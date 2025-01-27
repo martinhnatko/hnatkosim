@@ -1,0 +1,25 @@
+nech sa cyklus nezobrazuje v instrukciach ak ma -1 -1
+
+nejaky indikator ze simulacia skoncila -zeleny border na parsed instrukcie asi
+
+modernizacia slidera rychlosti... pripadne text hore ze Simulation speed in miliseconds s ikonkou raketky
+
+ulozit / nacitat kod
+
+cssko dat do custom tried a nie inline sracky asi... zjednotit to treba asi s milajom
+
+do komponentov vsetko rozjebat kod
+
+registre skraslit
+
+pridat nastavenie poctu registrov
+
+clear button s ikonkou kosa dole pod text
+
+konzola pod text + vypisovanie errorov v pripade cudzieho znaku , a nezatvoreneho/neotvoreneho cyklu
+
+
+
+odpisat z bakalarky ze chybaju cisla riadkov pri simstudio - nedava to zmysel lebo ked si priblizis , text sa zmeni
+
+do textu napisat ze poziadavka je ze ma to byt responzivne
