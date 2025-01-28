@@ -6713,7 +6713,7 @@ var $author$project$Main$update = F2(
 							return A2($author$project$Main$AddMessageWithTime, posix, newText);
 						},
 						$elm$time$Time$now));
-			default:
+			case 'AddMessageWithTime':
 				var posix = msg.a;
 				var text = msg.b;
 				var newConsoleMessage = {text: text, timestamp: posix};
@@ -6728,8 +6728,28 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					updatedModel,
 					$author$project$Main$scrollToBottom('consoleContainer'));
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							inputText: '',
+							instructionPointer: 0,
+							instructions: _List_Nil,
+							isRunning: false,
+							registers: $elm$core$Dict$fromList(
+								A2(
+									$elm$core$List$map,
+									function (n) {
+										return _Utils_Tuple2(n, 0);
+									},
+									A2($elm$core$List$range, 0, 100))),
+							simStarted: false
+						}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Main$DeleteInput = {$: 'DeleteInput'};
 var $author$project$Main$Pause = {$: 'Pause'};
 var $author$project$Main$Reset = {$: 'Reset'};
 var $author$project$Main$Start = {$: 'Start'};
@@ -6852,6 +6872,28 @@ var $author$project$Main$heroiconStep = A2(
 			_List_fromArray(
 				[
 					$elm$svg$Svg$Attributes$d('m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5')
+				]),
+			_List_Nil)
+		]));
+var $author$project$Main$heroiconTrash = A2(
+	$elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			$elm$svg$Svg$Attributes$class('h-12 w-12'),
+			$elm$svg$Svg$Attributes$fill('none'),
+			$elm$svg$Svg$Attributes$stroke('currentColor'),
+			$elm$svg$Svg$Attributes$strokeWidth('1.5'),
+			$elm$svg$Svg$Attributes$viewBox('0 0 24 24'),
+			$elm$svg$Svg$Attributes$strokeLinecap('round'),
+			$elm$svg$Svg$Attributes$strokeLinejoin('round')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0')
 				]),
 			_List_Nil)
 		]));
@@ -7028,7 +7070,7 @@ var $author$project$Main$viewConsole = function (consoleMessages) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('mt-4 bg-gray-800 text-white p-3 rounded shadow-lg')
+				$elm$html$Html$Attributes$class('mt-3 bg-gray-800 text-white p-3 rounded shadow-lg')
 			]),
 		_List_fromArray(
 			[
@@ -7037,7 +7079,7 @@ var $author$project$Main$viewConsole = function (consoleMessages) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$id('consoleContainer'),
-						$elm$html$Html$Attributes$class('font-mono text-sm h-32 overflow-y-auto')
+						$elm$html$Html$Attributes$class('font-mono text-sm h-24 overflow-y-auto')
 					]),
 				A2(
 					$elm$core$List$map,
@@ -7245,7 +7287,7 @@ var $author$project$Main$viewSlider = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex flex-col p-2 w-full')
+					$elm$html$Html$Attributes$class('flex flex-col p-1 w-full')
 				]),
 			_List_fromArray(
 				[
@@ -7301,7 +7343,7 @@ var $author$project$Main$view = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('flex flex-col h-screen p-3 bg-gray-200')
+				$elm$html$Html$Attributes$class('flex flex-col h-screen p-2 bg-gray-200')
 			]),
 		_List_fromArray(
 			[
@@ -7309,7 +7351,7 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex gap-4 mb-4')
+						$elm$html$Html$Attributes$class('flex gap-4 mb-5')
 					]),
 				_List_fromArray(
 					[
@@ -7425,7 +7467,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-4 shadow-lg rounded')
+								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-4 shadow-lg rounded relative')
 							]),
 						_List_fromArray(
 							[
@@ -7444,7 +7486,16 @@ var $author$project$Main$view = function (model) {
 										[
 											$elm$html$Html$Attributes$disabled(true)
 										]) : _List_Nil),
-								_List_Nil)
+								_List_Nil),
+								(!model.simStarted) ? A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('absolute bottom-5 right-5 text-gray-500 hover:text-red-500'),
+										$elm$html$Html$Events$onClick($author$project$Main$DeleteInput)
+									]),
+								_List_fromArray(
+									[$author$project$Main$heroiconTrash])) : $elm$html$Html$text('')
 							])),
 						A2(
 						$elm$html$Html$div,

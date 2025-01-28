@@ -6,8 +6,6 @@ do komponentov vsetko rozjebat kod
 
 pridat nastavenie poctu registrov
 
-clear button s ikonkou kosa dole pod text
-
 pridat viac errorov aby sa handlovalo - asi ze register ked je vacsi ako pocet registrov...
 
 error handling by mohol by lepsi - kazdy typ erroru by mohol mat svoj typ a svoju farbu
