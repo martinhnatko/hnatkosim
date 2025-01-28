@@ -33,6 +33,7 @@ import Svg exposing (path)
 import Svg.Attributes exposing (d)
 import Task
 import Process
+import Svg.Attributes exposing (end)
 
 -- MODEL
 
@@ -314,13 +315,13 @@ view model =
                         [ Html.Attributes.class "w-1/3 px-4 py-2 bg-gray-400 text-white flex cursor-not-allowed items-center justify-center rounded"
                         , disabled True
                         ]
-                        [ heroiconReset, text "Reset" ]
+                        [ heroiconReset, text "Stop" ]
                 else
                     button 
                         [ Html.Attributes.class "w-1/3 px-4 py-2 bg-red-500 text-white flex items-center justify-center rounded"
                         , onClick Reset
                         ]
-                        [ heroiconReset, text "Reset" ]
+                        [ heroiconReset, text "Stop" ]
                 ]
 
 
@@ -336,7 +337,7 @@ view model =
               div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded" ]
                 [ textarea
                     ( [ Html.Attributes.class
-                            ( "flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-xl font-mono "
+                            ( "flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono "
                                 ++ if model.simStarted then
                                     "bg-gray-200 text-gray-500 cursor-not-allowed"
                                 else
@@ -352,8 +353,17 @@ view model =
                 ]
 
             , -- Instructions Column
-              div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto" ]
-                [ viewInstructions model.instructions model.instructionPointer ]
+                div 
+                    [ Html.Attributes.class 
+                        ( "flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto "
+                            ++ if atEndOfInstructions && model.simStarted then
+                                "bg-green-50"
+                            else
+                                "bg-white"
+                        )
+                    ]
+                    [ viewInstructions model.instructions model.instructionPointer ]
+
             , -- Registers Column
               div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto" ]
                 [ div [] (viewRegisters model.registers model.highlighted) ]
@@ -411,23 +421,32 @@ viewInstructions instructions pointer =
                                 ")" ++ String.fromInt conditionIndex
 
                             UnknownInstruction ->
-                                "Unknown Instruction"
+                                "Unknown"
+
+                    -- Distinguish instruction types by background/text color.
+                    -- We handle each constructor explicitly, so we can give UnknownInstruction a unique color.
+                    typeColorClasses =
+                        case instruction of
+                            Increment _ ->
+                                " bg-green-200 text-green-800"
+
+                            Decrement _ ->
+                                " bg-red-200 text-red-800"
+
+                            StartLoop _ _ ->
+                                " bg-gray-200 text-gray-900"
+
+                            EndLoop _ _ ->
+                                " bg-gray-200 text-gray-900"
+
+                            UnknownInstruction ->
+                                " bg-yellow-200 text-yellow-800"
 
                     -- Base classes: same border thickness & style for everyone
                     baseClasses =
                         "p-2 border-4 border-solid rounded font-mono transition-colors"
 
-                    -- Distinguish instruction types by background/text color
-                    typeColorClasses =
-                        case instruction of
-                            Increment _ ->
-                                " bg-green-200 text-green-800"
-                            Decrement _ ->
-                                " bg-red-200 text-red-800"
-                            _ ->
-                                " bg-gray-200 text-gray-900"
-
-                    -- If active, show a blue border & bold text; else a transparent border
+                    -- If active, show a blue border & bold text; otherwise a transparent border
                     activeClasses =
                         if isActive then
                             " border-blue-500 font-bold"
@@ -455,7 +474,11 @@ viewRegisters registers highlighted =
                             |> Maybe.withDefault ""
                 in
                 div
-                    [ Html.Attributes.class ("flex items-center gap-3 p-2 border-b last:border-none " ++ highlightClass) ]
+                    [ Html.Attributes.class
+                        ("flex items-center gap-3 p-2 border-b last:border-none font-mono " 
+                            ++ highlightClass
+                        )
+                    ]
                     [ div [ Html.Attributes.class "text-gray-500 w-8 text-right" ]
                         [ text (String.fromInt regNum) ]
                     , div [ Html.Attributes.class "h-5 w-px bg-gray-300" ] []
@@ -463,6 +486,7 @@ viewRegisters registers highlighted =
                         [ text (String.fromInt value) ]
                     ]
             )
+
 
 
 

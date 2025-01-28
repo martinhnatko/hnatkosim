@@ -6335,6 +6335,7 @@ var $author$project$MyAbacusParser$StartLoop = F2(
 	function (a, b) {
 		return {$: 'StartLoop', a: a, b: b};
 	});
+var $author$project$MyAbacusParser$UnknownInstruction = {$: 'UnknownInstruction'};
 var $elm$core$String$fromList = _String_fromList;
 var $author$project$MyAbacusParser$getFirstDigits = function (chars) {
 	if (!chars.b) {
@@ -6348,6 +6349,24 @@ var $author$project$MyAbacusParser$getFirstDigits = function (chars) {
 			$author$project$MyAbacusParser$getFirstDigits(rest)) : _List_Nil;
 	}
 };
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $author$project$MyAbacusParser$isWhitespace = function (c) {
+	return _Utils_eq(
+		c,
+		_Utils_chr(' ')) || (_Utils_eq(
+		c,
+		_Utils_chr('\t')) || (_Utils_eq(
+		c,
+		_Utils_chr('\n')) || _Utils_eq(
+		c,
+		_Utils_chr('\r'))));
+};
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
@@ -6356,7 +6375,19 @@ var $author$project$MyAbacusParser$parseInstructions = F4(
 		parseInstructions:
 		while (true) {
 			if (!input.b) {
-				return instructions;
+				return $elm$core$List$isEmpty(stack) ? instructions : A2(
+					$elm$core$List$map,
+					function (instr) {
+						if (instr.$ === 'StartLoop') {
+							var endLoopIndex = instr.a;
+							var conditionIndex = instr.b;
+							return (_Utils_eq(endLoopIndex, -1) && _Utils_eq(conditionIndex, -1)) ? $author$project$MyAbacusParser$UnknownInstruction : instr;
+						} else {
+							var other = instr;
+							return other;
+						}
+					},
+					instructions);
 			} else {
 				switch (input.a.valueOf()) {
 					case 'a':
@@ -6438,10 +6469,13 @@ var $author$project$MyAbacusParser$parseInstructions = F4(
 							$elm$core$String$toInt(
 								$elm$core$String$fromList(digits)));
 						if (!stack.b) {
-							var $temp$instructions = instructions,
+							var $temp$instructions = _Utils_ap(
+								instructions,
+								_List_fromArray(
+									[$author$project$MyAbacusParser$UnknownInstruction])),
 								$temp$stack = stack,
-								$temp$currentIndex = currentIndex,
-								$temp$input = remaining;
+								$temp$currentIndex = currentIndex + 1,
+								$temp$input = rest;
 							instructions = $temp$instructions;
 							stack = $temp$stack;
 							currentIndex = $temp$currentIndex;
@@ -6476,16 +6510,32 @@ var $author$project$MyAbacusParser$parseInstructions = F4(
 							continue parseInstructions;
 						}
 					default:
+						var c = input.a;
 						var rest = input.b;
-						var $temp$instructions = instructions,
-							$temp$stack = stack,
-							$temp$currentIndex = currentIndex,
-							$temp$input = rest;
-						instructions = $temp$instructions;
-						stack = $temp$stack;
-						currentIndex = $temp$currentIndex;
-						input = $temp$input;
-						continue parseInstructions;
+						if ($author$project$MyAbacusParser$isWhitespace(c)) {
+							var $temp$instructions = instructions,
+								$temp$stack = stack,
+								$temp$currentIndex = currentIndex,
+								$temp$input = rest;
+							instructions = $temp$instructions;
+							stack = $temp$stack;
+							currentIndex = $temp$currentIndex;
+							input = $temp$input;
+							continue parseInstructions;
+						} else {
+							var $temp$instructions = _Utils_ap(
+								instructions,
+								_List_fromArray(
+									[$author$project$MyAbacusParser$UnknownInstruction])),
+								$temp$stack = stack,
+								$temp$currentIndex = currentIndex + 1,
+								$temp$input = rest;
+							instructions = $temp$instructions;
+							stack = $temp$stack;
+							currentIndex = $temp$currentIndex;
+							input = $temp$input;
+							continue parseInstructions;
+						}
 				}
 			}
 		}
@@ -6778,8 +6828,12 @@ var $author$project$Main$viewInstructions = F2(
 									return ' bg-green-200 text-green-800';
 								case 'Decrement':
 									return ' bg-red-200 text-red-800';
-								default:
+								case 'StartLoop':
 									return ' bg-gray-200 text-gray-900';
+								case 'EndLoop':
+									return ' bg-gray-200 text-gray-900';
+								default:
+									return ' bg-yellow-200 text-yellow-800';
 							}
 						}();
 						var isActive = _Utils_eq(index, pointer);
@@ -6797,7 +6851,7 @@ var $author$project$Main$viewInstructions = F2(
 									var conditionIndex = instruction.b;
 									return ')' + $elm$core$String$fromInt(conditionIndex);
 								default:
-									return 'Unknown Instruction';
+									return 'Unknown';
 							}
 						}();
 						var baseClasses = 'p-2 border-4 border-solid rounded font-mono transition-colors';
@@ -6833,7 +6887,7 @@ var $author$project$Main$viewRegisters = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex items-center gap-3 p-2 border-b last:border-none ' + highlightClass)
+							$elm$html$Html$Attributes$class('flex items-center gap-3 p-2 border-b last:border-none font-mono ' + highlightClass)
 						]),
 					_List_fromArray(
 						[
@@ -7048,7 +7102,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$author$project$Main$heroiconReset,
-										$elm$html$Html$text('Reset')
+										$elm$html$Html$text('Stop')
 									])) : A2(
 								$elm$html$Html$button,
 								_List_fromArray(
@@ -7059,7 +7113,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$author$project$Main$heroiconReset,
-										$elm$html$Html$text('Reset')
+										$elm$html$Html$text('Stop')
 									]))
 							])),
 						A2(
@@ -7095,7 +7149,7 @@ var $author$project$Main$view = function (model) {
 									_List_fromArray(
 										[
 											$elm$html$Html$Attributes$class(
-											'flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-xl font-mono ' + (model.simStarted ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-black')),
+											'flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono ' + (model.simStarted ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-black')),
 											$elm$html$Html$Attributes$placeholder('Enter your code here...'),
 											$elm$html$Html$Events$onInput($author$project$Main$UpdateCode),
 											$elm$html$Html$Attributes$value(model.inputText)
@@ -7110,7 +7164,8 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto')
+								$elm$html$Html$Attributes$class(
+								'flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto ' + ((atEndOfInstructions && model.simStarted) ? 'bg-green-50' : 'bg-white'))
 							]),
 						_List_fromArray(
 							[

@@ -25,8 +25,21 @@ parseInstructions : List Instruction -> LoopStack -> Int -> List Char -> List In
 parseInstructions instructions stack currentIndex input =
     case input of
         [] ->
-            -- Return the list of instructions once parsing is complete
-            instructions
+            -- If stack is non-empty, map all unmatched StartLoops to UnknownInstruction
+            if List.isEmpty stack then
+                instructions
+            else
+                instructions
+                    |> List.map (\instr ->
+                        case instr of
+                            StartLoop endLoopIndex conditionIndex ->
+                                if endLoopIndex == -1 && conditionIndex == -1 then
+                                    UnknownInstruction
+                                else
+                                    instr
+                            other ->
+                                other
+                    )
 
         'a' :: rest ->
             let
@@ -58,8 +71,7 @@ parseInstructions instructions stack currentIndex input =
             in
             case stack of
                 [] ->
-                    -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    parseInstructions instructions stack currentIndex remaining
+                    parseInstructions (instructions ++ [UnknownInstruction]) stack (currentIndex + 1) rest
 
                 startLoopIndex :: remainingStack ->
                     let
@@ -81,9 +93,11 @@ parseInstructions instructions stack currentIndex input =
                     in
                     parseInstructions (updatedInstructions ++ [endInstruction]) remainingStack (currentIndex + 1) remaining
 
-        _ :: rest ->
-            -- !!!!!!!!!!!!!!!!
-            parseInstructions instructions stack currentIndex rest
+        c :: rest ->
+            if isWhitespace c then
+                parseInstructions instructions stack currentIndex rest
+            else
+                parseInstructions (instructions ++ [UnknownInstruction]) stack (currentIndex + 1) rest
 
 
 -- HELPER FUNCTION
@@ -99,3 +113,8 @@ getFirstDigits chars =
                 c :: getFirstDigits rest
             else
                 []
+
+
+isWhitespace : Char -> Bool
+isWhitespace c =
+    c == ' ' || c == '\t' || c == '\n' || c == '\r'

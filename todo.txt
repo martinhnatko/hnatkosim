@@ -1,7 +1,3 @@
-nech sa cyklus nezobrazuje v instrukciach ak ma -1 -1
-
-nejaky indikator ze simulacia skoncila -zeleny border na parsed instrukcie asi
-
 modernizacia slidera rychlosti... pripadne text hore ze Simulation speed in miliseconds s ikonkou raketky
 
 ulozit / nacitat kod
@@ -9,8 +5,6 @@ ulozit / nacitat kod
 cssko dat do custom tried a nie inline sracky asi... zjednotit to treba asi s milajom
 
 do komponentov vsetko rozjebat kod
-
-registre skraslit
 
 pridat nastavenie poctu registrov
 
