@@ -7179,12 +7179,41 @@ var $elm$core$Basics$composeR = F3(
 		return g(
 			f(x));
 	});
+var $author$project$Main$heroiconRocket = A2(
+	$elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			$elm$svg$Svg$Attributes$class('h-5 w-5'),
+			$elm$svg$Svg$Attributes$fill('none'),
+			$elm$svg$Svg$Attributes$stroke('currentColor'),
+			$elm$svg$Svg$Attributes$strokeWidth('1.5'),
+			$elm$svg$Svg$Attributes$viewBox('0 0 24 24'),
+			$elm$svg$Svg$Attributes$strokeLinecap('round'),
+			$elm$svg$Svg$Attributes$strokeLinejoin('round')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z')
+				]),
+			_List_Nil)
+		]));
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
+var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$core$Basics$round = _Basics_round;
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$Main$sliderLabel = function (n) {
+var $author$project$Main$sliderLabel = function (ms) {
+	var toOneDecimal = function (f) {
+		return $elm$core$Basics$round(f * 10) / 10;
+	};
+	var inSeconds = toOneDecimal(ms / 1000);
+	var label = (!ms) ? '0' : $elm$core$String$fromFloat(inSeconds);
 	return A2(
 		$elm$html$Html$li,
 		_List_fromArray(
@@ -7201,8 +7230,7 @@ var $author$project$Main$sliderLabel = function (n) {
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(n))
+						$elm$html$Html$text(label)
 					]))
 			]));
 };
@@ -7217,10 +7245,21 @@ var $author$project$Main$viewSlider = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex flex-col space-y-2 p-2 w-full')
+					$elm$html$Html$Attributes$class('flex flex-col p-2 w-full')
 				]),
 			_List_fromArray(
 				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('flex items-center gap-2 text-gray-700')
+						]),
+					_List_fromArray(
+						[
+							$author$project$Main$heroiconRocket,
+							$elm$html$Html$text('Time between instructions (seconds)')
+						])),
 					A2(
 					$elm$html$Html$input,
 					_List_fromArray(
@@ -7412,7 +7451,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class(
-								'flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto ' + ((atEndOfInstructions && model.simStarted) ? 'bg-green-50' : 'bg-white'))
+								'flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto border-2 border-transparent ' + ((atEndOfInstructions && model.simStarted) ? ' bg-green-50 border-green-400' : ' bg-white'))
 							]),
 						_List_fromArray(
 							[

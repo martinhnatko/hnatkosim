@@ -1,5 +1,3 @@
-modernizacia slidera rychlosti... pripadne text hore ze Simulation speed in miliseconds s ikonkou raketky
-
 ulozit / nacitat kod
 
 cssko dat do custom tried a nie inline sracky asi... zjednotit to treba asi s milajom

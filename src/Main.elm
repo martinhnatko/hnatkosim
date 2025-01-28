@@ -65,9 +65,8 @@ init =
     , speedIdx = 4
     , consoleMessages = []
     }
-
-
-
+    
+    
 type alias ConsoleMessage =
     { timestamp : Time.Posix
     , text : String
@@ -437,16 +436,16 @@ view model =
                 ]
 
             , -- Instructions Column
-                div 
-                    [ Html.Attributes.class 
-                        ( "flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto "
-                            ++ if atEndOfInstructions && model.simStarted then
-                                "bg-green-50"
-                            else
-                                "bg-white"
-                        )
-                    ]
-                    [ viewInstructions model.instructions model.instructionPointer ]
+            div 
+                [ Html.Attributes.class
+                    ( "flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto border-2 border-transparent "
+                        ++ if atEndOfInstructions && model.simStarted then
+                            " bg-green-50 border-green-400"
+                        else
+                            " bg-white"
+                    )
+                ]
+                [ viewInstructions model.instructions model.instructionPointer ]
 
             , -- Registers Column
               div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto" ]
@@ -456,11 +455,38 @@ view model =
             , viewConsole model.consoleMessages
         ]
 
--- View for the slider
+-- Transform your slider speeds from ms to s in the labels
+sliderLabel : Int -> Html msg
+sliderLabel ms =
+    let
+        toOneDecimal f =
+            (toFloat (round (f * 10))) / 10
+
+        inSeconds =
+            toOneDecimal ((toFloat ms) / 1000)
+
+        label =
+            if ms == 0 then
+                "0"
+            else
+                String.fromFloat inSeconds
+    in
+    li [ Html.Attributes.class "flex justify-center relative" ]
+        [ span [ Html.Attributes.class "absolute" ]
+            [ text label ]
+        ]
+
+
 viewSlider : Int -> Model -> Html Msg
 viewSlider currentValue model =
-    div [ Html.Attributes.class "flex flex-col space-y-2 p-2 w-full" ]
-        [ -- Slider Input
+    div [ Html.Attributes.class "flex flex-col p-2 w-full" ]
+        [ -- Title with Rocket Icon
+          div [ Html.Attributes.class "flex items-center gap-2 text-gray-700" ]
+            [ heroiconRocket
+            , text "Time between instructions (seconds)"
+            ]
+
+        , -- Slider Input
           input
             [ type_ "range"
             , Html.Attributes.class "w-full"
@@ -471,17 +497,11 @@ viewSlider currentValue model =
             , onInput (String.toInt >> Maybe.withDefault 1 >> ChangeSpeed)
             ]
             []
+
         , -- Labels for the Slider
           ul [ Html.Attributes.class "flex justify-between w-full px-[10px]" ]
             (List.map sliderLabel (Array.toList model.speeds))
         ]
-
--- Helper function to generate slider labels
-sliderLabel : Int -> Html msg
-sliderLabel n =
-    li [ Html.Attributes.class "flex justify-center relative" ]
-        [ span [ Html.Attributes.class "absolute" ] [ Html.text (String.fromInt n) ] ]
-
         
 viewInstructions : List Instruction -> Int -> Html Msg
 viewInstructions instructions pointer =
@@ -666,3 +686,19 @@ heroiconReset =
         , strokeLinejoin "round"
         ]
         [ path [ d "M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" ] [] ]
+
+heroiconRocket : Html msg
+heroiconRocket =
+    svg
+        [ Svg.Attributes.class "h-5 w-5"
+        , fill "none"
+        , stroke "currentColor"
+        , strokeWidth "1.5"
+        , viewBox "0 0 24 24"
+        , strokeLinecap "round"
+        , strokeLinejoin "round"
+        ]
+        [ path
+            [ d "M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" ]
+            []
+        ]
