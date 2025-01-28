@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, textarea, text)
@@ -14,7 +14,7 @@ import Debug
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (disabled)
 import Html exposing (input)
-import Html.Attributes exposing (type_)
+import Html.Attributes exposing (type_, id)
 import Html.Attributes exposing (step)
 import Html exposing (ul)
 import Html exposing (li)
@@ -33,7 +33,8 @@ import Svg exposing (path)
 import Svg.Attributes exposing (d)
 import Task
 import Process
-import Svg.Attributes exposing (end)
+
+port scrollToBottom : String -> Cmd msg
 
 -- MODEL
 
@@ -47,6 +48,7 @@ type alias Model =
     , instructionPointer : Int
     , speeds : Array Int
     , speedIdx : Int
+    , consoleMessages : List ConsoleMessage
     }
 
 
@@ -61,9 +63,15 @@ init =
     , instructionPointer = 0
     , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 250, 100, 0 ]
     , speedIdx = 4
+    , consoleMessages = []
     }
 
 
+
+type alias ConsoleMessage =
+    { timestamp : Time.Posix
+    , text : String
+    }
 
 -- MESSAGES
 
@@ -76,6 +84,8 @@ type Msg
     | Step
     | ChangeSpeed Int
     | RemoveHighlight Int
+    | RequestAddMessage String  -- Ask for a new console message with the current time
+    | AddMessageWithTime Time.Posix String  -- Add a new console message with a given time
 
 
 subscriptions : Model -> Sub Msg
@@ -93,7 +103,7 @@ subscriptions model =
 -- UPDATE
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =    
+update msg model =
     case msg of
         UpdateCode newCode ->
             let
@@ -126,9 +136,24 @@ update msg model =
 
 
         Start ->
-            ( { model | isRunning = True, simStarted = True }
-            , Cmd.none
-            )
+            if model.simStarted then
+                -- Already started once, so just set isRunning = True
+                ( { model | isRunning = True }, Cmd.none )
+
+            else
+                -- We have not started before
+                let
+                    errors =
+                        checkForErrors model.instructions  -- e.g. returns List String
+                    messages =
+                        errors ++ [ "Simulation started" ]
+                in
+                ( { model
+                    | isRunning = True
+                    , simStarted = True
+                }
+                , requestAddMessages messages
+                )
 
         Pause ->
             ( { model | isRunning = False }, Cmd.none )
@@ -140,15 +165,40 @@ update msg model =
                 , instructionPointer = 0
                 , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
               }
-            , Cmd.none
+            , requestAddMessages ["Simulation stopped"]
             )
         Step ->
             let
                 highlightDuration = 200
-                ( updatedModel, removeHighlightCmd ) =
+                ( newModel1, removeHighlightCmd ) =
                     executeInstruction model highlightDuration
+
+                -- If we haven't started before, create "Simulation started" messages.
+                -- Otherwise, no new messages.
+                messages =
+                    if not newModel1.simStarted then
+                        let
+                            errors = checkForErrors model.instructions
+                        in
+                        errors ++ [ "Simulation started" ]
+                    else
+                        []
+
+                -- Now actually set `simStarted = True` if not started yet.
+                newModel2 =
+                    if not newModel1.simStarted then
+                        { newModel1 | simStarted = True }
+                    else
+                        newModel1
+
+                -- Combine highlight removal + any new console messages.
+                combinedCmd =
+                    Cmd.batch
+                        [ removeHighlightCmd
+                        , requestAddMessages messages
+                        ]
             in
-            ( { updatedModel | simStarted = True }, removeHighlightCmd )
+            ( newModel2, combinedCmd )
 
         
         ChangeSpeed newSpeed ->
@@ -161,6 +211,37 @@ update msg model =
             in
             ( { model | highlighted = newHighlighted }, Cmd.none )
 
+        RequestAddMessage newText ->
+            -- We want to add a message with a fresh timestamp
+            -- -> ask Elm for current time, then AddMessageWithTime
+            ( model
+            , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
+            )
+
+        AddMessageWithTime posix text ->
+            let
+                newConsoleMessage =
+                    { timestamp = posix
+                    , text = text
+                    }
+
+                updatedModel =
+                    { model
+                        | consoleMessages =
+                            model.consoleMessages ++ [ newConsoleMessage ]
+                    }
+            in
+            -- After adding the message, scroll to bottom
+            ( updatedModel, scrollToBottom "consoleContainer" )
+
+
+
+requestAddMessages : List String -> Cmd Msg
+requestAddMessages msgs =
+    msgs
+        |> List.map (\msg -> Time.now |> Task.perform (\posix -> AddMessageWithTime posix msg))
+        |> Cmd.batch
+
 executeInstruction : Model -> Int -> (Model, Cmd Msg)
 executeInstruction model highlightDuration =
     let
@@ -170,14 +251,6 @@ executeInstruction model highlightDuration =
         nextInstructionPointer =
             model.instructionPointer + 1
 
-        -- defaultSpeed = 1000
-        -- speed =
-        --     Array.get (model.speedIdx - 1) model.speeds
-        --         |> Maybe.withDefault defaultSpeed
-
-        -- -- half the speed in ms
-        -- highlightDuration =
-        --     speed // 2
     in
     case currentInstruction of
         Nothing ->
@@ -250,7 +323,18 @@ executeInstruction model highlightDuration =
                     -- Ignore unknown instructions and continue
                     ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
 
-
+checkForErrors : List Instruction -> List String
+checkForErrors instructions =
+    let
+        unknownInstructions = 
+            instructions
+                |> List.filter (\i -> i == UnknownInstruction)
+                |> List.length
+    in
+    if unknownInstructions > 0 then
+        [ "Error: Found " ++ String.fromInt unknownInstructions ++ " unknown instructions" ]
+    else
+        []
 
 view : Model -> Html Msg
 view model =
@@ -368,6 +452,8 @@ view model =
               div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto" ]
                 [ div [] (viewRegisters model.registers model.highlighted) ]
             ]
+            -- CONSOLE
+            , viewConsole model.consoleMessages
         ]
 
 -- View for the slider
@@ -487,7 +573,31 @@ viewRegisters registers highlighted =
                     ]
             )
 
+--Conole view
+viewConsole : List ConsoleMessage -> Html msg
+viewConsole consoleMessages =
+    div [ Html.Attributes.class "mt-4 bg-gray-800 text-white p-3 rounded shadow-lg" ]
+        [ div
+            [ id "consoleContainer"
+            , Html.Attributes.class "font-mono text-sm h-32 overflow-y-auto"
+            ]
+            (consoleMessages
+                |> List.map (\msg ->
+                    div [ Html.Attributes.class "py-1" ]
+                        [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+                )
+            )
+        ]
 
+formatTime : Time.Posix -> String
+formatTime posix =
+    let
+        hh = Time.toHour Time.utc posix + 1
+        mm = Time.toMinute Time.utc posix
+        ss = Time.toSecond Time.utc posix
+        twoDigits n = String.padLeft 2 '0' (String.fromInt n)
+    in
+    twoDigits hh ++ ":" ++ twoDigits mm ++ ":" ++ twoDigits ss
 
 
 -- MAIN

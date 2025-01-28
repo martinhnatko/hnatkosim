@@ -10,9 +10,9 @@ pridat nastavenie poctu registrov
 
 clear button s ikonkou kosa dole pod text
 
-konzola pod text + vypisovanie errorov v pripade cudzieho znaku , a nezatvoreneho/neotvoreneho cyklu
+pridat viac errorov aby sa handlovalo - asi ze register ked je vacsi ako pocet registrov...
 
-
+error handling by mohol by lepsi - kazdy typ erroru by mohol mat svoj typ a svoju farbu
 
 odpisat z bakalarky ze chybaju cisla riadkov pri simstudio - nedava to zmysel lebo ked si priblizis , text sa zmeni
 

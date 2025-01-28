@@ -5405,6 +5405,7 @@ var $elm$core$Dict$fromList = function (assocs) {
 		assocs);
 };
 var $author$project$Main$init = {
+	consoleMessages: _List_Nil,
 	highlighted: $elm$core$Dict$empty,
 	inputText: '',
 	instructionPointer: 0,
@@ -5796,6 +5797,35 @@ var $author$project$Main$subscriptions = function (model) {
 	} else {
 		return $elm$core$Platform$Sub$none;
 	}
+};
+var $author$project$Main$AddMessageWithTime = F2(
+	function (a, b) {
+		return {$: 'AddMessageWithTime', a: a, b: b};
+	});
+var $author$project$MyAbacusParser$UnknownInstruction = {$: 'UnknownInstruction'};
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$Main$checkForErrors = function (instructions) {
+	var unknownInstructions = $elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (i) {
+				return _Utils_eq(i, $author$project$MyAbacusParser$UnknownInstruction);
+			},
+			instructions));
+	return (unknownInstructions > 0) ? _List_fromArray(
+		[
+			'Error: Found ' + ($elm$core$String$fromInt(unknownInstructions) + ' unknown instructions')
+		]) : _List_Nil;
 };
 var $author$project$Main$RemoveHighlight = function (a) {
 	return {$: 'RemoveHighlight', a: a};
@@ -6335,7 +6365,6 @@ var $author$project$MyAbacusParser$StartLoop = F2(
 	function (a, b) {
 		return {$: 'StartLoop', a: a, b: b};
 	});
-var $author$project$MyAbacusParser$UnknownInstruction = {$: 'UnknownInstruction'};
 var $elm$core$String$fromList = _String_fromList;
 var $author$project$MyAbacusParser$getFirstDigits = function (chars) {
 	if (!chars.b) {
@@ -6540,6 +6569,22 @@ var $author$project$MyAbacusParser$parseInstructions = F4(
 			}
 		}
 	});
+var $author$project$Main$requestAddMessages = function (msgs) {
+	return $elm$core$Platform$Cmd$batch(
+		A2(
+			$elm$core$List$map,
+			function (msg) {
+				return A2(
+					$elm$core$Task$perform,
+					function (posix) {
+						return A2($author$project$Main$AddMessageWithTime, posix, msg);
+					},
+					$elm$time$Time$now);
+			},
+			msgs));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Main$scrollToBottom = _Platform_outgoingPort('scrollToBottom', $elm$json$Json$Encode$string);
 var $elm$core$String$foldr = _String_foldr;
 var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
@@ -6574,11 +6619,24 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(updatedModel, removalCmd);
 				}
 			case 'Start':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{isRunning: true, simStarted: true}),
-					$elm$core$Platform$Cmd$none);
+				if (model.simStarted) {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{isRunning: true}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var errors = $author$project$Main$checkForErrors(model.instructions);
+					var messages = _Utils_ap(
+						errors,
+						_List_fromArray(
+							['Simulation started']));
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{isRunning: true, simStarted: true}),
+						$author$project$Main$requestAddMessages(messages));
+				}
 			case 'Pause':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -6601,17 +6659,35 @@ var $author$project$Main$update = F2(
 									A2($elm$core$List$range, 0, 100))),
 							simStarted: false
 						}),
-					$elm$core$Platform$Cmd$none);
+					$author$project$Main$requestAddMessages(
+						_List_fromArray(
+							['Simulation stopped'])));
 			case 'Step':
 				var highlightDuration = 200;
 				var _v2 = A2($author$project$Main$executeInstruction, model, highlightDuration);
-				var updatedModel = _v2.a;
+				var newModel1 = _v2.a;
 				var removeHighlightCmd = _v2.b;
-				return _Utils_Tuple2(
-					_Utils_update(
-						updatedModel,
-						{simStarted: true}),
-					removeHighlightCmd);
+				var messages = function () {
+					if (!newModel1.simStarted) {
+						var errors = $author$project$Main$checkForErrors(model.instructions);
+						return _Utils_ap(
+							errors,
+							_List_fromArray(
+								['Simulation started']));
+					} else {
+						return _List_Nil;
+					}
+				}();
+				var newModel2 = (!newModel1.simStarted) ? _Utils_update(
+					newModel1,
+					{simStarted: true}) : newModel1;
+				var combinedCmd = $elm$core$Platform$Cmd$batch(
+					_List_fromArray(
+						[
+							removeHighlightCmd,
+							$author$project$Main$requestAddMessages(messages)
+						]));
+				return _Utils_Tuple2(newModel2, combinedCmd);
 			case 'ChangeSpeed':
 				var newSpeed = msg.a;
 				return _Utils_Tuple2(
@@ -6619,7 +6695,7 @@ var $author$project$Main$update = F2(
 						model,
 						{speedIdx: newSpeed}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'RemoveHighlight':
 				var reg = msg.a;
 				var newHighlighted = A2($elm$core$Dict$remove, reg, model.highlighted);
 				return _Utils_Tuple2(
@@ -6627,6 +6703,31 @@ var $author$project$Main$update = F2(
 						model,
 						{highlighted: newHighlighted}),
 					$elm$core$Platform$Cmd$none);
+			case 'RequestAddMessage':
+				var newText = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$elm$core$Task$perform,
+						function (posix) {
+							return A2($author$project$Main$AddMessageWithTime, posix, newText);
+						},
+						$elm$time$Time$now));
+			default:
+				var posix = msg.a;
+				var text = msg.b;
+				var newConsoleMessage = {text: text, timestamp: posix};
+				var updatedModel = _Utils_update(
+					model,
+					{
+						consoleMessages: _Utils_ap(
+							model.consoleMessages,
+							_List_fromArray(
+								[newConsoleMessage]))
+					});
+				return _Utils_Tuple2(
+					updatedModel,
+					$author$project$Main$scrollToBottom('consoleContainer'));
 		}
 	});
 var $author$project$Main$Pause = {$: 'Pause'};
@@ -6637,7 +6738,6 @@ var $author$project$Main$UpdateCode = function (a) {
 	return {$: 'UpdateCode', a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -6810,6 +6910,153 @@ var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return $elm$core$Basics$floor(numerator / denominator);
+	});
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.start, posixMinutes) < 0) {
+					return posixMinutes + era.offset;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var $elm$time$Time$toAdjustedMinutes = F2(
+	function (_v0, time) {
+		var defaultOffset = _v0.a;
+		var eras = _v0.b;
+		return A3(
+			$elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var $elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			24,
+			A2(
+				$elm$time$Time$flooredDiv,
+				A2($elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var $elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2($elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var $elm$time$Time$toSecond = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
+var $author$project$Main$formatTime = function (posix) {
+	var twoDigits = function (n) {
+		return A3(
+			$elm$core$String$padLeft,
+			2,
+			_Utils_chr('0'),
+			$elm$core$String$fromInt(n));
+	};
+	var ss = A2($elm$time$Time$toSecond, $elm$time$Time$utc, posix);
+	var mm = A2($elm$time$Time$toMinute, $elm$time$Time$utc, posix);
+	var hh = A2($elm$time$Time$toHour, $elm$time$Time$utc, posix) + 1;
+	return twoDigits(hh) + (':' + (twoDigits(mm) + (':' + twoDigits(ss))));
+};
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $author$project$Main$viewConsole = function (consoleMessages) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('mt-4 bg-gray-800 text-white p-3 rounded shadow-lg')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id('consoleContainer'),
+						$elm$html$Html$Attributes$class('font-mono text-sm h-32 overflow-y-auto')
+					]),
+				A2(
+					$elm$core$List$map,
+					function (msg) {
+						return A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('py-1')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									'[' + ($author$project$Main$formatTime(msg.timestamp) + ('] ' + msg.text)))
+								]));
+					},
+					consoleMessages))
+			]));
+};
 var $author$project$Main$viewInstructions = F2(
 	function (instructions, pointer) {
 		return A2(
@@ -7184,7 +7431,8 @@ var $author$project$Main$view = function (model) {
 								_List_Nil,
 								A2($author$project$Main$viewRegisters, model.registers, model.highlighted))
 							]))
-					]))
+					])),
+				$author$project$Main$viewConsole(model.consoleMessages)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

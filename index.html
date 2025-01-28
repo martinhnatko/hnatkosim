@@ -12,6 +12,17 @@
   var app = Elm.Main.init({
     node: document.getElementById('myapp')
   });
+
+  app.ports.scrollToBottom.subscribe(function (elementId) {
+    requestAnimationFrame(() => {
+        const el = document.getElementById(elementId);
+        if (el) {
+            el.scrollTop = el.scrollHeight;
+        }
+    });
+});
+
+
   </script>
 </body>
 </html>
