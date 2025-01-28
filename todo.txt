@@ -7,8 +7,9 @@ do komponentov vsetko rozjebat kod
 pridat nastavenie poctu registrov
 
 pridat viac errorov aby sa handlovalo - asi ze register ked je vacsi ako pocet registrov...
-
 error handling by mohol by lepsi - kazdy typ erroru by mohol mat svoj typ a svoju farbu
+
+responzivita
 
 odpisat z bakalarky ze chybaju cisla riadkov pri simstudio - nedava to zmysel lebo ked si priblizis , text sa zmeni
 
