@@ -34,8 +34,17 @@ import Svg.Attributes exposing (d)
 import Task
 import Process
 import Svg exposing (Svg)
+import Svg exposing (g)
 
 port scrollToBottom : String -> Cmd msg
+
+port setItem : ( String, String ) -> Cmd msg
+
+port getItem : String -> Cmd msg
+
+port gotItem : ( (String, Maybe String) -> msg ) -> Sub msg
+
+
 
 -- MODEL
 
@@ -51,11 +60,11 @@ type alias Model =
     , speedIdx : Int
     , consoleMessages : List ConsoleMessage
     }
+    
 
-
-init : Model
-init =
-    { inputText = ""
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { inputText = ""
     , registers = Dict.fromList (List.map (\n -> (n, 0)) (range 0 100))
     , highlighted = Dict.empty
     , instructions = []
@@ -66,7 +75,9 @@ init =
     , speedIdx = 4
     , consoleMessages = []
     }
-    
+    , getItem "myCode"  -- We'll handle the response in `GotItem (key, maybeValue)`
+    )
+
     
 type alias ConsoleMessage =
     { timestamp : Time.Posix
@@ -87,19 +98,25 @@ type Msg
     | RequestAddMessage String  -- Ask for a new console message with the current time
     | AddMessageWithTime Time.Posix String  -- Add a new console message with a given time
     | DeleteInput
+    | GotItem (String, Maybe String)
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    if model.isRunning then
-        let
-            defaultSpeed = 1000
-            speed = Array.get (model.speedIdx - 1) model.speeds
+    Sub.batch
+        [ if model.isRunning then
+            let
+                defaultSpeed = 1000
+                speed =
+                    Array.get (model.speedIdx - 1) model.speeds
                         |> Maybe.withDefault defaultSpeed
-        in
-        Time.every (toFloat speed ) Tick
-    else
-        Sub.none
+            in
+            Time.every (toFloat speed) Tick
+          else
+            Sub.none
+
+        , gotItem GotItem
+        ]
 
 -- UPDATE
 
@@ -111,10 +128,10 @@ update msg model =
                 loopStack : LoopStack
                 loopStack = []
                 input = String.toList newCode
-                newInstructions1 = parseInstructions [] loopStack 0 input False
-                newInstructions = Debug.log "newInstructions" newInstructions1
+                newInstructions = parseInstructions [] loopStack 0 input False
+                -- newInstructions = Debug.log "newInstructions" newInstructions1
             in
-            ( { model | inputText = newCode, instructions = newInstructions }, Cmd.none )
+            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("myCode", newCode) )
 
         Tick _ ->
             if not model.isRunning then
@@ -245,6 +262,23 @@ update msg model =
               }
             , Cmd.none
             )
+        
+        GotItem (key1, maybeValue1) ->
+            let
+                key = Debug.log "key" key1
+                maybeValue = Debug.log "maybevalue" maybeValue1
+
+                instructions = parseInstructions [] [] 0 (String.toList (Maybe.withDefault "" maybeValue)) False
+            in
+            if key == "myCode" then
+                let
+                    loadedText =
+                        Maybe.withDefault "" maybeValue
+                in
+                ( { model | inputText = loadedText, instructions = instructions }, requestAddMessages ["Welcome to Abacus Machine Simulator"] )
+            else
+                -- If it's some other key, ignore
+                ( model, Cmd.none )
 
 
 
@@ -647,7 +681,7 @@ formatTime posix =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = always ( init, Cmd.none )
+        { init = init
         , update = update
         , view = view
         , subscriptions = subscriptions

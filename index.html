@@ -8,7 +8,9 @@
 
 <body>
   <div id="myapp"></div>
-  <script>
+</body>
+
+<script>
   var app = Elm.Main.init({
     node: document.getElementById('myapp')
   });
@@ -20,9 +22,22 @@
             el.scrollTop = el.scrollHeight;
         }
     });
-});
+  });
 
+  // 1) setItem port => store key/value in localStorage
+  app.ports.setItem.subscribe(function ([key, value]) {
+    localStorage.setItem(key, value);
+  });
 
-  </script>
-</body>
+  // 2) getItem port => read localStorage and send back via gotItem
+  app.ports.getItem.subscribe(function (key) {
+    var value = localStorage.getItem(key);
+    if (value === null) {
+      // If not found, we send null
+      app.ports.gotItem.send([ key, null ]);
+    } else {
+      app.ports.gotItem.send([ key, value ]);
+    }
+  });
+</script>
 </html>
