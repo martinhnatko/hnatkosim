@@ -5242,6 +5242,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Array$fromListHelp = F3(
@@ -5402,29 +5403,52 @@ var $elm$core$Dict$fromList = function (assocs) {
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$getItem = _Platform_outgoingPort('getItem', $elm$json$Json$Encode$string);
+var $elm$core$Array$repeat = F2(
+	function (n, e) {
+		return A2(
+			$elm$core$Array$initialize,
+			n,
+			function (_v0) {
+				return e;
+			});
+	});
 var $author$project$Main$init = function (_v0) {
-	return _Utils_Tuple2(
-		{
-			consoleMessages: _List_Nil,
-			highlighted: $elm$core$Dict$empty,
-			inputText: '',
-			instructionPointer: 0,
-			instructions: _List_Nil,
-			isRunning: false,
-			registers: $elm$core$Dict$fromList(
+	var initialModel = {
+		consoleMessages: _List_Nil,
+		highlighted: $elm$core$Dict$empty,
+		inputText: '',
+		instructionPointer: 0,
+		instructions: _List_Nil,
+		isRunning: false,
+		registers: $elm$core$Dict$fromList(
+			A2(
+				$elm$core$List$map,
+				function (n) {
+					return _Utils_Tuple2(n, 0);
+				},
+				A2($elm$core$List$range, 0, 100))),
+		showSlotsModal: false,
+		simStarted: false,
+		slots: A2($elm$core$Array$repeat, 21, ''),
+		speedIdx: 4,
+		speeds: $elm$core$Array$fromList(
+			_List_fromArray(
+				[4000, 2000, 1000, 500, 250, 100, 0]))
+	};
+	var cmdToLoad = $elm$core$Platform$Cmd$batch(
+		_List_fromArray(
+			[
+				$author$project$Main$getItem('current'),
+				$elm$core$Platform$Cmd$batch(
 				A2(
 					$elm$core$List$map,
-					function (n) {
-						return _Utils_Tuple2(n, 0);
+					function (i) {
+						return $author$project$Main$getItem(
+							'slot_' + $elm$core$String$fromInt(i));
 					},
-					A2($elm$core$List$range, 0, 100))),
-			simStarted: false,
-			speedIdx: 4,
-			speeds: $elm$core$Array$fromList(
-				_List_fromArray(
-					[4000, 2000, 1000, 500, 250, 100, 0]))
-		},
-		$author$project$Main$getItem('myCode'));
+					A2($elm$core$List$range, 1, 20)))
+			]));
+	return _Utils_Tuple2(initialModel, cmdToLoad);
 };
 var $author$project$Main$GotItem = function (a) {
 	return {$: 'GotItem', a: a};
@@ -5839,7 +5863,6 @@ var $author$project$Main$AddMessageWithTime = F2(
 	function (a, b) {
 		return {$: 'AddMessageWithTime', a: a, b: b};
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$MyAbacusParser$UnknownInstruction = {$: 'UnknownInstruction'};
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -6388,7 +6411,6 @@ var $author$project$Main$executeInstruction = F2(
 			}
 		}
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$MyAbacusParser$Decrement = function (a) {
 	return {$: 'Decrement', a: a};
@@ -6684,6 +6706,49 @@ var $author$project$Main$requestAddMessages = function (msgs) {
 			msgs));
 };
 var $author$project$Main$scrollToBottom = _Platform_outgoingPort('scrollToBottom', $elm$json$Json$Encode$string);
+var $elm$core$Elm$JsArray$unsafeSet = _JsArray_unsafeSet;
+var $elm$core$Array$setHelp = F4(
+	function (shift, index, value, tree) {
+		var pos = $elm$core$Array$bitMask & (index >>> shift);
+		var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+		if (_v0.$ === 'SubTree') {
+			var subTree = _v0.a;
+			var newSub = A4($elm$core$Array$setHelp, shift - $elm$core$Array$shiftStep, index, value, subTree);
+			return A3(
+				$elm$core$Elm$JsArray$unsafeSet,
+				pos,
+				$elm$core$Array$SubTree(newSub),
+				tree);
+		} else {
+			var values = _v0.a;
+			var newLeaf = A3($elm$core$Elm$JsArray$unsafeSet, $elm$core$Array$bitMask & index, value, values);
+			return A3(
+				$elm$core$Elm$JsArray$unsafeSet,
+				pos,
+				$elm$core$Array$Leaf(newLeaf),
+				tree);
+		}
+	});
+var $elm$core$Array$set = F3(
+	function (index, value, array) {
+		var len = array.a;
+		var startShift = array.b;
+		var tree = array.c;
+		var tail = array.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? array : ((_Utils_cmp(
+			index,
+			$elm$core$Array$tailIndex(len)) > -1) ? A4(
+			$elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			tree,
+			A3($elm$core$Elm$JsArray$unsafeSet, $elm$core$Array$bitMask & index, value, tail)) : A4(
+			$elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			A4($elm$core$Array$setHelp, startShift, index, value, tree),
+			tail));
+	});
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
 		return _Json_wrap(
@@ -6724,7 +6789,7 @@ var $author$project$Main$update = F2(
 						model,
 						{inputText: newCode, instructions: newInstructions}),
 					$author$project$Main$setItem(
-						_Utils_Tuple2('myCode', newCode)));
+						_Utils_Tuple2('current', newCode)));
 			case 'Tick':
 				if (!model.isRunning) {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -6868,33 +6933,101 @@ var $author$project$Main$update = F2(
 									A2($elm$core$List$range, 0, 100))),
 							simStarted: false
 						}),
-					$elm$core$Platform$Cmd$none);
-			default:
+					$author$project$Main$setItem(
+						_Utils_Tuple2('current', '')));
+			case 'GotItem':
 				var _v3 = msg.a;
-				var key1 = _v3.a;
-				var maybeValue1 = _v3.b;
-				var maybeValue = A2($elm$core$Debug$log, 'maybevalue', maybeValue1);
-				var key = A2($elm$core$Debug$log, 'key', key1);
-				var instructions = A5(
-					$author$project$MyAbacusParser$parseInstructions,
-					_List_Nil,
-					_List_Nil,
-					0,
-					$elm$core$String$toList(
-						A2($elm$core$Maybe$withDefault, '', maybeValue)),
-					false);
-				if (key === 'myCode') {
-					var loadedText = A2($elm$core$Maybe$withDefault, '', maybeValue);
+				var key = _v3.a;
+				var code = _v3.b;
+				if (key === 'current') {
+					var instructions = A5(
+						$author$project$MyAbacusParser$parseInstructions,
+						_List_Nil,
+						_List_Nil,
+						0,
+						$elm$core$String$toList(
+							A2($elm$core$Maybe$withDefault, '', code)),
+						false);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{inputText: loadedText, instructions: instructions}),
+							{
+								inputText: A2($elm$core$Maybe$withDefault, '', code),
+								instructions: instructions
+							}),
 						$author$project$Main$requestAddMessages(
 							_List_fromArray(
 								['Welcome to Abacus Machine Simulator'])));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					var maybeSlotIndex = A2($elm$core$String$startsWith, 'slot_', key) ? $elm$core$String$toInt(
+						A2($elm$core$String$dropLeft, 5, key)) : $elm$core$Maybe$Nothing;
+					if (maybeSlotIndex.$ === 'Just') {
+						var i = maybeSlotIndex.a;
+						var updatedSlots = A3(
+							$elm$core$Array$set,
+							i,
+							A2($elm$core$Maybe$withDefault, '', code),
+							model.slots);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{slots: updatedSlots}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
 				}
+			case 'SaveSlot':
+				var i = msg.a;
+				var updatedSlots = A3($elm$core$Array$set, i, model.inputText, model.slots);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{slots: updatedSlots}),
+					$author$project$Main$setItem(
+						_Utils_Tuple2(
+							'slot_' + $elm$core$String$fromInt(i),
+							model.inputText)));
+			case 'DeleteSlot':
+				var i = msg.a;
+				var updatedSlots = A3($elm$core$Array$set, i, '', model.slots);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{slots: updatedSlots}),
+					$author$project$Main$setItem(
+						_Utils_Tuple2(
+							'slot_' + $elm$core$String$fromInt(i),
+							'')));
+			case 'LoadSlot':
+				var i = msg.a;
+				var maybeCode = A2($elm$core$Array$get, i, model.slots);
+				if (maybeCode.$ === 'Nothing') {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var code = maybeCode.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								inputText: code,
+								instructions: A5(
+									$author$project$MyAbacusParser$parseInstructions,
+									_List_Nil,
+									_List_Nil,
+									0,
+									$elm$core$String$toList(code),
+									false)
+							}),
+						$author$project$Main$setItem(
+							_Utils_Tuple2('current', code)));
+				}
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{showSlotsModal: !model.showSlotsModal}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$DeleteInput = {$: 'DeleteInput'};
@@ -6902,6 +7035,7 @@ var $author$project$Main$Pause = {$: 'Pause'};
 var $author$project$Main$Reset = {$: 'Reset'};
 var $author$project$Main$Start = {$: 'Start'};
 var $author$project$Main$Step = {$: 'Step'};
+var $author$project$Main$ToggleSlotsModal = {$: 'ToggleSlotsModal'};
 var $author$project$Main$UpdateCode = function (a) {
 	return {$: 'UpdateCode', a: a};
 };
@@ -6998,6 +7132,28 @@ var $author$project$Main$heroiconReset = A2(
 			_List_fromArray(
 				[
 					$elm$svg$Svg$Attributes$d('M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z')
+				]),
+			_List_Nil)
+		]));
+var $author$project$Main$heroiconSave = A2(
+	$elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			$elm$svg$Svg$Attributes$class('h-6 w-6'),
+			$elm$svg$Svg$Attributes$fill('none'),
+			$elm$svg$Svg$Attributes$stroke('currentColor'),
+			$elm$svg$Svg$Attributes$strokeWidth('1.5'),
+			$elm$svg$Svg$Attributes$viewBox('0 0 24 24'),
+			$elm$svg$Svg$Attributes$strokeLinecap('round'),
+			$elm$svg$Svg$Attributes$strokeLinejoin('round')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z')
 				]),
 			_List_Nil)
 		]));
@@ -7252,7 +7408,7 @@ var $author$project$Main$viewInstructions = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex flex-wrap gap-4')
+					$elm$html$Html$Attributes$class('flex flex-wrap gap-3')
 				]),
 			A2(
 				$elm$core$List$indexedMap,
@@ -7482,6 +7638,179 @@ var $author$project$Main$viewSlider = F2(
 						$elm$core$Array$toList(model.speeds)))
 				]));
 	});
+var $author$project$Main$heroiconX = A2(
+	$elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			$elm$svg$Svg$Attributes$class('h-10 w-10'),
+			$elm$svg$Svg$Attributes$fill('none'),
+			$elm$svg$Svg$Attributes$stroke('currentColor'),
+			$elm$svg$Svg$Attributes$strokeWidth('1.5'),
+			$elm$svg$Svg$Attributes$viewBox('0 0 24 24'),
+			$elm$svg$Svg$Attributes$strokeLinecap('round'),
+			$elm$svg$Svg$Attributes$strokeLinejoin('round')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('M6 18 18 6M6 6l12 12')
+				]),
+			_List_Nil)
+		]));
+var $author$project$Main$DeleteSlot = function (a) {
+	return {$: 'DeleteSlot', a: a};
+};
+var $author$project$Main$LoadSlot = function (a) {
+	return {$: 'LoadSlot', a: a};
+};
+var $author$project$Main$SaveSlot = function (a) {
+	return {$: 'SaveSlot', a: a};
+};
+var $author$project$Main$heroiconTrashSmall = A2(
+	$elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			$elm$svg$Svg$Attributes$class('h-6 w-6'),
+			$elm$svg$Svg$Attributes$fill('none'),
+			$elm$svg$Svg$Attributes$stroke('currentColor'),
+			$elm$svg$Svg$Attributes$strokeWidth('1.5'),
+			$elm$svg$Svg$Attributes$viewBox('0 0 24 24'),
+			$elm$svg$Svg$Attributes$strokeLinecap('round'),
+			$elm$svg$Svg$Attributes$strokeLinejoin('round')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$d('m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0')
+				]),
+			_List_Nil)
+		]));
+var $author$project$Main$viewSlots = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('grid grid-cols-5 gap-4 mt-8')
+			]),
+		A2(
+			$elm$core$List$map,
+			function (i) {
+				var maybeCode = A2($elm$core$Array$get, i, model.slots);
+				var label = 'Slot ' + $elm$core$String$fromInt(i);
+				var isEmpty = function () {
+					if (maybeCode.$ === 'Just') {
+						var code = maybeCode.a;
+						return code === '';
+					} else {
+						return true;
+					}
+				}();
+				return A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('border p-3 rounded bg-white shadow-sm w-full')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('font-bold text-gray-700')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(label)
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('flex gap-2 mt-2')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class(
+											'bg-blue-500 text-white px-2 py-1 rounded' + ((model.inputText === '') ? ' opacity-50 cursor-not-allowed' : '')),
+											$elm$html$Html$Events$onClick(
+											$author$project$Main$SaveSlot(i))
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Save')
+										])),
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class(
+											'bg-blue-500 text-white px-2 py-1 rounded' + (isEmpty ? ' opacity-50 cursor-not-allowed' : '')),
+											$elm$html$Html$Events$onClick(
+											$author$project$Main$LoadSlot(i)),
+											$elm$html$Html$Attributes$disabled(isEmpty)
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Load')
+										])),
+									A2(
+									$elm$html$Html$button,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class(
+											'bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center' + (isEmpty ? ' opacity-50 cursor-not-allowed' : '')),
+											$elm$html$Html$Events$onClick(
+											$author$project$Main$DeleteSlot(i)),
+											$elm$html$Html$Attributes$disabled(isEmpty)
+										]),
+									_List_fromArray(
+										[$author$project$Main$heroiconTrashSmall]))
+								]))
+						]));
+			},
+			A2($elm$core$List$range, 1, 20)));
+};
+var $author$project$Main$viewSlotsModal = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('bg-white p-4 rounded shadow-lg relative')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('absolute top-2 right-2 text-gray-500 hover:text-gray-700'),
+								$elm$html$Html$Events$onClick($author$project$Main$ToggleSlotsModal)
+							]),
+						_List_fromArray(
+							[$author$project$Main$heroiconX])),
+						$author$project$Main$viewSlots(model)
+					]))
+			]));
+};
 var $author$project$Main$view = function (model) {
 	var atEndOfInstructions = _Utils_cmp(
 		model.instructionPointer,
@@ -7600,6 +7929,27 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								A2($author$project$Main$viewSlider, model.speedIdx, model)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('flex gap-4 w-1/3')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('border border-blue-500 text-blue-500 bg-white w-1/3 px-1 py-2 flex items-center justify-center rounded'),
+										$elm$html$Html$Events$onClick($author$project$Main$ToggleSlotsModal)
+									]),
+								_List_fromArray(
+									[
+										$author$project$Main$heroiconSave,
+										$elm$html$Html$text('Save/Load')
+									]))
 							]))
 					])),
 				A2(
@@ -7614,7 +7964,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-4 shadow-lg rounded relative')
+								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-3 shadow-lg rounded relative')
 							]),
 						_List_fromArray(
 							[
@@ -7649,7 +7999,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class(
-								'flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto border-2 border-transparent ' + ((atEndOfInstructions && model.simStarted) ? ' bg-green-50 border-green-400' : ' bg-white'))
+								'flex flex-col w-1/3 p-3 shadow-lg rounded overflow-auto border-2 border-transparent ' + ((atEndOfInstructions && model.simStarted) ? ' bg-green-50 border-green-400' : ' bg-white'))
 							]),
 						_List_fromArray(
 							[
@@ -7659,7 +8009,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto')
+								$elm$html$Html$Attributes$class('flex flex-col w-1/3 bg-white p-3 shadow-lg rounded overflow-auto')
 							]),
 						_List_fromArray(
 							[
@@ -7669,7 +8019,8 @@ var $author$project$Main$view = function (model) {
 								A2($author$project$Main$viewRegisters, model.registers, model.highlighted))
 							]))
 					])),
-				$author$project$Main$viewConsole(model.consoleMessages)
+				$author$project$Main$viewConsole(model.consoleMessages),
+				model.showSlotsModal ? $author$project$Main$viewSlotsModal(model) : $elm$html$Html$text('')
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

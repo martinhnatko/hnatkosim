@@ -1,7 +1,3 @@
-welcome message do konzoly
-
-ulozit / nacitat kod
-
 cssko dat do custom tried a nie inline sracky asi... zjednotit to treba asi s milajom
 
 do komponentov vsetko rozjebat kod

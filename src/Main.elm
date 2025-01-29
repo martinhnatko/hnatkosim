@@ -35,6 +35,7 @@ import Task
 import Process
 import Svg exposing (Svg)
 import Svg exposing (g)
+import Html exposing (h2)
 
 port scrollToBottom : String -> Cmd msg
 
@@ -59,24 +60,39 @@ type alias Model =
     , speeds : Array Int
     , speedIdx : Int
     , consoleMessages : List ConsoleMessage
+    , slots : Array String
+    , showSlotsModal : Bool
     }
     
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { inputText = ""
-    , registers = Dict.fromList (List.map (\n -> (n, 0)) (range 0 100))
-    , highlighted = Dict.empty
-    , instructions = []
-    , isRunning = False
-    , simStarted = False
-    , instructionPointer = 0
-    , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 250, 100, 0 ]
-    , speedIdx = 4
-    , consoleMessages = []
-    }
-    , getItem "myCode"  -- We'll handle the response in `GotItem (key, maybeValue)`
-    )
+    let
+        initialModel =
+            { inputText = ""
+            , registers = Dict.fromList (List.map (\n -> (n, 0)) (range 0 100))
+            , highlighted = Dict.empty
+            , instructions = []
+            , isRunning = False
+            , simStarted = False
+            , instructionPointer = 0
+            , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 250, 100, 0 ]
+            , speedIdx = 4
+            , consoleMessages = []
+            , slots = Array.repeat 21 ""
+            , showSlotsModal = False
+            }
+        cmdToLoad =
+            Cmd.batch
+                [ getItem "current" -- ask for the current code
+                , Cmd.batch <|
+                    List.map
+                        (\i -> getItem ("slot_" ++ String.fromInt i))
+                        (List.range 1 20)
+                ]
+    in
+    ( initialModel, cmdToLoad )
+
 
     
 type alias ConsoleMessage =
@@ -99,6 +115,10 @@ type Msg
     | AddMessageWithTime Time.Posix String  -- Add a new console message with a given time
     | DeleteInput
     | GotItem (String, Maybe String)
+    | SaveSlot Int
+    | LoadSlot Int
+    | ToggleSlotsModal
+    | DeleteSlot Int
 
 
 subscriptions : Model -> Sub Msg
@@ -131,7 +151,7 @@ update msg model =
                 newInstructions = parseInstructions [] loopStack 0 input False
                 -- newInstructions = Debug.log "newInstructions" newInstructions1
             in
-            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("myCode", newCode) )
+            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("current", newCode) )
 
         Tick _ ->
             if not model.isRunning then
@@ -260,27 +280,71 @@ update msg model =
                 , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
                 , instructions = []
               }
-            , Cmd.none
+            , setItem ("current", "")
             )
         
-        GotItem (key1, maybeValue1) ->
+        GotItem (key, code) ->
+            case key of
+                "current" ->
+                    -- If localStorage had something for "current", put it in inputText
+                    let
+                        instructions = parseInstructions [] [] 0 (String.toList (Maybe.withDefault "" code)) False
+                    in
+                    ( { model | inputText = Maybe.withDefault "" code, instructions = instructions }, requestAddMessages ["Welcome to Abacus Machine Simulator"] )
+
+                _ ->
+                    -- Maybe it's one of the 10 slots, like "slot_3"
+                    let
+                        maybeSlotIndex =
+                            if String.startsWith "slot_" key then
+                                String.dropLeft 5 key |> String.toInt
+                            else
+                                Nothing
+                    in
+                    case maybeSlotIndex of
+                        Just i ->
+                            let
+                                updatedSlots = Array.set i (Maybe.withDefault "" code) model.slots
+                            in
+                            ( { model | slots = updatedSlots }, Cmd.none )
+
+                        Nothing ->
+                            -- Unrecognized key
+                            ( model, Cmd.none )
+
+        SaveSlot i ->
             let
-                key = Debug.log "key" key1
-                maybeValue = Debug.log "maybevalue" maybeValue1
-
-                instructions = parseInstructions [] [] 0 (String.toList (Maybe.withDefault "" maybeValue)) False
+                -- Update the local model, so the slot is not empty.
+                updatedSlots =
+                    Array.set i model.inputText model.slots
             in
-            if key == "myCode" then
-                let
-                    loadedText =
-                        Maybe.withDefault "" maybeValue
-                in
-                ( { model | inputText = loadedText, instructions = instructions }, requestAddMessages ["Welcome to Abacus Machine Simulator"] )
-            else
-                -- If it's some other key, ignore
-                ( model, Cmd.none )
+            ( { model | slots = updatedSlots }
+            , setItem ("slot_" ++ String.fromInt i, model.inputText)
+            )
 
+        DeleteSlot i ->
+            let
+                updatedSlots =
+                    Array.set i "" model.slots
+            in
+            ( { model | slots = updatedSlots }
+            , setItem ("slot_" ++ String.fromInt i, "") 
+            )
 
+        LoadSlot i ->
+            let
+                maybeCode = Array.get i model.slots
+            in
+            case maybeCode of
+                Nothing ->
+                    ( model, Cmd.none ) 
+                Just code ->
+                    ( { model | inputText = code, instructions = parseInstructions [] [] 0 (String.toList code) False }
+                    , setItem ("current", code) 
+                    )
+        
+        ToggleSlotsModal ->
+            ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )
 
 requestAddMessages : List String -> Cmd Msg
 requestAddMessages msgs =
@@ -460,11 +524,24 @@ view model =
                 [
                 viewSlider model.speedIdx model
                 ]
+
+            -- Slots Modal Button + possibly the modal itself   
+            , 
+            div [ Html.Attributes.class "flex gap-4 w-1/3"]
+                [ -- Button to open/close the modal
+                button
+                    [ Html.Attributes.class "border border-blue-500 text-blue-500 bg-white w-1/3 px-1 py-2 flex items-center justify-center rounded"
+                    , onClick ToggleSlotsModal
+                    ]
+                    [ heroiconSave, text "Save/Load" ]
+
+                
+                ]
             ]
         , -- Main Content Section
           div [ Html.Attributes.class "flex flex-grow gap-4 overflow-hidden" ]
             [ -- The textarea + trash bin button
-            div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded relative" ]
+            div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-3 shadow-lg rounded relative" ]
                 [ textarea
                     ( [ Html.Attributes.class
                             ( "flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono "
@@ -494,7 +571,7 @@ view model =
             , -- Instructions Column
             div 
                 [ Html.Attributes.class
-                    ( "flex flex-col w-1/3 p-4 shadow-lg rounded overflow-auto border-2 border-transparent "
+                    ( "flex flex-col w-1/3 p-3 shadow-lg rounded overflow-auto border-2 border-transparent "
                         ++ if atEndOfInstructions && model.simStarted then
                             " bg-green-50 border-green-400"
                         else
@@ -504,11 +581,16 @@ view model =
                 [ viewInstructions model.instructions model.instructionPointer ]
 
             , -- Registers Column
-              div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-4 shadow-lg rounded overflow-auto" ]
+              div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-3 shadow-lg rounded overflow-auto" ]
                 [ div [] (viewRegisters model.registers model.highlighted) ]
             ]
             -- CONSOLE
             , viewConsole model.consoleMessages
+
+            , if model.showSlotsModal then
+                    viewSlotsModal model
+                else
+                    text ""
         ]
 
 -- Transform your slider speeds from ms to s in the labels
@@ -561,7 +643,7 @@ viewSlider currentValue model =
         
 viewInstructions : List Instruction -> Int -> Html Msg
 viewInstructions instructions pointer =
-    div [ Html.Attributes.class "flex flex-wrap gap-4" ]
+    div [ Html.Attributes.class "flex flex-wrap gap-3" ]
         (instructions
             |> List.indexedMap (\index instruction ->
                 let
@@ -648,6 +730,101 @@ viewRegisters registers highlighted =
                         [ text (String.fromInt value) ]
                     ]
             )
+
+
+viewSlotsModal : Model -> Html Msg
+viewSlotsModal model =
+    div
+        [ Html.Attributes.class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        ]
+        [ div
+            [ Html.Attributes.class "bg-white p-4 rounded shadow-lg relative"
+            ]
+            [ -- “X” button in the top-right
+              button
+                [ Html.Attributes.class "absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                , onClick ToggleSlotsModal
+                ]
+                [ heroiconX ]
+
+              , viewSlots model
+            ]
+        ]
+
+viewSlots : Model -> Html Msg
+viewSlots model =
+    div [ Html.Attributes.class "grid grid-cols-5 gap-4 mt-8" ]
+        (List.map
+            (\i ->
+                let
+                    label =
+                        "Slot " ++ String.fromInt i
+
+                    maybeCode =
+                        Array.get i model.slots
+
+                    isEmpty =
+                        case maybeCode of
+                            Just code ->
+                                code == ""
+
+                            Nothing ->
+                                True
+                in
+                -- A small box for each slot
+                div [ Html.Attributes.class "border p-3 rounded bg-white shadow-sm w-full" ]
+                    [ -- The slot label
+                      div [ Html.Attributes.class "font-bold text-gray-700" ]
+                        [ text label ]
+
+                      -- The row of 3 buttons
+                    , div [ Html.Attributes.class "flex gap-2 mt-2" ]
+                        [ -- Save button
+                          button
+                            [ Html.Attributes.class 
+                                ( "bg-blue-500 text-white px-2 py-1 rounded"
+                                    ++ if model.inputText == "" then
+                                        " opacity-50 cursor-not-allowed"
+                                    else
+                                        ""
+                                )
+                            , onClick (SaveSlot i)
+                            ]
+                            [ text "Save" ]
+
+                          -- Load button
+                        , button
+                            [ Html.Attributes.class
+                                ( "bg-blue-500 text-white px-2 py-1 rounded"
+                                    ++ if isEmpty then
+                                        " opacity-50 cursor-not-allowed"
+                                       else
+                                        ""
+                                )
+                            , onClick (LoadSlot i)
+                            , disabled isEmpty
+                            ]
+                            [ text "Load" ]
+
+                          -- Delete (trash icon)
+                        , button
+                            [ Html.Attributes.class
+                                ( "bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
+                                    ++ if isEmpty then
+                                        " opacity-50 cursor-not-allowed"
+                                       else
+                                        ""
+                                )
+                            , onClick (DeleteSlot i)
+                            , disabled isEmpty
+                            ]
+                            [ heroiconTrashSmall ]
+                        ]
+                    ]
+            )
+            (List.range 1 20)
+        )
+
 
 --Conole view
 viewConsole : List ConsoleMessage -> Html msg
@@ -776,3 +953,58 @@ heroiconTrash =
             []
         ]
 
+
+-- The trash icon small
+heroiconTrashSmall : Html msg
+heroiconTrashSmall =
+    svg
+        [ Svg.Attributes.class "h-6 w-6"
+        , Svg.Attributes.fill "none"
+        , Svg.Attributes.stroke "currentColor"
+        , Svg.Attributes.strokeWidth "1.5"
+        , Svg.Attributes.viewBox "0 0 24 24"
+        , Svg.Attributes.strokeLinecap "round"
+        , Svg.Attributes.strokeLinejoin "round"
+        ]
+        [ path 
+            [ Svg.Attributes.d "m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" ]
+            []
+        ]
+
+-- The x icon
+heroiconX : Html msg
+heroiconX =
+    svg
+        [ Svg.Attributes.class "h-10 w-10"
+        , Svg.Attributes.fill "none"
+        , Svg.Attributes.stroke "currentColor"
+        , Svg.Attributes.strokeWidth "1.5"
+        , Svg.Attributes.viewBox "0 0 24 24"
+        , Svg.Attributes.strokeLinecap "round"
+        , Svg.Attributes.strokeLinejoin "round"
+        ]
+        [ path 
+            [ Svg.Attributes.d "M6 18 18 6M6 6l12 12" ]
+            []
+        ]
+
+
+-- The save
+heroiconSave : Html msg
+heroiconSave =
+    svg
+        [ Svg.Attributes.class "h-6 w-6"
+        , Svg.Attributes.fill "none"
+        , Svg.Attributes.stroke "currentColor"
+        , Svg.Attributes.strokeWidth "1.5"
+        , Svg.Attributes.viewBox "0 0 24 24"
+        , Svg.Attributes.strokeLinecap "round"
+        , Svg.Attributes.strokeLinejoin "round"
+        ]
+        [ path 
+            [ Svg.Attributes.d "M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z" ]
+            []
+        ]
+-- <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+--   <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d=""/>
+-- </svg>
