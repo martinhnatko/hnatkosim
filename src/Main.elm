@@ -111,7 +111,7 @@ update msg model =
                 loopStack : LoopStack
                 loopStack = []
                 input = String.toList newCode
-                newInstructions1 = parseInstructions [] loopStack 0 input
+                newInstructions1 = parseInstructions [] loopStack 0 input False
                 newInstructions = Debug.log "newInstructions" newInstructions1
             in
             ( { model | inputText = newCode, instructions = newInstructions }, Cmd.none )
@@ -449,7 +449,7 @@ view model =
                 , -- The trash bin button, only clickable if NOT simStarted, else we might disable or hide
                 if not model.simStarted then
                     button 
-                        [ Html.Attributes.class "absolute bottom-5 right-5 text-gray-500 hover:text-red-500"
+                        [ Html.Attributes.class "absolute bottom-9 right-10 text-gray-500 hover:text-red-500"
                         , onClick DeleteInput
                         ]
                         [ heroiconTrash ]
@@ -729,7 +729,7 @@ heroiconRocket =
 heroiconTrash : Html msg
 heroiconTrash =
     svg
-        [ Svg.Attributes.class "h-12 w-12"
+        [ Svg.Attributes.class "h-10 w-10"
         , Svg.Attributes.fill "none"
         , Svg.Attributes.stroke "currentColor"
         , Svg.Attributes.strokeWidth "1.5"

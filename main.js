@@ -6399,172 +6399,233 @@ var $author$project$MyAbacusParser$isWhitespace = function (c) {
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$MyAbacusParser$parseInstructions = F4(
-	function (instructions, stack, currentIndex, input) {
+var $author$project$MyAbacusParser$parseInstructions = F5(
+	function (instructions, stack, currentIndex, input, parsingComment) {
 		parseInstructions:
 		while (true) {
-			if (!input.b) {
-				return $elm$core$List$isEmpty(stack) ? instructions : A2(
-					$elm$core$List$map,
-					function (instr) {
-						if (instr.$ === 'StartLoop') {
-							var endLoopIndex = instr.a;
-							var conditionIndex = instr.b;
-							return (_Utils_eq(endLoopIndex, -1) && _Utils_eq(conditionIndex, -1)) ? $author$project$MyAbacusParser$UnknownInstruction : instr;
-						} else {
-							var other = instr;
-							return other;
-						}
-					},
-					instructions);
+			if (parsingComment) {
+				if (!input.b) {
+					return instructions;
+				} else {
+					if ('\n' === input.a.valueOf()) {
+						var rest = input.b;
+						var $temp$instructions = instructions,
+							$temp$stack = stack,
+							$temp$currentIndex = currentIndex,
+							$temp$input = rest,
+							$temp$parsingComment = false;
+						instructions = $temp$instructions;
+						stack = $temp$stack;
+						currentIndex = $temp$currentIndex;
+						input = $temp$input;
+						parsingComment = $temp$parsingComment;
+						continue parseInstructions;
+					} else {
+						var rest = input.b;
+						var $temp$instructions = instructions,
+							$temp$stack = stack,
+							$temp$currentIndex = currentIndex,
+							$temp$input = rest,
+							$temp$parsingComment = true;
+						instructions = $temp$instructions;
+						stack = $temp$stack;
+						currentIndex = $temp$currentIndex;
+						input = $temp$input;
+						parsingComment = $temp$parsingComment;
+						continue parseInstructions;
+					}
+				}
 			} else {
-				switch (input.a.valueOf()) {
-					case 'a':
-						var rest = input.b;
-						var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
-						var remaining = A2(
-							$elm$core$List$drop,
-							$elm$core$List$length(digits),
-							rest);
-						var value = A2(
-							$elm$core$Maybe$withDefault,
-							0,
-							$elm$core$String$toInt(
-								$elm$core$String$fromList(digits)));
-						var newInstruction = $author$project$MyAbacusParser$Increment(value);
-						var $temp$instructions = _Utils_ap(
-							instructions,
-							_List_fromArray(
-								[newInstruction])),
-							$temp$stack = stack,
-							$temp$currentIndex = currentIndex + 1,
-							$temp$input = remaining;
-						instructions = $temp$instructions;
-						stack = $temp$stack;
-						currentIndex = $temp$currentIndex;
-						input = $temp$input;
-						continue parseInstructions;
-					case 's':
-						var rest = input.b;
-						var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
-						var remaining = A2(
-							$elm$core$List$drop,
-							$elm$core$List$length(digits),
-							rest);
-						var value = A2(
-							$elm$core$Maybe$withDefault,
-							0,
-							$elm$core$String$toInt(
-								$elm$core$String$fromList(digits)));
-						var newInstruction = $author$project$MyAbacusParser$Decrement(value);
-						var $temp$instructions = _Utils_ap(
-							instructions,
-							_List_fromArray(
-								[newInstruction])),
-							$temp$stack = stack,
-							$temp$currentIndex = currentIndex + 1,
-							$temp$input = remaining;
-						instructions = $temp$instructions;
-						stack = $temp$stack;
-						currentIndex = $temp$currentIndex;
-						input = $temp$input;
-						continue parseInstructions;
-					case '(':
-						var rest = input.b;
-						var $temp$instructions = _Utils_ap(
-							instructions,
-							_List_fromArray(
-								[
-									A2($author$project$MyAbacusParser$StartLoop, -1, -1)
-								])),
-							$temp$stack = A2($elm$core$List$cons, currentIndex, stack),
-							$temp$currentIndex = currentIndex + 1,
-							$temp$input = rest;
-						instructions = $temp$instructions;
-						stack = $temp$stack;
-						currentIndex = $temp$currentIndex;
-						input = $temp$input;
-						continue parseInstructions;
-					case ')':
-						var rest = input.b;
-						var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
-						var remaining = A2(
-							$elm$core$List$drop,
-							$elm$core$List$length(digits),
-							rest);
-						var conditionIndex = A2(
-							$elm$core$Maybe$withDefault,
-							0,
-							$elm$core$String$toInt(
-								$elm$core$String$fromList(digits)));
-						if (!stack.b) {
+				if (!input.b) {
+					return $elm$core$List$isEmpty(stack) ? instructions : A2(
+						$elm$core$List$map,
+						function (instr) {
+							if (instr.$ === 'StartLoop') {
+								var endLoopIndex = instr.a;
+								var conditionIndex = instr.b;
+								return (_Utils_eq(endLoopIndex, -1) && _Utils_eq(conditionIndex, -1)) ? $author$project$MyAbacusParser$UnknownInstruction : instr;
+							} else {
+								var other = instr;
+								return other;
+							}
+						},
+						instructions);
+				} else {
+					switch (input.a.valueOf()) {
+						case 'a':
+							var rest = input.b;
+							var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
+							var remaining = A2(
+								$elm$core$List$drop,
+								$elm$core$List$length(digits),
+								rest);
+							var value = A2(
+								$elm$core$Maybe$withDefault,
+								0,
+								$elm$core$String$toInt(
+									$elm$core$String$fromList(digits)));
+							var newInstruction = $author$project$MyAbacusParser$Increment(value);
 							var $temp$instructions = _Utils_ap(
 								instructions,
 								_List_fromArray(
-									[$author$project$MyAbacusParser$UnknownInstruction])),
+									[newInstruction])),
 								$temp$stack = stack,
 								$temp$currentIndex = currentIndex + 1,
-								$temp$input = rest;
+								$temp$input = remaining,
+								$temp$parsingComment = false;
 							instructions = $temp$instructions;
 							stack = $temp$stack;
 							currentIndex = $temp$currentIndex;
 							input = $temp$input;
+							parsingComment = $temp$parsingComment;
 							continue parseInstructions;
-						} else {
-							var startLoopIndex = stack.a;
-							var remainingStack = stack.b;
-							var updatedInstructions = A2(
-								$elm$core$List$indexedMap,
-								F2(
-									function (i, instr) {
-										if (instr.$ === 'StartLoop') {
-											return _Utils_eq(i, startLoopIndex) ? A2($author$project$MyAbacusParser$StartLoop, currentIndex, conditionIndex) : instr;
-										} else {
-											return instr;
-										}
-									}),
-								instructions);
-							var endInstruction = A2($author$project$MyAbacusParser$EndLoop, startLoopIndex, conditionIndex);
+						case 's':
+							var rest = input.b;
+							var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
+							var remaining = A2(
+								$elm$core$List$drop,
+								$elm$core$List$length(digits),
+								rest);
+							var value = A2(
+								$elm$core$Maybe$withDefault,
+								0,
+								$elm$core$String$toInt(
+									$elm$core$String$fromList(digits)));
+							var newInstruction = $author$project$MyAbacusParser$Decrement(value);
 							var $temp$instructions = _Utils_ap(
-								updatedInstructions,
+								instructions,
 								_List_fromArray(
-									[endInstruction])),
-								$temp$stack = remainingStack,
+									[newInstruction])),
+								$temp$stack = stack,
 								$temp$currentIndex = currentIndex + 1,
-								$temp$input = remaining;
+								$temp$input = remaining,
+								$temp$parsingComment = false;
 							instructions = $temp$instructions;
 							stack = $temp$stack;
 							currentIndex = $temp$currentIndex;
 							input = $temp$input;
+							parsingComment = $temp$parsingComment;
 							continue parseInstructions;
-						}
-					default:
-						var c = input.a;
-						var rest = input.b;
-						if ($author$project$MyAbacusParser$isWhitespace(c)) {
+						case '(':
+							var rest = input.b;
+							var $temp$instructions = _Utils_ap(
+								instructions,
+								_List_fromArray(
+									[
+										A2($author$project$MyAbacusParser$StartLoop, -1, -1)
+									])),
+								$temp$stack = A2($elm$core$List$cons, currentIndex, stack),
+								$temp$currentIndex = currentIndex + 1,
+								$temp$input = rest,
+								$temp$parsingComment = false;
+							instructions = $temp$instructions;
+							stack = $temp$stack;
+							currentIndex = $temp$currentIndex;
+							input = $temp$input;
+							parsingComment = $temp$parsingComment;
+							continue parseInstructions;
+						case ')':
+							var rest = input.b;
+							var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
+							var remaining = A2(
+								$elm$core$List$drop,
+								$elm$core$List$length(digits),
+								rest);
+							var conditionIndex = A2(
+								$elm$core$Maybe$withDefault,
+								0,
+								$elm$core$String$toInt(
+									$elm$core$String$fromList(digits)));
+							if (!stack.b) {
+								var $temp$instructions = _Utils_ap(
+									instructions,
+									_List_fromArray(
+										[$author$project$MyAbacusParser$UnknownInstruction])),
+									$temp$stack = stack,
+									$temp$currentIndex = currentIndex + 1,
+									$temp$input = rest,
+									$temp$parsingComment = false;
+								instructions = $temp$instructions;
+								stack = $temp$stack;
+								currentIndex = $temp$currentIndex;
+								input = $temp$input;
+								parsingComment = $temp$parsingComment;
+								continue parseInstructions;
+							} else {
+								var startLoopIndex = stack.a;
+								var remainingStack = stack.b;
+								var updatedInstructions = A2(
+									$elm$core$List$indexedMap,
+									F2(
+										function (i, instr) {
+											if (instr.$ === 'StartLoop') {
+												return _Utils_eq(i, startLoopIndex) ? A2($author$project$MyAbacusParser$StartLoop, currentIndex, conditionIndex) : instr;
+											} else {
+												return instr;
+											}
+										}),
+									instructions);
+								var endInstruction = A2($author$project$MyAbacusParser$EndLoop, startLoopIndex, conditionIndex);
+								var $temp$instructions = _Utils_ap(
+									updatedInstructions,
+									_List_fromArray(
+										[endInstruction])),
+									$temp$stack = remainingStack,
+									$temp$currentIndex = currentIndex + 1,
+									$temp$input = remaining,
+									$temp$parsingComment = false;
+								instructions = $temp$instructions;
+								stack = $temp$stack;
+								currentIndex = $temp$currentIndex;
+								input = $temp$input;
+								parsingComment = $temp$parsingComment;
+								continue parseInstructions;
+							}
+						case '#':
+							var rest = input.b;
 							var $temp$instructions = instructions,
 								$temp$stack = stack,
 								$temp$currentIndex = currentIndex,
-								$temp$input = rest;
+								$temp$input = rest,
+								$temp$parsingComment = true;
 							instructions = $temp$instructions;
 							stack = $temp$stack;
 							currentIndex = $temp$currentIndex;
 							input = $temp$input;
+							parsingComment = $temp$parsingComment;
 							continue parseInstructions;
-						} else {
-							var $temp$instructions = _Utils_ap(
-								instructions,
-								_List_fromArray(
-									[$author$project$MyAbacusParser$UnknownInstruction])),
-								$temp$stack = stack,
-								$temp$currentIndex = currentIndex + 1,
-								$temp$input = rest;
-							instructions = $temp$instructions;
-							stack = $temp$stack;
-							currentIndex = $temp$currentIndex;
-							input = $temp$input;
-							continue parseInstructions;
-						}
+						default:
+							var c = input.a;
+							var rest = input.b;
+							if ($author$project$MyAbacusParser$isWhitespace(c)) {
+								var $temp$instructions = instructions,
+									$temp$stack = stack,
+									$temp$currentIndex = currentIndex,
+									$temp$input = rest,
+									$temp$parsingComment = false;
+								instructions = $temp$instructions;
+								stack = $temp$stack;
+								currentIndex = $temp$currentIndex;
+								input = $temp$input;
+								parsingComment = $temp$parsingComment;
+								continue parseInstructions;
+							} else {
+								var $temp$instructions = _Utils_ap(
+									instructions,
+									_List_fromArray(
+										[$author$project$MyAbacusParser$UnknownInstruction])),
+									$temp$stack = stack,
+									$temp$currentIndex = currentIndex + 1,
+									$temp$input = rest,
+									$temp$parsingComment = false;
+								instructions = $temp$instructions;
+								stack = $temp$stack;
+								currentIndex = $temp$currentIndex;
+								input = $temp$input;
+								parsingComment = $temp$parsingComment;
+								continue parseInstructions;
+							}
+					}
 				}
 			}
 		}
@@ -6596,7 +6657,7 @@ var $author$project$Main$update = F2(
 				var newCode = msg.a;
 				var loopStack = _List_Nil;
 				var input = $elm$core$String$toList(newCode);
-				var newInstructions1 = A4($author$project$MyAbacusParser$parseInstructions, _List_Nil, loopStack, 0, input);
+				var newInstructions1 = A5($author$project$MyAbacusParser$parseInstructions, _List_Nil, loopStack, 0, input, false);
 				var newInstructions = A2($elm$core$Debug$log, 'newInstructions', newInstructions1);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -6879,7 +6940,7 @@ var $author$project$Main$heroiconTrash = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
-			$elm$svg$Svg$Attributes$class('h-12 w-12'),
+			$elm$svg$Svg$Attributes$class('h-10 w-10'),
 			$elm$svg$Svg$Attributes$fill('none'),
 			$elm$svg$Svg$Attributes$stroke('currentColor'),
 			$elm$svg$Svg$Attributes$strokeWidth('1.5'),
@@ -7491,7 +7552,7 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$button,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('absolute bottom-5 right-5 text-gray-500 hover:text-red-500'),
+										$elm$html$Html$Attributes$class('absolute bottom-9 right-10 text-gray-500 hover:text-red-500'),
 										$elm$html$Html$Events$onClick($author$project$Main$DeleteInput)
 									]),
 								_List_fromArray(
