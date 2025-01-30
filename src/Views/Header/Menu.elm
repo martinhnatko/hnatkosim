@@ -1,16 +1,28 @@
-module Views.SaveSlots exposing (..)
-import Html exposing (Html)
-import Html exposing (div)
-import Html.Attributes
-import Html exposing (button)
+module Views.Header.Menu exposing (menu, viewSlotsModal)
+
+import Html exposing (Html, div, button, text)
+import Html.Attributes exposing (class, disabled)
 import Html.Events exposing (onClick)
+import Array
+
+import Icons.Save exposing (heroiconSave)
 import Icons.X exposing (heroiconX)
 import Icons.TrashSmall exposing (heroiconTrashSmall)
-import Array
-import Html exposing (text)
-import Html.Attributes exposing (disabled)
+
 import Types.Messages exposing (Msg(..))
 import Types.Model exposing (Model)
+
+menu : Html Msg
+menu =
+    div [ class "flex gap-4 w-1/3" ]
+        [ -- Save/Load Slots Button
+          button
+              [ class "border border-blue-500 text-blue-500 bg-white w-1/3 px-1 py-2 flex items-center justify-center rounded"
+              , onClick ToggleSlotsModal
+              ]
+              [ heroiconSave, text "Save/Load" ]
+        ]
+
 
 viewSlotsModal : Model -> Html Msg
 viewSlotsModal model =

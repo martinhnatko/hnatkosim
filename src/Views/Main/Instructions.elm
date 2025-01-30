@@ -1,4 +1,4 @@
-module Views.Instructions exposing (..)
+module Views.Main.Instructions exposing (..)
 import Types.Messages exposing (Msg)
 import Html exposing (Html, div, text)
 import Html.Attributes

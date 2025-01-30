@@ -1,9 +1,8 @@
 port module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, textarea, text, input)
-import Html.Attributes exposing (value, disabled)
-import Html.Events exposing (onInput, onClick)
+import Html exposing (Html, div, text, input)
+import Html.Attributes exposing (class)
 import Dict
 import List exposing (range)
 import String
@@ -11,25 +10,18 @@ import Time
 import Task
 import Array
 
-import Utils.AbacusParser exposing(parseInstructions)
-import Views.Console exposing (viewConsole)
 import Types.Messages exposing (Msg(..))
 import Types.Model exposing (Model)
 import Types.Instructions exposing (Instruction(..))
-import Views.SaveSlots exposing (viewSlotsModal)
-import Views.Registers exposing (viewRegisters)
-import Views.Instructions exposing (viewInstructions)
-import Views.SpeedSlider exposing (viewSlider)
 
-import Icons.Pause exposing (heroiconPause)
-import Icons.Play exposing (heroiconPlay)
-import Icons.Step exposing (heroiconStep)
-import Icons.Reset exposing (heroiconReset)
-import Icons.Trash exposing (heroiconTrash)
-import Icons.Save exposing (heroiconSave)
+import Views.HeaderView exposing (headerView)
+import Views.MainView exposing (mainContentView)
+import Views.FooterView exposing (footerView)
+import Views.Header.Menu exposing (viewSlotsModal)
 
 import Utils.ExecuteInstruction exposing (executeInstruction)
 import Utils.HelperFunctions exposing (requestAddMessages, checkForErrors)
+import Utils.AbacusParser exposing(parseInstructions)
 
 
 -- MAIN
@@ -303,151 +295,23 @@ update msg model =
         ToggleSlotsModal ->
             ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )
 
-
 -- VIEW
+
 view : Model -> Html Msg
 view model =
-    let
-        atEndOfInstructions : Bool
-        atEndOfInstructions =
-            model.instructionPointer >= List.length model.instructions
-    in
-    div [ Html.Attributes.class "flex flex-col h-screen p-2 bg-gray-200" ]
-        [ -- Navbar Section
-          div [ Html.Attributes.class "flex gap-4 mb-5" ]
-            [
-            div [ Html.Attributes.class "flex gap-4 w-1/3 pr-3" ]
-                [
-                    -- If isRunning, show Pause button
-                    if model.isRunning then
-                        button 
-                            [ Html.Attributes.class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded"
-                            , onClick Pause 
-                            ]
-                            [ heroiconPause, text "Pause"  ]
-                    else
-                        -- Otherwise, show Start button
-                        let
-                            isDisabled = atEndOfInstructions
-                        in
-                        button
-                            (  [ Html.Attributes.class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded"
-                            , onClick Start
-                            ]
-                            ++ ( if isDisabled then 
-                                    [ disabled True
-                                    , Html.Attributes.class "bg-gray-400 cursor-not-allowed"
-                                    ] 
-                                else 
-                                    []
-                            )
-                            )
-                            [ heroiconPlay, text "Start" ]
+    div [ class "flex flex-col h-screen p-2 bg-gray-200" ]
+        [ -- Header Section
+          headerView model
 
-                , -- Step button
-                let
-                    isDisabled = atEndOfInstructions || model.isRunning
-                in
-                button
-                    (  [ Html.Attributes.class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded"
-                        , onClick Step
-                        ]
-                    ++ ( if isDisabled then 
-                            [ disabled True
-                            , Html.Attributes.class "bg-gray-400 cursor-not-allowed"
-                            ]
-                        else
-                            []
-                        )
-                    )
-                    [ heroiconStep, text "Step" ]
+          -- Main Content Section
+        , mainContentView model
 
-                , -- Reset button
-                if not model.simStarted then
-                    button 
-                        [ Html.Attributes.class "w-1/3 px-4 py-2 bg-gray-400 text-white flex cursor-not-allowed items-center justify-center rounded"
-                        , disabled True
-                        ]
-                        [ heroiconReset, text "Stop" ]
-                else
-                    button 
-                        [ Html.Attributes.class "w-1/3 px-4 py-2 bg-red-500 text-white flex items-center justify-center rounded"
-                        , onClick Reset
-                        ]
-                        [ heroiconReset, text "Stop" ]
-                ]
+          -- Footer Section
+        , footerView model
 
-
-            , -- Speed Section
-            div [ Html.Attributes.class "flex gap-4 w-1/3 pr-8" ]
-                [
-                viewSlider model.speedIdx model
-                ]
-
-            -- Slots Modal Button + possibly the modal itself   
-            , 
-            div [ Html.Attributes.class "flex gap-4 w-1/3"]
-                [ -- Button to open/close the modal
-                button
-                    [ Html.Attributes.class "border border-blue-500 text-blue-500 bg-white w-1/3 px-1 py-2 flex items-center justify-center rounded"
-                    , onClick ToggleSlotsModal
-                    ]
-                    [ heroiconSave, text "Save/Load" ]
-
-                
-                ]
-            ]
-        , -- Main Content Section
-          div [ Html.Attributes.class "flex flex-grow gap-4 overflow-hidden" ]
-            [ -- The textarea + trash bin button
-            div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-3 shadow-lg rounded relative" ]
-                [ textarea
-                    ( [ Html.Attributes.class
-                            ( "flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono "
-                                ++ if model.simStarted then
-                                    "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                else
-                                    "bg-white text-black"
-                            )
-                    , Html.Attributes.placeholder "Enter your code here..."
-                    , onInput UpdateCode
-                    , value model.inputText
-                    ]
-                    ++ (if model.simStarted then [ disabled True ] else [])
-                    )
-                    []
-                , -- The trash bin button, only clickable if NOT simStarted, else we might disable or hide
-                if not model.simStarted then
-                    button 
-                        [ Html.Attributes.class "absolute bottom-9 right-10 text-gray-500 hover:text-red-500"
-                        , onClick DeleteInput
-                        ]
-                        [ heroiconTrash ]
-                else
-                    text ""
-                ]
-
-            , -- Instructions Column
-            div 
-                [ Html.Attributes.class
-                    ( "flex flex-col w-1/3 p-3 shadow-lg rounded overflow-auto border-2 border-transparent "
-                        ++ if atEndOfInstructions && model.simStarted then
-                            " bg-green-50 border-green-400"
-                        else
-                            " bg-white"
-                    )
-                ]
-                [ viewInstructions model.instructions model.instructionPointer ]
-
-            , -- Registers Column
-              div [ Html.Attributes.class "flex flex-col w-1/3 bg-white p-3 shadow-lg rounded overflow-auto" ]
-                [ div [] (viewRegisters model.registers model.highlighted) ]
-            ]
-            -- CONSOLE
-            , viewConsole model.consoleMessages
-
-            , if model.showSlotsModal then
-                    viewSlotsModal model
-                else
-                    text ""
+          -- Slots Modal
+        , if model.showSlotsModal then
+              viewSlotsModal model
+          else
+              text ""
         ]

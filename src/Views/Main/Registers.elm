@@ -1,4 +1,4 @@
-module Views.Registers exposing (..)
+module Views.Main.Registers exposing (..)
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)

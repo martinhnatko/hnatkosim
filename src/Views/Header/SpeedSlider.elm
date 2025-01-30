@@ -1,4 +1,4 @@
-module Views.SpeedSlider exposing (..)
+module Views.Header.SpeedSlider exposing (..)
 import Html exposing (Html, li, span, text, ul, div, input)
 import Html.Attributes exposing (type_, step, value)
 import Html.Events exposing (onInput)
@@ -29,9 +29,9 @@ sliderLabel ms =
         ]
 
 
-viewSlider : Int -> Model -> Html Msg
-viewSlider currentValue model =
-    div [ Html.Attributes.class "flex flex-col p-1 w-full" ]
+speedSlider : Int -> Model -> Html Msg
+speedSlider currentValue model =
+    div [ Html.Attributes.class "flex flex-col p-1 w-1/3" ]
         [ -- Title with Rocket Icon
           div [ Html.Attributes.class "flex items-center gap-2 text-gray-700" ]
             [ heroiconRocket

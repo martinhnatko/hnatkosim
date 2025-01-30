@@ -1,5 +1,4 @@
-module Views.Console exposing (..)
-
+module Views.Footer.Console exposing (..)
 import Html exposing (Html)
 import Html exposing (div, text)
 import Html.Attributes exposing (id)
@@ -8,19 +7,18 @@ import Types.ConsoleMessage exposing (ConsoleMessage)
 
 --Conole view
 viewConsole : List ConsoleMessage -> Html msg
-viewConsole consoleMessages =
-    div [ Html.Attributes.class "mt-3 bg-gray-800 text-white p-3 rounded shadow-lg" ]
-        [ div
-            [ id "consoleContainer"
-            , Html.Attributes.class "font-mono text-sm h-24 overflow-y-auto"
-            ]
-            (consoleMessages
-                |> List.map (\msg ->
-                    div [ Html.Attributes.class "py-1" ]
-                        [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
-                )
-            )
+viewConsole consoleMessages =    
+    div
+        [ id "consoleContainer"
+        , Html.Attributes.class "font-mono text-sm h-24 overflow-y-auto"
         ]
+        (consoleMessages
+            |> List.map (\msg ->
+                div [ Html.Attributes.class "py-1" ]
+                    [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+            )
+        )
+        
 
 
 formatTime : Time.Posix -> String
