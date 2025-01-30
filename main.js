@@ -5450,10 +5450,10 @@ var $author$project$Main$init = function (_v0) {
 			]));
 	return _Utils_Tuple2(initialModel, cmdToLoad);
 };
-var $author$project$Main$GotItem = function (a) {
+var $author$project$Types$Messages$GotItem = function (a) {
 	return {$: 'GotItem', a: a};
 };
-var $author$project$Main$Tick = function (a) {
+var $author$project$Types$Messages$Tick = function (a) {
 	return {$: 'Tick', a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5851,19 +5851,19 @@ var $author$project$Main$subscriptions = function (model) {
 						$elm$core$Maybe$withDefault,
 						defaultSpeed,
 						A2($elm$core$Array$get, model.speedIdx - 1, model.speeds));
-					return A2($elm$time$Time$every, speed, $author$project$Main$Tick);
+					return A2($elm$time$Time$every, speed, $author$project$Types$Messages$Tick);
 				} else {
 					return $elm$core$Platform$Sub$none;
 				}
 			}(),
-				$author$project$Main$gotItem($author$project$Main$GotItem)
+				$author$project$Main$gotItem($author$project$Types$Messages$GotItem)
 			]));
 };
-var $author$project$Main$AddMessageWithTime = F2(
+var $author$project$Types$Messages$AddMessageWithTime = F2(
 	function (a, b) {
 		return {$: 'AddMessageWithTime', a: a, b: b};
 	});
-var $author$project$MyAbacusParser$UnknownInstruction = {$: 'UnknownInstruction'};
+var $author$project$Types$Instructions$UnknownInstruction = {$: 'UnknownInstruction'};
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5875,12 +5875,12 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var $author$project$Main$checkForErrors = function (instructions) {
+var $author$project$Utils$HelperFunctions$checkForErrors = function (instructions) {
 	var unknownInstructions = $elm$core$List$length(
 		A2(
 			$elm$core$List$filter,
 			function (i) {
-				return _Utils_eq(i, $author$project$MyAbacusParser$UnknownInstruction);
+				return _Utils_eq(i, $author$project$Types$Instructions$UnknownInstruction);
 			},
 			instructions));
 	return (unknownInstructions > 0) ? _List_fromArray(
@@ -5888,7 +5888,7 @@ var $author$project$Main$checkForErrors = function (instructions) {
 			'Error: Found ' + ($elm$core$String$fromInt(unknownInstructions) + ' unknown instructions')
 		]) : _List_Nil;
 };
-var $author$project$Main$RemoveHighlight = function (a) {
+var $author$project$Types$Messages$RemoveHighlight = function (a) {
 	return {$: 'RemoveHighlight', a: a};
 };
 var $elm$core$List$drop = F2(
@@ -6306,7 +6306,7 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
-var $author$project$Main$executeInstruction = F2(
+var $author$project$Utils$ExecuteInstruction$executeInstruction = F2(
 	function (model, highlightDuration) {
 		var nextInstructionPointer = model.instructionPointer + 1;
 		var currentInstruction = $elm$core$List$head(
@@ -6342,7 +6342,7 @@ var $author$project$Main$executeInstruction = F2(
 						A2(
 							$elm$core$Task$perform,
 							function (_v2) {
-								return $author$project$Main$RemoveHighlight(reg);
+								return $author$project$Types$Messages$RemoveHighlight(reg);
 							},
 							$elm$core$Process$sleep(highlightDuration)));
 				case 'Decrement':
@@ -6367,7 +6367,7 @@ var $author$project$Main$executeInstruction = F2(
 						A2(
 							$elm$core$Task$perform,
 							function (_v3) {
-								return $author$project$Main$RemoveHighlight(reg);
+								return $author$project$Types$Messages$RemoveHighlight(reg);
 							},
 							$elm$core$Process$sleep(highlightDuration)));
 				case 'StartLoop':
@@ -6412,22 +6412,22 @@ var $author$project$Main$executeInstruction = F2(
 		}
 	});
 var $elm$core$Basics$not = _Basics_not;
-var $author$project$MyAbacusParser$Decrement = function (a) {
+var $author$project$Types$Instructions$Decrement = function (a) {
 	return {$: 'Decrement', a: a};
 };
-var $author$project$MyAbacusParser$EndLoop = F2(
+var $author$project$Types$Instructions$EndLoop = F2(
 	function (a, b) {
 		return {$: 'EndLoop', a: a, b: b};
 	});
-var $author$project$MyAbacusParser$Increment = function (a) {
+var $author$project$Types$Instructions$Increment = function (a) {
 	return {$: 'Increment', a: a};
 };
-var $author$project$MyAbacusParser$StartLoop = F2(
+var $author$project$Types$Instructions$StartLoop = F2(
 	function (a, b) {
 		return {$: 'StartLoop', a: a, b: b};
 	});
 var $elm$core$String$fromList = _String_fromList;
-var $author$project$MyAbacusParser$getFirstDigits = function (chars) {
+var $author$project$Utils$AbacusParser$getFirstDigits = function (chars) {
 	if (!chars.b) {
 		return _List_Nil;
 	} else {
@@ -6436,7 +6436,7 @@ var $author$project$MyAbacusParser$getFirstDigits = function (chars) {
 		return $elm$core$Char$isDigit(c) ? A2(
 			$elm$core$List$cons,
 			c,
-			$author$project$MyAbacusParser$getFirstDigits(rest)) : _List_Nil;
+			$author$project$Utils$AbacusParser$getFirstDigits(rest)) : _List_Nil;
 	}
 };
 var $elm$core$List$isEmpty = function (xs) {
@@ -6446,7 +6446,7 @@ var $elm$core$List$isEmpty = function (xs) {
 		return false;
 	}
 };
-var $author$project$MyAbacusParser$isWhitespace = function (c) {
+var $author$project$Utils$AbacusParser$isWhitespace = function (c) {
 	return _Utils_eq(
 		c,
 		_Utils_chr(' ')) || (_Utils_eq(
@@ -6460,7 +6460,7 @@ var $author$project$MyAbacusParser$isWhitespace = function (c) {
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$MyAbacusParser$parseInstructions = F5(
+var $author$project$Utils$AbacusParser$parseInstructions = F5(
 	function (instructions, stack, currentIndex, input, parsingComment) {
 		parseInstructions:
 		while (true) {
@@ -6504,7 +6504,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 							if (instr.$ === 'StartLoop') {
 								var endLoopIndex = instr.a;
 								var conditionIndex = instr.b;
-								return (_Utils_eq(endLoopIndex, -1) && _Utils_eq(conditionIndex, -1)) ? $author$project$MyAbacusParser$UnknownInstruction : instr;
+								return (_Utils_eq(endLoopIndex, -1) && _Utils_eq(conditionIndex, -1)) ? $author$project$Types$Instructions$UnknownInstruction : instr;
 							} else {
 								var other = instr;
 								return other;
@@ -6515,7 +6515,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 					switch (input.a.valueOf()) {
 						case 'a':
 							var rest = input.b;
-							var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
+							var digits = $author$project$Utils$AbacusParser$getFirstDigits(rest);
 							var remaining = A2(
 								$elm$core$List$drop,
 								$elm$core$List$length(digits),
@@ -6525,7 +6525,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 								0,
 								$elm$core$String$toInt(
 									$elm$core$String$fromList(digits)));
-							var newInstruction = $author$project$MyAbacusParser$Increment(value);
+							var newInstruction = $author$project$Types$Instructions$Increment(value);
 							var $temp$instructions = _Utils_ap(
 								instructions,
 								_List_fromArray(
@@ -6542,7 +6542,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 							continue parseInstructions;
 						case 's':
 							var rest = input.b;
-							var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
+							var digits = $author$project$Utils$AbacusParser$getFirstDigits(rest);
 							var remaining = A2(
 								$elm$core$List$drop,
 								$elm$core$List$length(digits),
@@ -6552,7 +6552,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 								0,
 								$elm$core$String$toInt(
 									$elm$core$String$fromList(digits)));
-							var newInstruction = $author$project$MyAbacusParser$Decrement(value);
+							var newInstruction = $author$project$Types$Instructions$Decrement(value);
 							var $temp$instructions = _Utils_ap(
 								instructions,
 								_List_fromArray(
@@ -6573,7 +6573,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 								instructions,
 								_List_fromArray(
 									[
-										A2($author$project$MyAbacusParser$StartLoop, -1, -1)
+										A2($author$project$Types$Instructions$StartLoop, -1, -1)
 									])),
 								$temp$stack = A2($elm$core$List$cons, currentIndex, stack),
 								$temp$currentIndex = currentIndex + 1,
@@ -6587,7 +6587,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 							continue parseInstructions;
 						case ')':
 							var rest = input.b;
-							var digits = $author$project$MyAbacusParser$getFirstDigits(rest);
+							var digits = $author$project$Utils$AbacusParser$getFirstDigits(rest);
 							var remaining = A2(
 								$elm$core$List$drop,
 								$elm$core$List$length(digits),
@@ -6601,7 +6601,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 								var $temp$instructions = _Utils_ap(
 									instructions,
 									_List_fromArray(
-										[$author$project$MyAbacusParser$UnknownInstruction])),
+										[$author$project$Types$Instructions$UnknownInstruction])),
 									$temp$stack = stack,
 									$temp$currentIndex = currentIndex + 1,
 									$temp$input = rest,
@@ -6620,13 +6620,13 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 									F2(
 										function (i, instr) {
 											if (instr.$ === 'StartLoop') {
-												return _Utils_eq(i, startLoopIndex) ? A2($author$project$MyAbacusParser$StartLoop, currentIndex, conditionIndex) : instr;
+												return _Utils_eq(i, startLoopIndex) ? A2($author$project$Types$Instructions$StartLoop, currentIndex, conditionIndex) : instr;
 											} else {
 												return instr;
 											}
 										}),
 									instructions);
-								var endInstruction = A2($author$project$MyAbacusParser$EndLoop, startLoopIndex, conditionIndex);
+								var endInstruction = A2($author$project$Types$Instructions$EndLoop, startLoopIndex, conditionIndex);
 								var $temp$instructions = _Utils_ap(
 									updatedInstructions,
 									_List_fromArray(
@@ -6658,7 +6658,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 						default:
 							var c = input.a;
 							var rest = input.b;
-							if ($author$project$MyAbacusParser$isWhitespace(c)) {
+							if ($author$project$Utils$AbacusParser$isWhitespace(c)) {
 								var $temp$instructions = instructions,
 									$temp$stack = stack,
 									$temp$currentIndex = currentIndex,
@@ -6674,7 +6674,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 								var $temp$instructions = _Utils_ap(
 									instructions,
 									_List_fromArray(
-										[$author$project$MyAbacusParser$UnknownInstruction])),
+										[$author$project$Types$Instructions$UnknownInstruction])),
 									$temp$stack = stack,
 									$temp$currentIndex = currentIndex + 1,
 									$temp$input = rest,
@@ -6691,7 +6691,7 @@ var $author$project$MyAbacusParser$parseInstructions = F5(
 			}
 		}
 	});
-var $author$project$Main$requestAddMessages = function (msgs) {
+var $author$project$Utils$HelperFunctions$requestAddMessages = function (msgs) {
 	return $elm$core$Platform$Cmd$batch(
 		A2(
 			$elm$core$List$map,
@@ -6699,7 +6699,7 @@ var $author$project$Main$requestAddMessages = function (msgs) {
 				return A2(
 					$elm$core$Task$perform,
 					function (posix) {
-						return A2($author$project$Main$AddMessageWithTime, posix, msg);
+						return A2($author$project$Types$Messages$AddMessageWithTime, posix, msg);
 					},
 					$elm$time$Time$now);
 			},
@@ -6781,9 +6781,8 @@ var $author$project$Main$update = F2(
 		switch (msg.$) {
 			case 'UpdateCode':
 				var newCode = msg.a;
-				var loopStack = _List_Nil;
 				var input = $elm$core$String$toList(newCode);
-				var newInstructions = A5($author$project$MyAbacusParser$parseInstructions, _List_Nil, loopStack, 0, input, false);
+				var newInstructions = A5($author$project$Utils$AbacusParser$parseInstructions, _List_Nil, _List_Nil, 0, input, false);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -6800,7 +6799,7 @@ var $author$project$Main$update = F2(
 						defaultSpeed,
 						A2($elm$core$Array$get, model.speedIdx - 1, model.speeds));
 					var highlightDuration = (speed / 2) | 0;
-					var _v1 = A2($author$project$Main$executeInstruction, model, highlightDuration);
+					var _v1 = A2($author$project$Utils$ExecuteInstruction$executeInstruction, model, highlightDuration);
 					var updatedModel = _v1.a;
 					var removalCmd = _v1.b;
 					return _Utils_Tuple2(updatedModel, removalCmd);
@@ -6813,7 +6812,7 @@ var $author$project$Main$update = F2(
 							{isRunning: true}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var errors = $author$project$Main$checkForErrors(model.instructions);
+					var errors = $author$project$Utils$HelperFunctions$checkForErrors(model.instructions);
 					var messages = _Utils_ap(
 						errors,
 						_List_fromArray(
@@ -6822,7 +6821,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{isRunning: true, simStarted: true}),
-						$author$project$Main$requestAddMessages(messages));
+						$author$project$Utils$HelperFunctions$requestAddMessages(messages));
 				}
 			case 'Pause':
 				return _Utils_Tuple2(
@@ -6846,17 +6845,17 @@ var $author$project$Main$update = F2(
 									A2($elm$core$List$range, 0, 100))),
 							simStarted: false
 						}),
-					$author$project$Main$requestAddMessages(
+					$author$project$Utils$HelperFunctions$requestAddMessages(
 						_List_fromArray(
 							['Simulation stopped'])));
 			case 'Step':
 				var highlightDuration = 200;
-				var _v2 = A2($author$project$Main$executeInstruction, model, highlightDuration);
+				var _v2 = A2($author$project$Utils$ExecuteInstruction$executeInstruction, model, highlightDuration);
 				var newModel1 = _v2.a;
 				var removeHighlightCmd = _v2.b;
 				var messages = function () {
 					if (!newModel1.simStarted) {
-						var errors = $author$project$Main$checkForErrors(model.instructions);
+						var errors = $author$project$Utils$HelperFunctions$checkForErrors(model.instructions);
 						return _Utils_ap(
 							errors,
 							_List_fromArray(
@@ -6872,7 +6871,7 @@ var $author$project$Main$update = F2(
 					_List_fromArray(
 						[
 							removeHighlightCmd,
-							$author$project$Main$requestAddMessages(messages)
+							$author$project$Utils$HelperFunctions$requestAddMessages(messages)
 						]));
 				return _Utils_Tuple2(newModel2, combinedCmd);
 			case 'ChangeSpeed':
@@ -6897,7 +6896,7 @@ var $author$project$Main$update = F2(
 					A2(
 						$elm$core$Task$perform,
 						function (posix) {
-							return A2($author$project$Main$AddMessageWithTime, posix, newText);
+							return A2($author$project$Types$Messages$AddMessageWithTime, posix, newText);
 						},
 						$elm$time$Time$now));
 			case 'AddMessageWithTime':
@@ -6941,7 +6940,7 @@ var $author$project$Main$update = F2(
 				var code = _v3.b;
 				if (key === 'current') {
 					var instructions = A5(
-						$author$project$MyAbacusParser$parseInstructions,
+						$author$project$Utils$AbacusParser$parseInstructions,
 						_List_Nil,
 						_List_Nil,
 						0,
@@ -6955,7 +6954,7 @@ var $author$project$Main$update = F2(
 								inputText: A2($elm$core$Maybe$withDefault, '', code),
 								instructions: instructions
 							}),
-						$author$project$Main$requestAddMessages(
+						$author$project$Utils$HelperFunctions$requestAddMessages(
 							_List_fromArray(
 								['Welcome to Abacus Machine Simulator'])));
 				} else {
@@ -7012,7 +7011,7 @@ var $author$project$Main$update = F2(
 							{
 								inputText: code,
 								instructions: A5(
-									$author$project$MyAbacusParser$parseInstructions,
+									$author$project$Utils$AbacusParser$parseInstructions,
 									_List_Nil,
 									_List_Nil,
 									0,
@@ -7030,13 +7029,13 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$DeleteInput = {$: 'DeleteInput'};
-var $author$project$Main$Pause = {$: 'Pause'};
-var $author$project$Main$Reset = {$: 'Reset'};
-var $author$project$Main$Start = {$: 'Start'};
-var $author$project$Main$Step = {$: 'Step'};
-var $author$project$Main$ToggleSlotsModal = {$: 'ToggleSlotsModal'};
-var $author$project$Main$UpdateCode = function (a) {
+var $author$project$Types$Messages$DeleteInput = {$: 'DeleteInput'};
+var $author$project$Types$Messages$Pause = {$: 'Pause'};
+var $author$project$Types$Messages$Reset = {$: 'Reset'};
+var $author$project$Types$Messages$Start = {$: 'Start'};
+var $author$project$Types$Messages$Step = {$: 'Step'};
+var $author$project$Types$Messages$ToggleSlotsModal = {$: 'ToggleSlotsModal'};
+var $author$project$Types$Messages$UpdateCode = function (a) {
 	return {$: 'UpdateCode', a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -7069,7 +7068,7 @@ var $elm$svg$Svg$Attributes$strokeLinejoin = _VirtualDom_attribute('stroke-linej
 var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $author$project$Main$heroiconPause = A2(
+var $author$project$Icons$Pause$heroiconPause = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7091,7 +7090,7 @@ var $author$project$Main$heroiconPause = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$heroiconPlay = A2(
+var $author$project$Icons$Play$heroiconPlay = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7113,7 +7112,7 @@ var $author$project$Main$heroiconPlay = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$heroiconReset = A2(
+var $author$project$Icons$Reset$heroiconReset = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7135,7 +7134,7 @@ var $author$project$Main$heroiconReset = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$heroiconSave = A2(
+var $author$project$Icons$Save$heroiconSave = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7157,7 +7156,7 @@ var $author$project$Main$heroiconSave = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$heroiconStep = A2(
+var $author$project$Icons$Step$heroiconStep = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7179,7 +7178,7 @@ var $author$project$Main$heroiconStep = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$heroiconTrash = A2(
+var $author$project$Icons$Trash$heroiconTrash = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7354,7 +7353,7 @@ var $elm$time$Time$toSecond = F2(
 				1000));
 	});
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
-var $author$project$Main$formatTime = function (posix) {
+var $author$project$Views$Console$formatTime = function (posix) {
 	var twoDigits = function (n) {
 		return A3(
 			$elm$core$String$padLeft,
@@ -7368,7 +7367,7 @@ var $author$project$Main$formatTime = function (posix) {
 	return twoDigits(hh) + (':' + (twoDigits(mm) + (':' + twoDigits(ss))));
 };
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $author$project$Main$viewConsole = function (consoleMessages) {
+var $author$project$Views$Console$viewConsole = function (consoleMessages) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -7396,13 +7395,13 @@ var $author$project$Main$viewConsole = function (consoleMessages) {
 							_List_fromArray(
 								[
 									$elm$html$Html$text(
-									'[' + ($author$project$Main$formatTime(msg.timestamp) + ('] ' + msg.text)))
+									'[' + ($author$project$Views$Console$formatTime(msg.timestamp) + ('] ' + msg.text)))
 								]));
 					},
 					consoleMessages))
 			]));
 };
-var $author$project$Main$viewInstructions = F2(
+var $author$project$Views$Instructions$viewInstructions = F2(
 	function (instructions, pointer) {
 		return A2(
 			$elm$html$Html$div,
@@ -7464,7 +7463,7 @@ var $author$project$Main$viewInstructions = F2(
 					}),
 				instructions));
 	});
-var $author$project$Main$viewRegisters = F2(
+var $author$project$Views$Registers$viewRegisters = F2(
 	function (registers, highlighted) {
 		return A2(
 			$elm$core$List$map,
@@ -7516,7 +7515,7 @@ var $author$project$Main$viewRegisters = F2(
 			},
 			$elm$core$Dict$toList(registers));
 	});
-var $author$project$Main$ChangeSpeed = function (a) {
+var $author$project$Types$Messages$ChangeSpeed = function (a) {
 	return {$: 'ChangeSpeed', a: a};
 };
 var $elm$core$Basics$composeR = F3(
@@ -7524,7 +7523,7 @@ var $elm$core$Basics$composeR = F3(
 		return g(
 			f(x));
 	});
-var $author$project$Main$heroiconRocket = A2(
+var $author$project$Icons$Rocket$heroiconRocket = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7553,7 +7552,7 @@ var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$core$Basics$round = _Basics_round;
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$Main$sliderLabel = function (ms) {
+var $author$project$Views$SpeedSlider$sliderLabel = function (ms) {
 	var toOneDecimal = function (f) {
 		return $elm$core$Basics$round(f * 10) / 10;
 	};
@@ -7584,7 +7583,7 @@ var $elm$html$Html$Attributes$step = function (n) {
 };
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$Main$viewSlider = F2(
+var $author$project$Views$SpeedSlider$viewSlider = F2(
 	function (currentValue, model) {
 		return A2(
 			$elm$html$Html$div,
@@ -7602,7 +7601,7 @@ var $author$project$Main$viewSlider = F2(
 						]),
 					_List_fromArray(
 						[
-							$author$project$Main$heroiconRocket,
+							$author$project$Icons$Rocket$heroiconRocket,
 							$elm$html$Html$text('Time between instructions (seconds)')
 						])),
 					A2(
@@ -7623,7 +7622,7 @@ var $author$project$Main$viewSlider = F2(
 								A2(
 									$elm$core$Basics$composeR,
 									$elm$core$Maybe$withDefault(1),
-									$author$project$Main$ChangeSpeed)))
+									$author$project$Types$Messages$ChangeSpeed)))
 						]),
 					_List_Nil),
 					A2(
@@ -7634,11 +7633,11 @@ var $author$project$Main$viewSlider = F2(
 						]),
 					A2(
 						$elm$core$List$map,
-						$author$project$Main$sliderLabel,
+						$author$project$Views$SpeedSlider$sliderLabel,
 						$elm$core$Array$toList(model.speeds)))
 				]));
 	});
-var $author$project$Main$heroiconX = A2(
+var $author$project$Icons$X$heroiconX = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7660,16 +7659,16 @@ var $author$project$Main$heroiconX = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$DeleteSlot = function (a) {
+var $author$project$Types$Messages$DeleteSlot = function (a) {
 	return {$: 'DeleteSlot', a: a};
 };
-var $author$project$Main$LoadSlot = function (a) {
+var $author$project$Types$Messages$LoadSlot = function (a) {
 	return {$: 'LoadSlot', a: a};
 };
-var $author$project$Main$SaveSlot = function (a) {
+var $author$project$Types$Messages$SaveSlot = function (a) {
 	return {$: 'SaveSlot', a: a};
 };
-var $author$project$Main$heroiconTrashSmall = A2(
+var $author$project$Icons$TrashSmall$heroiconTrashSmall = A2(
 	$elm$svg$Svg$svg,
 	_List_fromArray(
 		[
@@ -7691,7 +7690,7 @@ var $author$project$Main$heroiconTrashSmall = A2(
 				]),
 			_List_Nil)
 		]));
-var $author$project$Main$viewSlots = function (model) {
+var $author$project$Views$SaveSlots$viewSlots = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -7744,7 +7743,7 @@ var $author$project$Main$viewSlots = function (model) {
 											$elm$html$Html$Attributes$class(
 											'bg-blue-500 text-white px-2 py-1 rounded' + ((model.inputText === '') ? ' opacity-50 cursor-not-allowed' : '')),
 											$elm$html$Html$Events$onClick(
-											$author$project$Main$SaveSlot(i))
+											$author$project$Types$Messages$SaveSlot(i))
 										]),
 									_List_fromArray(
 										[
@@ -7757,7 +7756,7 @@ var $author$project$Main$viewSlots = function (model) {
 											$elm$html$Html$Attributes$class(
 											'bg-blue-500 text-white px-2 py-1 rounded' + (isEmpty ? ' opacity-50 cursor-not-allowed' : '')),
 											$elm$html$Html$Events$onClick(
-											$author$project$Main$LoadSlot(i)),
+											$author$project$Types$Messages$LoadSlot(i)),
 											$elm$html$Html$Attributes$disabled(isEmpty)
 										]),
 									_List_fromArray(
@@ -7771,17 +7770,17 @@ var $author$project$Main$viewSlots = function (model) {
 											$elm$html$Html$Attributes$class(
 											'bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center' + (isEmpty ? ' opacity-50 cursor-not-allowed' : '')),
 											$elm$html$Html$Events$onClick(
-											$author$project$Main$DeleteSlot(i)),
+											$author$project$Types$Messages$DeleteSlot(i)),
 											$elm$html$Html$Attributes$disabled(isEmpty)
 										]),
 									_List_fromArray(
-										[$author$project$Main$heroiconTrashSmall]))
+										[$author$project$Icons$TrashSmall$heroiconTrashSmall]))
 								]))
 						]));
 			},
 			A2($elm$core$List$range, 1, 20)));
 };
-var $author$project$Main$viewSlotsModal = function (model) {
+var $author$project$Views$SaveSlots$viewSlotsModal = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -7803,11 +7802,11 @@ var $author$project$Main$viewSlotsModal = function (model) {
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$class('absolute top-2 right-2 text-gray-500 hover:text-gray-700'),
-								$elm$html$Html$Events$onClick($author$project$Main$ToggleSlotsModal)
+								$elm$html$Html$Events$onClick($author$project$Types$Messages$ToggleSlotsModal)
 							]),
 						_List_fromArray(
-							[$author$project$Main$heroiconX])),
-						$author$project$Main$viewSlots(model)
+							[$author$project$Icons$X$heroiconX])),
+						$author$project$Views$SaveSlots$viewSlots(model)
 					]))
 			]));
 };
@@ -7846,11 +7845,11 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$class('w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded'),
-												$elm$html$Html$Events$onClick($author$project$Main$Pause)
+												$elm$html$Html$Events$onClick($author$project$Types$Messages$Pause)
 											]),
 										_List_fromArray(
 											[
-												$author$project$Main$heroiconPause,
+												$author$project$Icons$Pause$heroiconPause,
 												$elm$html$Html$text('Pause')
 											]));
 								} else {
@@ -7861,7 +7860,7 @@ var $author$project$Main$view = function (model) {
 											_List_fromArray(
 												[
 													$elm$html$Html$Attributes$class('w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded'),
-													$elm$html$Html$Events$onClick($author$project$Main$Start)
+													$elm$html$Html$Events$onClick($author$project$Types$Messages$Start)
 												]),
 											isDisabled ? _List_fromArray(
 												[
@@ -7870,7 +7869,7 @@ var $author$project$Main$view = function (model) {
 												]) : _List_Nil),
 										_List_fromArray(
 											[
-												$author$project$Main$heroiconPlay,
+												$author$project$Icons$Play$heroiconPlay,
 												$elm$html$Html$text('Start')
 											]));
 								}
@@ -7883,7 +7882,7 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$class('w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded'),
-												$elm$html$Html$Events$onClick($author$project$Main$Step)
+												$elm$html$Html$Events$onClick($author$project$Types$Messages$Step)
 											]),
 										isDisabled ? _List_fromArray(
 											[
@@ -7892,7 +7891,7 @@ var $author$project$Main$view = function (model) {
 											]) : _List_Nil),
 									_List_fromArray(
 										[
-											$author$project$Main$heroiconStep,
+											$author$project$Icons$Step$heroiconStep,
 											$elm$html$Html$text('Step')
 										]));
 							}(),
@@ -7905,18 +7904,18 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$author$project$Main$heroiconReset,
+										$author$project$Icons$Reset$heroiconReset,
 										$elm$html$Html$text('Stop')
 									])) : A2(
 								$elm$html$Html$button,
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('w-1/3 px-4 py-2 bg-red-500 text-white flex items-center justify-center rounded'),
-										$elm$html$Html$Events$onClick($author$project$Main$Reset)
+										$elm$html$Html$Events$onClick($author$project$Types$Messages$Reset)
 									]),
 								_List_fromArray(
 									[
-										$author$project$Main$heroiconReset,
+										$author$project$Icons$Reset$heroiconReset,
 										$elm$html$Html$text('Stop')
 									]))
 							])),
@@ -7928,7 +7927,7 @@ var $author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								A2($author$project$Main$viewSlider, model.speedIdx, model)
+								A2($author$project$Views$SpeedSlider$viewSlider, model.speedIdx, model)
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -7943,11 +7942,11 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('border border-blue-500 text-blue-500 bg-white w-1/3 px-1 py-2 flex items-center justify-center rounded'),
-										$elm$html$Html$Events$onClick($author$project$Main$ToggleSlotsModal)
+										$elm$html$Html$Events$onClick($author$project$Types$Messages$ToggleSlotsModal)
 									]),
 								_List_fromArray(
 									[
-										$author$project$Main$heroiconSave,
+										$author$project$Icons$Save$heroiconSave,
 										$elm$html$Html$text('Save/Load')
 									]))
 							]))
@@ -7976,7 +7975,7 @@ var $author$project$Main$view = function (model) {
 											$elm$html$Html$Attributes$class(
 											'flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono ' + (model.simStarted ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-black')),
 											$elm$html$Html$Attributes$placeholder('Enter your code here...'),
-											$elm$html$Html$Events$onInput($author$project$Main$UpdateCode),
+											$elm$html$Html$Events$onInput($author$project$Types$Messages$UpdateCode),
 											$elm$html$Html$Attributes$value(model.inputText)
 										]),
 									model.simStarted ? _List_fromArray(
@@ -7989,10 +7988,10 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('absolute bottom-9 right-10 text-gray-500 hover:text-red-500'),
-										$elm$html$Html$Events$onClick($author$project$Main$DeleteInput)
+										$elm$html$Html$Events$onClick($author$project$Types$Messages$DeleteInput)
 									]),
 								_List_fromArray(
-									[$author$project$Main$heroiconTrash])) : $elm$html$Html$text('')
+									[$author$project$Icons$Trash$heroiconTrash])) : $elm$html$Html$text('')
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -8003,7 +8002,7 @@ var $author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								A2($author$project$Main$viewInstructions, model.instructions, model.instructionPointer)
+								A2($author$project$Views$Instructions$viewInstructions, model.instructions, model.instructionPointer)
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -8016,11 +8015,11 @@ var $author$project$Main$view = function (model) {
 								A2(
 								$elm$html$Html$div,
 								_List_Nil,
-								A2($author$project$Main$viewRegisters, model.registers, model.highlighted))
+								A2($author$project$Views$Registers$viewRegisters, model.registers, model.highlighted))
 							]))
 					])),
-				$author$project$Main$viewConsole(model.consoleMessages),
-				model.showSlotsModal ? $author$project$Main$viewSlotsModal(model) : $elm$html$Html$text('')
+				$author$project$Views$Console$viewConsole(model.consoleMessages),
+				model.showSlotsModal ? $author$project$Views$SaveSlots$viewSlotsModal(model) : $elm$html$Html$text('')
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

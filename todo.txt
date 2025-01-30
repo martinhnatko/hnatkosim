@@ -1,8 +1,12 @@
-cssko dat do custom tried a nie inline sracky asi... zjednotit to treba asi s milajom
-
 do komponentov vsetko rozjebat kod
 
+cssko dat do custom tried a nie inline sracky asi... zjednotit to treba asi s milajom
+
+premenovanie slotov
+
 pridat nastavenie poctu registrov
+
+navod
 
 pridat viac errorov aby sa handlovalo - asi ze register ked je vacsi ako pocet registrov...
 error handling by mohol by lepsi - kazdy typ erroru by mohol mat svoj typ a svoju farbu

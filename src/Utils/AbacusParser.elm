@@ -1,21 +1,9 @@
-module MyAbacusParser exposing (..)
+module Utils.AbacusParser exposing (..)
 
 import Char exposing (isDigit)
 import List exposing (drop)
 import Maybe
-
-
--- INSTRUCTIONS
-
-type Instruction
-    = Increment Int
-    | Decrement Int
-    | StartLoop Int Int
-    | EndLoop Int Int 
-    | UnknownInstruction
-
-
--- PARSE INSTRUCTIONS
+import Types.Instructions exposing (Instruction(..))
 
 type alias LoopStack =
     List Int -- StartLoop index
