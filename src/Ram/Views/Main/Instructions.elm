@@ -1,60 +1,95 @@
-module Ram.Views.Main.Instructions exposing (..)
-import Ram.Types.Messages exposing (Msg)
+module Ram.Views.Main.Instructions exposing (viewInstructions)
+
 import Html exposing (Html, div, text)
-import Html.Attributes
+import Html.Attributes exposing (class)
+
+import Ram.Types.Messages exposing (Msg)
 import Ram.Types.Instructions exposing (Instruction(..))
+import Ram.Types.Operand exposing (Operand(..))
+
+import String
 
 
+{-| Convert an Operand to a string. Adjust this to your Operand type.
+    For example:
+-}
+operandToString : Operand -> String
+operandToString operand =
+    case operand of
+        Constant n ->
+            "=" ++ String.fromInt n
+
+        Direct n ->
+            String.fromInt n
+
+        Indirect n ->
+            "*" ++ String.fromInt n
+
+
+{-| viewInstructions renders a list of instructions in one column.
+    The currently active instruction (given by pointer) gets a blue border.
+    The styling rules:
+      - Most instructions: blue background and blue text.
+      - Halt: red background and red text.
+      - UnknownInstruction: yellow background and yellow text.
+      - Label: gray background and gray text.
+-}
 viewInstructions : List Instruction -> Int -> Html Msg
 viewInstructions instructions pointer =
-    div [ Html.Attributes.class "flex flex-wrap gap-3" ]
+    div [ class "flex flex-col gap-2" ]
         (instructions
             |> List.indexedMap (\index instruction ->
                 let
                     isActive =
                         index == pointer
 
-                    instructionText =
+                    (instructionText, typeColorClasses) =
                         case instruction of
-                            Increment n ->
-                                "Add " ++ String.fromInt n
+                            Load operand ->
+                                ("Load " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Decrement n ->
-                                "Sub " ++ String.fromInt n
+                            Store operand ->
+                                ("Store " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            StartLoop _ _ ->
-                                "("
+                            Add operand ->
+                                ("Add " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            EndLoop _ conditionIndex ->
-                                ")" ++ String.fromInt conditionIndex
+                            Sub operand ->
+                                ("Sub " ++ operandToString operand, " bg-blue-200 text-blue-800")
+
+                            Mul operand ->
+                                ("Mul " ++ operandToString operand, " bg-blue-200 text-blue-800")
+
+                            Div operand ->
+                                ("Div " ++ operandToString operand, " bg-blue-200 text-blue-800")
+
+                            Read operand ->
+                                ("Read " ++ operandToString operand, " bg-blue-200 text-blue-800")
+
+                            Write operand ->
+                                ("Write " ++ operandToString operand, " bg-blue-200 text-blue-800")
+
+                            Jump _ label ->
+                                ("Jump " ++ label, " bg-gray-200 text-gray-800")
+
+                            Jzero _ label ->
+                                ("Jzero " ++ label, " bg-gray-200 text-gray-800")
+
+                            Jgtz _ label ->
+                                ("Jgtz " ++ label, " bg-gray-200 text-gray-800")
+
+                            Halt ->
+                                ("Halt", " bg-red-200 text-red-800")
+
+                            Label lbl ->
+                                (lbl ++ ":", " bg-gray-200 text-gray-800")
 
                             UnknownInstruction ->
-                                "Unknown"
+                                ("Unknown", " bg-yellow-200 text-yellow-800")
 
-                    -- Distinguish instruction types by background/text color.
-                    -- We handle each constructor explicitly, so we can give UnknownInstruction a unique color.
-                    typeColorClasses =
-                        case instruction of
-                            Increment _ ->
-                                " bg-green-200 text-green-800"
-
-                            Decrement _ ->
-                                " bg-red-200 text-red-800"
-
-                            StartLoop _ _ ->
-                                " bg-gray-200 text-gray-900"
-
-                            EndLoop _ _ ->
-                                " bg-gray-200 text-gray-900"
-
-                            UnknownInstruction ->
-                                " bg-yellow-200 text-yellow-800"
-
-                    -- Base classes: same border thickness & style for everyone
                     baseClasses =
                         "p-2 border-4 border-solid rounded font-mono transition-colors"
 
-                    -- If active, show a blue border & bold text; otherwise a transparent border
                     activeClasses =
                         if isActive then
                             " border-blue-500 font-bold"
@@ -62,10 +97,7 @@ viewInstructions instructions pointer =
                             " border-transparent"
                 in
                 div
-                    [ Html.Attributes.class (baseClasses ++ typeColorClasses ++ activeClasses) ]
+                    [ class (baseClasses ++ typeColorClasses ++ activeClasses) ]
                     [ text instructionText ]
             )
         )
-
-
-

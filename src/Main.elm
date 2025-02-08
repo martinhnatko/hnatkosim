@@ -274,8 +274,8 @@ update msg model =
                 case key of
                     "ram_current" ->
                         let
-                            instructions =
-                                RamParser.parseInstructions [] [] 0 (String.toList rawCode) False
+                            (instructions, labels) =
+                                RamParser.parseRAM rawCode
 
                             innerRamModel = model.ramModel    
                             updatedRamModel =
@@ -283,6 +283,7 @@ update msg model =
                                     innerRamModel
                                     | inputText = rawCode
                                     , instructions = instructions
+                                    , labels = labels
                                 }
                         in
                         ( { model | ramModel = updatedRamModel }
@@ -329,7 +330,7 @@ view : Model -> Browser.Document Msg
 view model =
     case model.page of
         Landing ->
-            { title = "Simulator Landing Page"
+            { title = "Menu"
             , body =
                 [ div [ class "flex items-center justify-center min-h-screen bg-gray-100" ]
                     [ div [ class "flex flex-col gap-6" ]

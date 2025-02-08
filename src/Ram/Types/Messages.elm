@@ -19,3 +19,8 @@ type Msg
     | LoadSlot Int
     | ToggleSlotsModal
     | DeleteSlot Int
+    | UpdateInputTape Int Int
+    | RemoveCell Int
+    | CellFocused Int
+    | CellBlurred
+    | NoOp

@@ -18,8 +18,8 @@ controlButtons model =
             model.instructionPointer >= List.length model.instructions
 
         isRunning = model.isRunning
-        isDisabledStart = atEndOfInstructions
-        isDisabledStep = atEndOfInstructions || model.isRunning
+        isDisabledStart = atEndOfInstructions || model.halted
+        isDisabledStep = atEndOfInstructions || model.isRunning || model.halted
     in
     div [ class "flex gap-4 w-1/3" ]
         [ -- Start/Pause Button

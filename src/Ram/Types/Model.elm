@@ -3,6 +3,7 @@ import Dict exposing (Dict)
 import Array exposing (Array)
 import Ram.Types.ConsoleMessage exposing (ConsoleMessage)
 import Ram.Types.Instructions exposing (Instruction)
+import Ram.Types.LabelDict exposing (LabelDict)
 
 -- MODEL
 type alias Model =
@@ -18,4 +19,12 @@ type alias Model =
     , consoleMessages : List ConsoleMessage
     , slots : Array String
     , showSlotsModal : Bool
+    , labels : LabelDict
+    , halted : Bool
+    , inputTape : Array ( Maybe Int )
+    , inputTapePointer : Int
+    , outputTape : Array ( Maybe Int )
+    , outputTapePointer : Int
+    , maybeFocusedCell : Maybe Int
+    , pendingFocus : Maybe Int
     }

@@ -3,7 +3,7 @@ module Ram.Utils.Update exposing (..)
 import Ram.Types.Messages exposing (Msg)
 import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg(..))
-import Ram.Utils.RamParser exposing (parseInstructions)
+import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
 import Ram.Utils.HelperFunctions exposing (..)
 import Dict
@@ -12,6 +12,8 @@ import Array
 import Time
 import Task
 import Shared.Ports exposing (setItem, scrollToBottom)
+import Browser.Dom exposing (focus)
+import Process
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -19,10 +21,10 @@ update msg model =
     case msg of
         UpdateCode newCode ->
             let
-                input = String.toList newCode
-                newInstructions = parseInstructions [] [] 0 input False
+                (newInstructions1, newLabels) = parseRAM newCode
+                newInstructions = Debug.log "newInstructions" newInstructions1
             in
-            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("ram_current", newCode) )
+            ( { model | inputText = newCode, instructions = newInstructions, labels = newLabels }, setItem ("ram_current", newCode) )
 
         Tick _ ->
             if not model.isRunning then
@@ -73,6 +75,10 @@ update msg model =
                 , simStarted = False
                 , instructionPointer = 0
                 , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                , halted = False
+                , inputTapePointer = 0
+                , outputTapePointer = 0
+                , outputTape = Array.repeat 100 Nothing
               }
             , requestAddMessages ["Simulation stopped"]
             )
@@ -153,35 +159,6 @@ update msg model =
               }
             , setItem ("ram_current", "")
             )
-        
-        -- GotItem (key, code) ->
-        --     case key of
-        --         "ram_current" ->
-        --             -- If localStorage had something for "current", put it in inputText
-        --             let
-        --                 instructions = parseInstructions [] [] 0 (String.toList (Maybe.withDefault "" code)) False
-        --             in
-        --             ( { model | inputText = Maybe.withDefault "" code, instructions = instructions }, requestAddMessages ["Welcome to Random Access Machine Simulator"] )
-
-        --         _ ->
-        --             -- Maybe it's one of the 10 slots, like "slot_3"
-        --             let
-        --                 maybeSlotIndex =
-        --                     if String.startsWith "ram_slot_" key then
-        --                         String.dropLeft 9 key |> String.toInt
-        --                     else
-        --                         Nothing
-        --             in
-        --             case maybeSlotIndex of
-        --                 Just i ->
-        --                     let
-        --                         updatedSlots = Array.set i (Maybe.withDefault "" code) model.slots
-        --                     in
-        --                     ( { model | slots = updatedSlots }, Cmd.none )
-
-        --                 Nothing ->
-        --                     -- Unrecognized key
-        --                     ( model, Cmd.none )
 
         SaveSlot i ->
             let
@@ -210,9 +187,53 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none ) 
                 Just code ->
-                    ( { model | inputText = code, instructions = parseInstructions [] [] 0 (String.toList code) False }
+                    let
+                        (instructions, labels) = parseRAM code
+                    in
+                    ( { model | inputText = code, instructions = instructions, labels = labels }
                     , setItem ("ram_current", code) 
                     )
         
         ToggleSlotsModal ->
             ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )
+        
+        UpdateInputTape idx value ->
+            let
+                updatedTape = Array.set idx (Just value) model.inputTape
+            in
+            ( { model | inputTape = updatedTape }, Cmd.none )
+        
+        RemoveCell idx ->
+            let
+                updatedTape = Array.set idx Nothing model.inputTape
+            in
+            ( { model | inputTape = updatedTape }, Cmd.none )
+        
+        CellFocused index ->
+            case model.maybeFocusedCell of
+                Nothing ->
+                    -- No cell is currently focused, so focus immediately.
+                    ( { model | maybeFocusedCell = Just index }
+                    , Browser.Dom.focus ("input-" ++ String.fromInt index)
+                        |> Task.attempt (\_ -> NoOp)
+                    )
+                Just _ ->
+                    -- Another cell is focused; queue up the new focus.
+                    ( { model | pendingFocus = Just index }, Cmd.none )
+        
+
+        CellBlurred ->
+            case model.pendingFocus of
+                Just newIndex ->
+                    -- If there is a pending focus, switch focus to that cell.
+                    ( { model | maybeFocusedCell = Just newIndex, pendingFocus = Nothing }
+                    , Browser.Dom.focus ("input-" ++ String.fromInt newIndex)
+                        |> Task.attempt (\_ -> NoOp)
+                    )
+                Nothing ->
+                    ( { model | maybeFocusedCell = Nothing }, Cmd.none )
+
+
+        NoOp ->
+            ( model, Cmd.none )
+            

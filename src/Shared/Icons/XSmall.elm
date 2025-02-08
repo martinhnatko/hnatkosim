@@ -1,4 +1,4 @@
-module Shared.Icons.X exposing (heroiconX)
+module Shared.Icons.XSmall exposing (..)
 import Html exposing (Html)
 import Svg exposing (svg, path)
 import Svg.Attributes exposing (fill, stroke, strokeWidth, viewBox, strokeLinecap, strokeLinejoin, d, class)
@@ -7,7 +7,7 @@ import Svg.Attributes exposing (fill, stroke, strokeWidth, viewBox, strokeLineca
 heroiconX : Html msg
 heroiconX =
     svg
-        [ class "h-10 w-10"
+        [ class "h-4 w-4"
         , fill "none"
         , stroke "currentColor"
         , strokeWidth "1.5"
