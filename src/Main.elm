@@ -1,11 +1,9 @@
 module Main exposing (main)
 
 -- import Browser
-import Html exposing (Html, div, text, button)
+import Html exposing (div, text, button)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Dict
-import List exposing (range)
 import String
 import Time
 import Array
@@ -13,13 +11,9 @@ import Array
 import Browser
 import Browser.Navigation as Nav
 import Url exposing (Url)
-import Url.Parser as Parser
-import Json.Decode as Decode
-
 
 import Am.Types.Messages as AmMsg
 import Am.Types.Model as AmModel
-import Am.Types.Instructions as AmInstructions
 import Am.Views.View as AmView
 import Am.Utils.Update as AmUpdate
 import Am.Utils.Init as AmInit
@@ -28,7 +22,6 @@ import Am.Utils.HelperFunctions as AmHelper
 
 import Ram.Types.Messages as RamMsg 
 import Ram.Types.Model as RamModel
-import Ram.Types.Instructions as RamInstructions
 import Ram.Views.View as RamView
 import Ram.Utils.Update as RamUpdate
 import Ram.Utils.Init as RamInit
@@ -36,7 +29,6 @@ import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
 
 import Shared.Ports exposing (getItem, gotItem)
-import Html exposing (sub)
 
 -- -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
@@ -147,7 +139,7 @@ init _ url key =
                 
                 , getItem "ram_current_input_tape"
                 , Cmd.batch <|
-                    List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i ++ "input_tape")) (List.range 1 20)
+                    List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i ++ "_input_tape")) (List.range 1 20)
                 ]
     in
     ( { page = pageFromUrl
@@ -299,7 +291,7 @@ update msg model =
                     _ ->
                         if String.endsWith "_input_tape" key then
                             let
-                                maybeSlotIndex = String.dropRight 10 key |> String.dropLeft 9 |> String.toInt
+                                maybeSlotIndex = String.dropRight 11 key |> String.dropLeft 9 |> String.toInt
                                 maybeTape = RamHelper.decodeInputTape rawCode
                             in
                             case maybeSlotIndex of

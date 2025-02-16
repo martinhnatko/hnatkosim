@@ -6,9 +6,6 @@ import Ram.Types.Instructions exposing (Instruction(..))
 import Ram.Types.Operand exposing (Operand(..))
 import Ram.Utils.HelperFunctions exposing (..)
 
-import Dict
-import Task
-import Process
 import Array
 import Platform.Cmd as Cmd
 
