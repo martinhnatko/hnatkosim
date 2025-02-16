@@ -21,7 +21,6 @@ viewOutputTape model =
         cells =
             model.outputTape
                 |> Array.toList
-                |> List.filterMap identity
     in
     div [ class "flex rounded bg-white space-x-2 p-3 overflow-x-auto" ]
         (if List.isEmpty cells then
@@ -30,7 +29,7 @@ viewOutputTape model =
          else
             (List.map (\n ->
             div
-                [ class "w-20 h-20 border rounded text-center flex items-center justify-center font-mono bg-white" ]
+                [ class "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white" ]
                 [ text (String.fromInt n) ]
             )
             cells

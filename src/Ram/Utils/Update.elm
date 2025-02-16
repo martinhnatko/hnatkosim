@@ -12,8 +12,6 @@ import Array
 import Time
 import Task
 import Shared.Ports exposing (setItem, scrollToBottom)
-import Browser.Dom exposing (focus)
-import Process
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -77,21 +75,18 @@ update msg model =
                 , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
                 , halted = False
                 , inputTapePointer = 0
-                , outputTapePointer = 0
-                , outputTape = Array.repeat 100 Nothing
+                , outputTape = Array.empty
               }
             , requestAddMessages ["Simulation stopped"]
             )
         Step ->
             let
                 highlightDuration = 200
-                ( newModel1, removeHighlightCmd ) =
+                ( newModel, removeHighlightCmd ) =
                     executeInstruction model highlightDuration
 
-                -- If we haven't started before, create "Simulation started" messages.
-                -- Otherwise, no new messages.
                 messages =
-                    if not newModel1.simStarted then
+                    if not newModel.simStarted then
                         let
                             errors = checkForErrors model.instructions
                         in
@@ -101,10 +96,10 @@ update msg model =
 
                 -- Now actually set `simStarted = True` if not started yet.
                 newModel2 =
-                    if not newModel1.simStarted then
-                        { newModel1 | simStarted = True }
+                    if not newModel.simStarted then
+                        { newModel | simStarted = True }
                     else
-                        newModel1
+                        newModel
 
                 -- Combine highlight removal + any new console messages.
                 combinedCmd =
@@ -127,8 +122,6 @@ update msg model =
             ( { model | highlighted = newHighlighted }, Cmd.none )
 
         RequestAddMessage newText ->
-            -- We want to add a message with a fresh timestamp
-            -- -> ask Elm for current time, then AddMessageWithTime
             ( model
             , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
             )
@@ -199,41 +192,24 @@ update msg model =
         
         UpdateInputTape idx value ->
             let
-                updatedTape = Array.set idx (Just value) model.inputTape
+                updatedTape = Array.set idx value model.inputTape
             in
             ( { model | inputTape = updatedTape }, Cmd.none )
         
-        RemoveCell idx ->
+        AddCellToInputTape ->
             let
-                updatedTape = Array.set idx Nothing model.inputTape
+                updatedTape = Array.push 0 model.inputTape
             in
             ( { model | inputTape = updatedTape }, Cmd.none )
         
-        CellFocused index ->
-            case model.maybeFocusedCell of
-                Nothing ->
-                    -- No cell is currently focused, so focus immediately.
-                    ( { model | maybeFocusedCell = Just index }
-                    , Browser.Dom.focus ("input-" ++ String.fromInt index)
-                        |> Task.attempt (\_ -> NoOp)
-                    )
-                Just _ ->
-                    -- Another cell is focused; queue up the new focus.
-                    ( { model | pendingFocus = Just index }, Cmd.none )
-        
-
-        CellBlurred ->
-            case model.pendingFocus of
-                Just newIndex ->
-                    -- If there is a pending focus, switch focus to that cell.
-                    ( { model | maybeFocusedCell = Just newIndex, pendingFocus = Nothing }
-                    , Browser.Dom.focus ("input-" ++ String.fromInt newIndex)
-                        |> Task.attempt (\_ -> NoOp)
-                    )
-                Nothing ->
-                    ( { model | maybeFocusedCell = Nothing }, Cmd.none )
-
-
+        RemoveLastCell ->
+            let
+                len = Array.length model.inputTape
+            in
+            if len > 0 then
+                ( { model | inputTape = Array.slice 0 (len - 1) model.inputTape }, Cmd.none ) 
+            else
+                ( model, Cmd.none )
         NoOp ->
             ( model, Cmd.none )
             

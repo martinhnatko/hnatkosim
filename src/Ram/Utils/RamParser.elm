@@ -1,16 +1,11 @@
 module Ram.Utils.RamParser exposing (..)
 
-import Char exposing (isDigit)
-import List exposing (drop)
-import Maybe
-
 import Ram.Types.Instructions exposing (Instruction(..))
 import Ram.Types.LabelDict exposing (LabelDict)
 import Ram.Types.Operand exposing (Operand(..))
 
+import Dict
 import Maybe
-import Dict exposing (Dict)
-import Svg.Attributes exposing (in_)
 
 parseRAM : String -> (List Instruction, LabelDict)
 parseRAM input =

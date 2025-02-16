@@ -8,6 +8,7 @@ import Shared.Ports exposing (getItem)
 
 -- INIT
 
+init : { inputText : String, registers : Dict.Dict Int number, highlighted : Dict.Dict k v, instructions : List a, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List b, slots : Array.Array String, showSlotsModal : Bool, labels : Dict.Dict c d, halted : Bool, inputTape : Array.Array e, inputTapePointer : number, outputTape : Array.Array f }
 init =
     let
         initialModel =
@@ -18,19 +19,16 @@ init =
             , isRunning = False
             , simStarted = False
             , instructionPointer = 0
-            , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 250, 100, 0 ]
+            , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 300, 100, 0 ]
             , speedIdx = 4
             , consoleMessages = []
             , slots = Array.repeat 21 ""
             , showSlotsModal = False
             , labels = Dict.empty
             , halted = False
-            , inputTape = Array.repeat 100 Nothing
+            , inputTape = Array.empty
             , inputTapePointer = 0
-            , outputTape = Array.repeat 100 Nothing
-            , outputTapePointer = 0
-            , maybeFocusedCell = Nothing
-            , pendingFocus = Nothing
+            , outputTape = Array.empty
             }
     in
     initialModel

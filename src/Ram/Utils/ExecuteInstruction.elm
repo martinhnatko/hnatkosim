@@ -261,7 +261,7 @@ executeInstruction model highlightDuration =
 
                         Direct regIndex ->
                             case Array.get model.inputTapePointer model.inputTape of
-                                Just (Just val) ->
+                                Just val ->
                                     let
                                         newIP = model.instructionPointer + 1
 
@@ -288,7 +288,7 @@ executeInstruction model highlightDuration =
                                 pointer = getRegisterValue regIndex model
                             in
                             case Array.get model.inputTapePointer model.inputTape of
-                                Just (Just val) ->
+                                Just val ->
                                     let
                                         newIP = model.instructionPointer + 1
 
@@ -318,12 +318,12 @@ executeInstruction model highlightDuration =
                         Direct regIndex ->
                             let
                                 value = getRegisterValue regIndex model
-                                updatedOutputTape = Array.set model.outputTapePointer (Just value) model.outputTape
+                                updatedOutputTape = Array.push value model.outputTape
                             in
                             (
+                            Debug.log "model"
                             { model
                                 | outputTape = updatedOutputTape
-                                , outputTapePointer = model.outputTapePointer + 1
                                 , instructionPointer = model.instructionPointer + 1
                             }
                             , Cmd.none
@@ -333,12 +333,11 @@ executeInstruction model highlightDuration =
                             let
                                 pointer = getRegisterValue regIndex model
                                 value = getRegisterValue pointer model
-                                updatedOutputTape = Array.set model.outputTapePointer (Just value) model.outputTape
+                                updatedOutputTape = Array.push value model.outputTape
                             in
                             (
                             { model
                                 | outputTape = updatedOutputTape
-                                , outputTapePointer = model.outputTapePointer + 1
                                 , instructionPointer = model.instructionPointer + 1
                             }
                             , Cmd.none

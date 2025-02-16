@@ -21,10 +21,7 @@ type alias Model =
     , showSlotsModal : Bool
     , labels : LabelDict
     , halted : Bool
-    , inputTape : Array ( Maybe Int )
+    , inputTape : Array Int
     , inputTapePointer : Int
-    , outputTape : Array ( Maybe Int )
-    , outputTapePointer : Int
-    , maybeFocusedCell : Maybe Int
-    , pendingFocus : Maybe Int
+    , outputTape : Array Int
     }
