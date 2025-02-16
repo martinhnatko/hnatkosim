@@ -1,10 +1,7 @@
 module Am.Utils.Init exposing (..)
-import Am.Types.Model exposing (Model)
-import Am.Types.Messages exposing (Msg)
 import Dict
 import List exposing (range)
 import Array
-import Shared.Ports exposing (getItem)
 
 -- INIT
 init : { inputText : String, registers : Dict.Dict Int number, highlighted : Dict.Dict k v, instructions : List a, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List b, slots : Array.Array String, showSlotsModal : Bool }

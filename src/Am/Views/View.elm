@@ -1,7 +1,6 @@
 module Am.Views.View exposing (..)
 import Am.Types.Model exposing (Model)
 import Am.Types.Messages exposing (Msg)
-import Html exposing (Html)
 import Html exposing (div)
 import Html.Attributes exposing (class)
 

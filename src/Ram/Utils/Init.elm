@@ -1,10 +1,7 @@
 module Ram.Utils.Init exposing (..)
-import Ram.Types.Model exposing (Model)
-import Ram.Types.Messages exposing (Msg)
 import Dict
 import List exposing (range)
 import Array
-import Shared.Ports exposing (getItem)
 
 -- INIT
 

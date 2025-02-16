@@ -1,7 +1,6 @@
 module Ram.Views.View exposing (..)
 import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg)
-import Html exposing (Html)
 import Html exposing (div)
 import Html.Attributes exposing (class)
 
