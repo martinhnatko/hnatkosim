@@ -5,7 +5,6 @@ import Array
 
 -- INIT
 
-init : { inputText : String, registers : Dict.Dict Int number, highlighted : Dict.Dict k v, instructions : List a, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List b, slots : Array.Array String, showSlotsModal : Bool, labels : Dict.Dict c d, halted : Bool, inputTape : Array.Array e, inputTapePointer : number, outputTape : Array.Array f }
 init =
     let
         initialModel =
@@ -20,6 +19,7 @@ init =
             , speedIdx = 4
             , consoleMessages = []
             , slots = Array.repeat 21 ""
+            , slots_input_tapes = Array.repeat 21 Array.empty
             , showSlotsModal = False
             , labels = Dict.empty
             , halted = False

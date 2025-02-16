@@ -6,11 +6,13 @@ import Ram.Types.Messages exposing (Msg(..))
 import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
 import Ram.Utils.HelperFunctions exposing (..)
+
 import Dict
 import List exposing (range)
 import Array
 import Time
 import Task
+
 import Shared.Ports exposing (setItem, scrollToBottom)
 
 -- UPDATE
@@ -141,6 +143,7 @@ update msg model =
             in
             -- After adding the message, scroll to bottom
             ( updatedModel, scrollToBottom "consoleContainer" )
+        
         DeleteInput ->
             ( { model
                 | isRunning = False
@@ -155,12 +158,19 @@ update msg model =
 
         SaveSlot i ->
             let
-                -- Update the local model, so the slot is not empty.
                 updatedSlots =
                     Array.set i model.inputText model.slots
+                updatedInputTapeSlots = 
+                    Array.set i model.inputTape model.slots_input_tapes
             in
-            ( { model | slots = updatedSlots }
-            , setItem ("ram_slot_" ++ String.fromInt i, model.inputText)
+            ( { model | slots = updatedSlots 
+                      , slots_input_tapes = updatedInputTapeSlots
+              }
+            ,
+            Cmd.batch
+                [ setItem ("ram_slot_" ++ String.fromInt i, model.inputText)
+                , setItem ("ram_slot_" ++ String.fromInt i ++ "_input_tape", encodeInputTape model.inputTape)
+                ]
             )
 
         DeleteSlot i ->
@@ -169,12 +179,17 @@ update msg model =
                     Array.set i "" model.slots
             in
             ( { model | slots = updatedSlots }
-            , setItem ("ram_slot_" ++ String.fromInt i, "") 
+            , Cmd.batch
+                [ setItem ("ram_slot_" ++ String.fromInt i ++ "_input_tape", "")
+                , setItem ("ram_slot_" ++ String.fromInt i, "")
+                ] 
             )
 
         LoadSlot i ->
             let
                 maybeCode = Array.get i model.slots
+                maybeInputTape = Debug.log "maaybeinpittape" (Array.get i model.slots_input_tapes)
+                actualInputTape = Maybe.withDefault Array.empty maybeInputTape
             in
             case maybeCode of
                 Nothing ->
@@ -183,8 +198,11 @@ update msg model =
                     let
                         (instructions, labels) = parseRAM code
                     in
-                    ( { model | inputText = code, instructions = instructions, labels = labels }
-                    , setItem ("ram_current", code) 
+                    ( { model | inputText = code, instructions = instructions, labels = labels, inputTape = actualInputTape }
+                    , Cmd.batch
+                        [ setItem ("ram_current", code)
+                        , setItem ("ram_current_input_tape", encodeInputTape actualInputTape)
+                        ]
                     )
         
         ToggleSlotsModal ->
@@ -193,21 +211,27 @@ update msg model =
         UpdateInputTape idx value ->
             let
                 updatedTape = Array.set idx value model.inputTape
+                encodedTape = encodeInputTape updatedTape
             in
-            ( { model | inputTape = updatedTape }, Cmd.none )
+            ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape) )
         
         AddCellToInputTape ->
             let
                 updatedTape = Array.push 0 model.inputTape
+                encodedTape = encodeInputTape updatedTape
             in
-            ( { model | inputTape = updatedTape }, Cmd.none )
+            ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape))
         
         RemoveLastCell ->
             let
                 len = Array.length model.inputTape
             in
             if len > 0 then
-                ( { model | inputTape = Array.slice 0 (len - 1) model.inputTape }, Cmd.none ) 
+                let
+                    updatedTape = Array.slice 0 (len - 1) model.inputTape
+                    encodedTape = encodeInputTape updatedTape
+                in
+                ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape)) 
             else
                 ( model, Cmd.none )
         NoOp ->

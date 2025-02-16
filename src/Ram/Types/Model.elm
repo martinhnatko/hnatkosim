@@ -18,6 +18,7 @@ type alias Model =
     , speedIdx : Int
     , consoleMessages : List ConsoleMessage
     , slots : Array String
+    , slots_input_tapes : Array (Array Int)
     , showSlotsModal : Bool
     , labels : LabelDict
     , halted : Bool
