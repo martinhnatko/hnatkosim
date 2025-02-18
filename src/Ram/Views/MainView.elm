@@ -40,7 +40,7 @@ mainContentView model =
                 [ viewInstructions model.instructions model.instructionPointer ]
 
             , div [ class "flex flex-col w-1/3 bg-white p-3 shadow-lg rounded overflow-auto" ]
-                ( viewRegisters model.registers model.highlighted )
+                ( viewRegisters model )
             ]
           
         -- Bottom: Output Tape appears below everything.

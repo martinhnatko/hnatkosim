@@ -11,9 +11,6 @@ requestAddMessages msgs =
         |> Cmd.batch
 
 
-
-
-
 checkForErrors : List Instruction -> List String
 checkForErrors instructions =
     let

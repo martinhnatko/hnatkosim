@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onInput)
 
 import Array
 import String
+import Dict
 
 import Ram.Types.Messages exposing (Msg(..))
 import Ram.Types.Model exposing (Model)
@@ -16,14 +17,20 @@ import Shared.Icons.Plus exposing (heroiconPlus)
 renderInputCell : Int -> Int -> Model -> Html Msg
 renderInputCell index cell model =
     let
+        highlightClass =
+            Dict.get index model.highlighted_input_tape
+                |> Maybe.withDefault ""
+
         ( displayValue, bgClass ) =
             ( String.fromInt cell
-            , if model.simStarted then
-                "bg-gray-200 cursor-not-allowed text-gray-500"
+            , if highlightClass /= "" then
+                highlightClass ++ " cursor-not-allowed text-gray-700"
+              else if model.simStarted then
+                "bg-gray-100 cursor-not-allowed text-gray-700"
               else
                 "bg-white"
             )
-
+        
         commonAttrs =
             [ type_ "number"
             , class ("w-20 h-20 border rounded text-center appearance-none font-mono " ++ bgClass

@@ -67,7 +67,16 @@ update msg model =
                 )
 
         Pause ->
-            ( { model | isRunning = False }, Cmd.none )
+            ( 
+                {
+                model
+                    | isRunning = False
+                    , highlighted_input_tape = Dict.empty
+                    , highlighted_registers = Dict.empty
+                    , highlighted_output_tape = Dict.empty
+                }
+            , Cmd.none 
+            )
 
         Reset ->
             ( { model
@@ -78,12 +87,15 @@ update msg model =
                 , halted = False
                 , inputTapePointer = 0
                 , outputTape = Array.empty
+                , highlighted_input_tape = Dict.empty
+                , highlighted_registers = Dict.empty
+                , highlighted_output_tape = Dict.empty
               }
             , requestAddMessages ["Simulation stopped"]
             )
         Step ->
             let
-                highlightDuration = 200
+                highlightDuration = 500
                 ( newModel, removeHighlightCmd ) =
                     executeInstruction model highlightDuration
 
@@ -116,12 +128,73 @@ update msg model =
         ChangeSpeed newSpeed ->
             ( { model | speedIdx = newSpeed }, Cmd.none )
         
-        RemoveHighlight reg ->
+        RemoveHighlightFromRegisters reg ->
             let
                 newHighlighted =
-                    Dict.remove reg model.highlighted
+                    Dict.remove reg model.highlighted_registers
             in
-            ( { model | highlighted = newHighlighted }, Cmd.none )
+            ( { model | highlighted_registers = newHighlighted }, Cmd.none )
+        
+        RemoveHighlightFromInputTape idx ->
+            let
+                newHighlighted =
+                    Dict.remove idx model.highlighted_input_tape
+            in
+            ( { model | highlighted_input_tape = newHighlighted }, Cmd.none )
+
+        RemoveHighlightFromOutputTape idx ->
+            let
+                newHighlighted =
+                    Dict.remove idx model.highlighted_output_tape
+            in
+            ( { model | highlighted_output_tape = newHighlighted }, Cmd.none )
+        
+        SwitchHighlight (typeSource, source) (typeDest, dest, style) ->
+            let 
+                newHighlightedInputTape =
+                    if typeSource == 0 then
+                        Dict.remove source model.highlighted_input_tape
+                    else
+                        model.highlighted_input_tape
+
+                newHighlightedRegisters =
+                    if typeSource == 1 then
+                        Dict.remove source model.highlighted_registers
+                    else
+                        model.highlighted_registers
+
+                newHighlightedOutputTape =
+                    if typeSource == 2 then
+                        Dict.remove source model.highlighted_output_tape
+                    else
+                        model.highlighted_output_tape
+
+                finalHighlightedInputTape =
+                    if typeDest == 0 then
+                        Dict.insert dest style newHighlightedInputTape
+                    else
+                        newHighlightedInputTape
+                
+                finalHighlightedRegisters =
+                    if typeDest == 1 then
+                        Dict.insert dest style newHighlightedRegisters
+                    else
+                        newHighlightedRegisters
+                
+                finalHighlightedOutputTape =
+                    if typeDest == 2 then
+                        Dict.insert dest style newHighlightedOutputTape
+                    else
+                        newHighlightedOutputTape
+
+            in
+            ( { model 
+                | highlighted_registers = finalHighlightedRegisters
+                , highlighted_input_tape = finalHighlightedInputTape
+                , highlighted_output_tape = finalHighlightedOutputTape
+              }
+              , Cmd.none
+            )
 
         RequestAddMessage newText ->
             ( model

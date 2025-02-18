@@ -1,19 +1,26 @@
 module Ram.Views.Main.Registers exposing (..)
+
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Ram.Types.Messages exposing (Msg(..))
 
-viewRegisters : Dict Int Int -> Dict Int String -> List (Html Msg)
-viewRegisters registers highlighted =
-    registers
+import Ram.Types.Messages exposing (Msg(..))
+import Ram.Types.Model exposing (Model)
+import Array
+
+viewRegisters : Model -> List (Html Msg)
+viewRegisters model =
+    model.registers
         |> Dict.toList
         |> List.map
             (\(regNum, value) ->
                 let
                     highlightClass =
-                        Dict.get regNum highlighted
-                            |> Maybe.withDefault ""
+                        -- if model.speedIdx == (List.length (Array.toList model.speeds)) then
+                        --     ""
+                        -- else
+                            Dict.get regNum model.highlighted_registers
+                                |> Maybe.withDefault ""
                 in
                 div
                     [ class

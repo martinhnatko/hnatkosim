@@ -15,7 +15,7 @@ inputTextArea model =
             ( [ class 
                     ( "flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono "
                         ++ if model.simStarted then
-                            "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            "bg-gray-100 text-gray-700 cursor-not-allowed"
                         else
                             "bg-white text-black"
                     )

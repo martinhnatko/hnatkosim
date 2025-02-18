@@ -9,7 +9,9 @@ import Ram.Types.LabelDict exposing (LabelDict)
 type alias Model =
     { inputText : String
     , registers : Dict Int Int
-    , highlighted : Dict Int String
+    , highlighted_registers : Dict Int String
+    , highlighted_input_tape : Dict Int String
+    , highlighted_output_tape : Dict Int String
     , instructions : List Instruction
     , isRunning : Bool
     , simStarted : Bool

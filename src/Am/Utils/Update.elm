@@ -52,7 +52,7 @@ update msg model =
                 -- We have not started before
                 let
                     errors =
-                        checkForErrors model.instructions  -- e.g. returns List String
+                        checkForErrors model.instructions  
                     messages =
                         errors ++ [ "Simulation started" ]
                 in
@@ -77,7 +77,7 @@ update msg model =
             )
         Step ->
             let
-                highlightDuration = 200
+                highlightDuration = 300
                 ( newModel1, removeHighlightCmd ) =
                     executeInstruction model highlightDuration
 
@@ -92,7 +92,7 @@ update msg model =
                     else
                         []
 
-                -- Now actually set `simStarted = True` if not started yet.
+                -- Now set `simStarted = True` if not started yet.
                 newModel2 =
                     if not newModel1.simStarted then
                         { newModel1 | simStarted = True }
@@ -120,8 +120,6 @@ update msg model =
             ( { model | highlighted = newHighlighted }, Cmd.none )
 
         RequestAddMessage newText ->
-            -- We want to add a message with a fresh timestamp
-            -- -> ask Elm for current time, then AddMessageWithTime
             ( model
             , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
             )
@@ -152,35 +150,6 @@ update msg model =
               }
             , setItem ("am_current", "")
             )
-        
-        -- GotItem (key, code) ->
-        --     case key of
-        --         "am_current" ->
-        --             -- If localStorage had something for "current", put it in inputText
-        --             let
-        --                 instructions = parseInstructions [] [] 0 (String.toList (Maybe.withDefault "" code)) False
-        --             in
-        --             ( { model | inputText = Maybe.withDefault "" code, instructions = instructions }, requestAddMessages ["Welcome to Abacus Machine Simulator"] )
-
-        --         _ ->
-        --             -- Maybe it's one of the 10 slots, like "slot_3"
-        --             let
-        --                 maybeSlotIndex =
-        --                     if String.startsWith "am_slot_" key then
-        --                         String.dropLeft 8 key |> String.toInt
-        --                     else
-        --                         Nothing
-        --             in
-        --             case maybeSlotIndex of
-        --                 Just i ->
-        --                     let
-        --                         updatedSlots = Array.set i (Maybe.withDefault "" code) model.slots
-        --                     in
-        --                     ( { model | slots = updatedSlots }, Cmd.none )
-
-        --                 Nothing ->
-        --                     -- Unrecognized key
-        --                     ( model, Cmd.none )
 
         SaveSlot i ->
             let

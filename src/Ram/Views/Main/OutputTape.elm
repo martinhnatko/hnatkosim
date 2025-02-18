@@ -6,6 +6,7 @@ import Html.Attributes exposing (class)
 import String
 import Ram.Types.Model exposing (Model)
 import Array
+import Dict
 
 
 viewOutputTape : Model -> Html Msg
@@ -16,19 +17,47 @@ viewOutputTape model =
         cells =
             model.outputTape
                 |> Array.toList
+        
+        highlightClass =
+            (Dict.get ((List.length (Array.toList model.outputTape)) - 1) model.highlighted_output_tape
+                |> Maybe.withDefault "")
+
     in
     div [ class "flex rounded bg-white space-x-2 p-3 overflow-x-auto" ]
         (if List.isEmpty cells then
             -- Render a placeholder cell that is invisible but takes up the same space
             [ div [ class "w-20 h-20 border rounded invisible" ] [] ]
          else
-            (List.map (\n ->
-            div
-                [ class "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white" ]
-                [ text (String.fromInt n) ]
+            
+            (List.indexedMap
+                (\index cell ->
+                    renderOutputCell index cell model
+                )
+                cells
             )
-            cells
-            )
-
+            -- div
+            --     [ class ("w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white " ++ highlightClass) ]
+            --     [ text (String.fromInt n) ]
+            -- )
+            
         )
         
+renderOutputCell : Int -> Int -> Model -> Html Msg
+renderOutputCell index cell model =
+    let
+        highlightClass =
+            Dict.get index model.highlighted_output_tape
+                |> Maybe.withDefault ""
+
+        ( displayValue, bgClass ) =
+            ( String.fromInt cell
+            , if highlightClass /= "" then
+                "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white " ++ highlightClass
+              else
+                "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white"
+            )
+
+        inputElement =
+            div [ class bgClass ] [ text displayValue ]
+    in
+    inputElement

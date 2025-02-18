@@ -30,7 +30,7 @@ import Ram.Utils.HelperFunctions as RamHelper
 
 import Shared.Ports exposing (getItem, gotItem)
 
--- -- SUBSCRIPTIONS
+-- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
 abacusSubscriptions model =
     if model.isRunning then
