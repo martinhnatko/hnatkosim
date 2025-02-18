@@ -17,7 +17,7 @@ viewRegisters registers highlighted =
                 in
                 div
                     [ class
-                        ("flex items-center gap-3 p-2 border-b last:border-none font-mono " 
+                        ("flex items-center gap-4 p-2 border-b last:border-none font-mono " 
                             ++ highlightClass
                         )
                     ]

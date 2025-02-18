@@ -10,9 +10,6 @@ import Ram.Types.Operand exposing (Operand(..))
 import String
 
 
-{-| Convert an Operand to a string. Adjust this to your Operand type.
-    For example:
--}
 operandToString : Operand -> String
 operandToString operand =
     case operand of
@@ -26,14 +23,6 @@ operandToString operand =
             "*" ++ String.fromInt n
 
 
-{-| viewInstructions renders a list of instructions in one column.
-    The currently active instruction (given by pointer) gets a blue border.
-    The styling rules:
-      - Most instructions: blue background and blue text.
-      - Halt: red background and red text.
-      - UnknownInstruction: yellow background and yellow text.
-      - Label: gray background and gray text.
--}
 viewInstructions : List Instruction -> Int -> Html Msg
 viewInstructions instructions pointer =
     div [ class "flex flex-col gap-2" ]
@@ -88,16 +77,25 @@ viewInstructions instructions pointer =
                                 ("Unknown", " bg-yellow-200 text-yellow-800")
 
                     baseClasses =
-                        "p-2 border-4 border-solid rounded font-mono transition-colors"
+                        "p-1 border-4 border-solid rounded font-mono transition-colors"
 
                     activeClasses =
                         if isActive then
                             " border-blue-500 font-bold"
                         else
                             " border-transparent"
+                    
                 in
                 div
-                    [ class (baseClasses ++ typeColorClasses ++ activeClasses) ]
-                    [ text instructionText ]
+                    [ class
+                        ("flex items-center gap-3 font-mono " ++ baseClasses ++ typeColorClasses ++ activeClasses)
+                    ]
+                    [ div [ class "text-gray-400 w-8 text-right" ]
+                        [ text (String.fromInt (index + 1)) ]
+
+                    , div [ class "h-6 w-px bg-gray-400" ] []
+
+                    , div [] [ text instructionText ]
+                    ]
             )
         )

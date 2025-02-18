@@ -1,12 +1,11 @@
 module Ram.Views.Main.Registers exposing (..)
 
-import Dict exposing (Dict)
+import Dict
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 
 import Ram.Types.Messages exposing (Msg(..))
 import Ram.Types.Model exposing (Model)
-import Array
 
 viewRegisters : Model -> List (Html Msg)
 viewRegisters model =
@@ -24,7 +23,7 @@ viewRegisters model =
                 in
                 div
                     [ class
-                        ("flex items-center gap-3 p-2 border-b last:border-none font-mono " 
+                        ("flex items-center gap-4 p-2 border-b last:border-none font-mono " 
                             ++ highlightClass
                         )
                     ]

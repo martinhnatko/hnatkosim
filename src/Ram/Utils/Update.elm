@@ -95,7 +95,7 @@ update msg model =
             )
         Step ->
             let
-                highlightDuration = 500
+                highlightDuration = 600
                 ( newModel, removeHighlightCmd ) =
                     executeInstruction model highlightDuration
 

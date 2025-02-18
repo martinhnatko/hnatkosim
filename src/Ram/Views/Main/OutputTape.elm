@@ -17,10 +17,6 @@ viewOutputTape model =
         cells =
             model.outputTape
                 |> Array.toList
-        
-        highlightClass =
-            (Dict.get ((List.length (Array.toList model.outputTape)) - 1) model.highlighted_output_tape
-                |> Maybe.withDefault "")
 
     in
     div [ class "flex rounded bg-white space-x-2 p-3 overflow-x-auto" ]
@@ -34,12 +30,7 @@ viewOutputTape model =
                     renderOutputCell index cell model
                 )
                 cells
-            )
-            -- div
-            --     [ class ("w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white " ++ highlightClass) ]
-            --     [ text (String.fromInt n) ]
-            -- )
-            
+            )            
         )
         
 renderOutputCell : Int -> Int -> Model -> Html Msg
