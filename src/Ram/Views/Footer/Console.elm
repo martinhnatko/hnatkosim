@@ -1,21 +1,39 @@
 module Ram.Views.Footer.Console exposing (..)
+
 import Html exposing (Html)
 import Html exposing (div, text)
-import Html.Attributes exposing (id)
+import Html.Attributes exposing (id, class)
 import Time
-import Ram.Types.ConsoleMessage exposing (ConsoleMessage)
+
+import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
 
 --Conole view
 viewConsole : List ConsoleMessage -> Html msg
 viewConsole consoleMessages =    
     div
         [ id "consoleContainer"
-        , Html.Attributes.class "font-mono text-sm h-24 overflow-y-auto"
+        , class "font-mono text-sm h-24 overflow-y-auto"
         ]
         (consoleMessages
             |> List.map (\msg ->
-                div [ Html.Attributes.class "py-1" ]
-                    [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                case msg.messageType of
+                    InfoMessage ->
+                        div [ class "py-1" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                    ErrorMessage ->
+                        div [ class "py-1 text-yellow-400" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                    SimStarted ->
+                        div [ class "py-1 text-green-400" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                    SimStopped ->
+                        div [ class "py-1 text-red-400" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
             )
         )
         

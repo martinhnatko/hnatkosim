@@ -29,6 +29,7 @@ import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
 
 import Shared.Ports exposing (getItem, gotItem)
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
 
 -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
@@ -269,7 +270,7 @@ update msg model =
                                 }
                         in
                         ( { model | ramModel = updatedRamModel }
-                        , Cmd.map RamMsg (RamHelper.requestAddMessages ["Welcome to RAM Simulator"])
+                        , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )
                         )
 
                     "ram_current_input_tape" -> 

@@ -3,9 +3,13 @@ module Ram.Utils.Update exposing (..)
 import Ram.Types.Messages exposing (Msg)
 import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg(..))
+
 import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
 import Ram.Utils.HelperFunctions exposing (..)
+import Ram.Utils.CheckForErrors exposing (checkForErrors)
+
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
 
 import Dict
 import List exposing (range)
@@ -21,8 +25,7 @@ update msg model =
     case msg of
         UpdateCode newCode ->
             let
-                (newInstructions1, newLabels) = parseRAM newCode
-                newInstructions = Debug.log "newInstructions" newInstructions1
+                (newInstructions, newLabels) = parseRAM newCode
             in
             ( { model | inputText = newCode, instructions = newInstructions, labels = newLabels }, setItem ("ram_current", newCode) )
 
@@ -53,17 +56,17 @@ update msg model =
 
             else
                 -- We have not started before
-                let
-                    errors =
-                        checkForErrors model.instructions  -- e.g. returns List String
-                    messages =
-                        errors ++ [ "Simulation started" ]
-                in
+                -- let
+                    -- errors =
+                    --     checkForErrors model.instructions  -- e.g. returns List String
+                    -- messages =
+                    --     errors ++ [ "Simulation started" ]
+                -- in
                 ( { model
                     | isRunning = True
                     , simStarted = True
                 }
-                , requestAddMessages messages
+                , requestAddMessage (SimStarted, "Simulation started")
                 )
 
         Pause ->
@@ -91,38 +94,21 @@ update msg model =
                 , highlighted_registers = Dict.empty
                 , highlighted_output_tape = Dict.empty
               }
-            , requestAddMessages ["Simulation stopped"]
+            , requestAddMessage (SimStopped, "Simulation stopped")
             )
+        
         Step ->
             let
-                highlightDuration = 600
-                ( newModel, removeHighlightCmd ) =
-                    executeInstruction model highlightDuration
-
-                messages =
-                    if not newModel.simStarted then
-                        let
-                            errors = checkForErrors model.instructions
-                        in
-                        errors ++ [ "Simulation started" ]
-                    else
-                        []
-
-                -- Now actually set `simStarted = True` if not started yet.
-                newModel2 =
-                    if not newModel.simStarted then
-                        { newModel | simStarted = True }
-                    else
-                        newModel
-
-                -- Combine highlight removal + any new console messages.
-                combinedCmd =
-                    Cmd.batch
-                        [ removeHighlightCmd
-                        , requestAddMessages messages
-                        ]
+                highlightDuration = 550
+                
+                ( newModel, removeHighlightCmd ) = executeInstruction model highlightDuration
             in
-            ( newModel2, combinedCmd )
+            if model.simStarted then
+                ( { newModel | simStarted = True }, removeHighlightCmd )
+
+            else
+                ( { newModel | simStarted = True }, Cmd.batch [ (checkForErrors model.instructions model), removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started") ] )
+                
 
         
         ChangeSpeed newSpeed ->
@@ -196,15 +182,11 @@ update msg model =
               , Cmd.none
             )
 
-        RequestAddMessage newText ->
-            ( model
-            , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
-            )
-
-        AddMessageWithTime posix text ->
+        AddMessageWithTime messageType posix text ->
             let
                 newConsoleMessage =
-                    { timestamp = posix
+                    { messageType = messageType
+                    , timestamp = posix
                     , text = text
                     }
 

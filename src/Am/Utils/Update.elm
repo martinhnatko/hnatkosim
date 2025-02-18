@@ -119,10 +119,10 @@ update msg model =
             in
             ( { model | highlighted = newHighlighted }, Cmd.none )
 
-        RequestAddMessage newText ->
-            ( model
-            , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
-            )
+        -- RequestAddMessage newText ->
+        --     ( model
+        --     , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
+        --     )
 
         AddMessageWithTime posix text ->
             let

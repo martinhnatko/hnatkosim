@@ -1,5 +1,8 @@
 module Ram.Types.Messages exposing (..)
+
 import Time
+
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType)
 
 -- MESSAGES
 type Msg
@@ -14,8 +17,7 @@ type Msg
     | RemoveHighlightFromInputTape Int
     | RemoveHighlightFromOutputTape Int
     | SwitchHighlight (Int, Int) (Int, Int, String)
-    | RequestAddMessage String  -- Ask for a new console message with the current time
-    | AddMessageWithTime Time.Posix String  -- Add a new console message with a given time
+    | AddMessageWithTime ConsoleMessageType Time.Posix String
     | DeleteInput
     | SaveSlot Int
     | LoadSlot Int

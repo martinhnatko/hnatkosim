@@ -717,7 +717,10 @@ executeInstruction model highlightDuration =
 
                                 _ ->
                                     -- ERRORRRRRRRRRRRRRRRRRRR
-                                    ( model |> incrementIP , Cmd.none )
+                                    ( { model
+                                        | instructionPointer = nextInstructionPointer
+                                      }
+                                    , Cmd.none )
 
                         Indirect regIndex ->
                             let

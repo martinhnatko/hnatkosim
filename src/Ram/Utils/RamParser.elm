@@ -23,11 +23,11 @@ parseRAM input =
             List.filter (\line -> String.trim line /= "") cleanedLines
 
         -- Extract labels from non-empty lines.
-        labels = Debug.log "labels" (findLabels nonEmptyLines)
+        labels = findLabels nonEmptyLines
 
         -- Parse each non-empty line into an instruction.
         instructions =
-            List.map (\line -> parseInstruction labels line) nonEmptyLines
+            List.indexedMap (\idx line -> parseInstruction labels line idx) nonEmptyLines
     in
     (instructions, labels)
 
@@ -54,8 +54,8 @@ findLabels lines =
 
 
 
-parseInstruction : LabelDict -> String -> Instruction
-parseInstruction labels line =
+parseInstruction : LabelDict -> String -> Int -> Instruction
+parseInstruction labels line idx =
     let
         parts = List.filter (not << String.isEmpty) (String.split " " (String.trim line))
     in
@@ -68,7 +68,11 @@ parseInstruction labels line =
                 _ ->            
                     if String.endsWith ":" something then
                         if String.length something > 1 then
-                            Label (String.dropRight 1 something)
+                            if (Maybe.withDefault -1 (Dict.get (String.toUpper (String.dropRight 1 something)) labels) == idx) then
+                                Label (String.dropRight 1 something)
+                            else
+                                --Error
+                                UnknownInstruction
                         else
                             --Error
                             UnknownInstruction

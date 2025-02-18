@@ -1,9 +1,11 @@
 module Ram.Types.Model exposing (..)
+
 import Dict exposing (Dict)
 import Array exposing (Array)
-import Ram.Types.ConsoleMessage exposing (ConsoleMessage)
+
 import Ram.Types.Instructions exposing (Instruction)
 import Ram.Types.LabelDict exposing (LabelDict)
+import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
 
 -- MODEL
 type alias Model =

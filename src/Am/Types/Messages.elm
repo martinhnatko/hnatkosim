@@ -11,7 +11,7 @@ type Msg
     | Step
     | ChangeSpeed Int
     | RemoveHighlight Int
-    | RequestAddMessage String
+    -- | RequestAddMessage String
     | AddMessageWithTime Time.Posix String
     | DeleteInput
     | SaveSlot Int
