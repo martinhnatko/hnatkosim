@@ -15,7 +15,6 @@ import Array
 import Dict
 import Task
 import Process
-import Html exposing (th)
 
 executeInstruction : Model -> Int -> (Model, Cmd Msg)
 executeInstruction model highlightDuration =
