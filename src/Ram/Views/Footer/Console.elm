@@ -24,15 +24,15 @@ viewConsole consoleMessages =
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
 
                     ErrorMessage ->
-                        div [ class "py-1 text-yellow-400" ]
+                        div [ class "py-1 text-red-500" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
 
                     SimStarted ->
-                        div [ class "py-1 text-green-400" ]
+                        div [ class "py-1 text-green-300" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
 
                     SimStopped ->
-                        div [ class "py-1 text-red-400" ]
+                        div [ class "py-1 text-red-300" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
             )
         )

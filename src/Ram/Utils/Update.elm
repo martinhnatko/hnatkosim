@@ -7,7 +7,6 @@ import Ram.Types.Messages exposing (Msg(..))
 import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
 import Ram.Utils.HelperFunctions exposing (..)
-import Ram.Utils.CheckForErrors exposing (checkForErrors)
 
 import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
 
@@ -16,6 +15,7 @@ import List exposing (range)
 import Array
 
 import Shared.Ports exposing (setItem, scrollToBottom)
+import Ram.Utils.PrintErrors exposing (printErrors)
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,7 +23,7 @@ update msg model =
     case msg of
         UpdateCode newCode ->
             let
-                (newInstructions, newLabels) = parseRAM newCode
+                (newInstructions, newLabels) = parseRAM newCode model
             in
             ( { model | inputText = newCode, instructions = newInstructions, labels = newLabels }, setItem ("ram_current", newCode) )
 
@@ -105,7 +105,7 @@ update msg model =
                 ( { newModel | simStarted = True }, removeHighlightCmd )
 
             else
-                ( { newModel | simStarted = True }, Cmd.batch [ (checkForErrors model.instructions model), removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started") ] )
+                ( { newModel | simStarted = True }, Cmd.batch [ (printErrors model.instructions), removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started") ] )
                 
 
         
@@ -249,9 +249,24 @@ update msg model =
                     ( model, Cmd.none ) 
                 Just code ->
                     let
-                        (instructions, labels) = parseRAM code
+                        (instructions, labels) = parseRAM code model
                     in
-                    ( { model | inputText = code, instructions = instructions, labels = labels, inputTape = actualInputTape }
+                    ( { model 
+                        | inputText = code
+                        , instructions = instructions
+                        , labels = labels
+                        , inputTape = actualInputTape
+                        , inputTapePointer = 0
+                        , instructionPointer = 0
+                        , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                        , halted = False
+                        , highlighted_input_tape = Dict.empty
+                        , highlighted_registers = Dict.empty
+                        , highlighted_output_tape = Dict.empty
+                        , simStarted = False
+                        , isRunning = False
+                        , outputTape = Array.empty
+                        }
                     , Cmd.batch
                         [ setItem ("ram_current", code)
                         , setItem ("ram_current_input_tape", encodeInputTape actualInputTape)

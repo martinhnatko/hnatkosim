@@ -18,9 +18,9 @@ requestAddMessage (messageType, textOfMessage) =
     Time.now |> Task.perform (\posix -> AddMessageWithTime messageType posix textOfMessage)
 
 
-getRegisterValue : Int -> Model -> Int
+getRegisterValue : Int -> Model -> Maybe Int
 getRegisterValue regIndex model =
-    Dict.get regIndex model.registers |> Maybe.withDefault 0
+    Dict.get regIndex model.registers
 
 
 encodeInputTape : Array Int -> String

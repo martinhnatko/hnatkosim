@@ -258,7 +258,7 @@ update msg model =
                     "ram_current" ->
                         let
                             (instructions, labels) =
-                                RamParser.parseRAM rawCode
+                                RamParser.parseRAM rawCode model.ramModel
 
                             innerRamModel = model.ramModel    
                             updatedRamModel =

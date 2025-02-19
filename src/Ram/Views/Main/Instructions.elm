@@ -34,47 +34,95 @@ viewInstructions instructions pointer =
 
                     (instructionText, typeColorClasses) =
                         case instruction of
-                            Load operand ->
-                                ("Load " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Load operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Load " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Load " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Store operand ->
-                                ("Store " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Store operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Store " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Store " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Add operand ->
-                                ("Add " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Add operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Add " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Add " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Sub operand ->
-                                ("Sub " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Sub operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Sub " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Sub " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Mul operand ->
-                                ("Mul " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Mul operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Mul " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Mul " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Div operand ->
-                                ("Div " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Div operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Div " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Div " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Read operand ->
-                                ("Read " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Read operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Read " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Read " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Write operand ->
-                                ("Write " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                            Write operand isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Write " ++ operandToString operand, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Write " ++ operandToString operand, " bg-blue-200 text-blue-800")
 
-                            Jump _ label ->
-                                ("Jump " ++ label, " bg-gray-200 text-gray-800")
+                            Jump _ label isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Jump " ++ label, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Jump " ++ label, " bg-gray-200 text-gray-800")
 
-                            Jzero _ label ->
-                                ("Jzero " ++ label, " bg-gray-200 text-gray-800")
+                            Jzero _ label isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Jzero " ++ label, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Jzero " ++ label, " bg-gray-200 text-gray-800")
 
-                            Jgtz _ label ->
-                                ("Jgtz " ++ label, " bg-gray-200 text-gray-800")
+                            Jgtz _ label isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Jgtz " ++ label, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Jgtz " ++ label, " bg-gray-200 text-gray-800")
 
                             Halt ->
-                                ("Halt", " bg-red-200 text-red-800")
+                                ("Halt", " bg-yellow-200 text-yellow-800")
 
-                            Label lbl ->
-                                (lbl ++ ":", " bg-gray-200 text-gray-800")
+                            Label lbl isError ->
+                                case isError of
+                                    Just _ ->
+                                        (lbl ++ ":", " bg-red-200 text-red-800")
+                                    _ ->
+                                        (lbl ++ ":", " bg-gray-200 text-gray-800")
 
                             UnknownInstruction ->
-                                ("Unknown", " bg-yellow-200 text-yellow-800")
+                                ("Unknown", " bg-red-200 text-red-800")
 
                     baseClasses =
                         "p-1 border-4 border-solid rounded font-mono transition-colors"
