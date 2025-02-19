@@ -14,8 +14,6 @@ import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
 import Dict
 import List exposing (range)
 import Array
-import Time
-import Task
 
 import Shared.Ports exposing (setItem, scrollToBottom)
 

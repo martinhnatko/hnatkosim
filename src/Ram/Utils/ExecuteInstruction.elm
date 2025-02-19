@@ -6,6 +6,9 @@ import Ram.Types.Instructions exposing (Instruction(..))
 import Ram.Types.Operand exposing (Operand(..))
 import Ram.Utils.HelperFunctions exposing (..)
 
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+import Shared.Types.ConsoleMessage exposing (..)
+
 import Array
 import Dict
 import Task
@@ -567,8 +570,13 @@ executeInstruction model highlightDuration =
                             else if dontHighlight && value == 0 then
                                 ( { model
                                     | instructionPointer = nextInstructionPointer
-                                  }
-                                , Cmd.none
+                                }
+                                , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
+                                )
+                            else if value == 0 then
+                                (
+                                updatedModel
+                                , Cmd.batch [ requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
                                 )
                             else
                                 (
@@ -618,7 +626,12 @@ executeInstruction model highlightDuration =
                                 ( { model
                                     | instructionPointer = nextInstructionPointer
                                   }
-                                , Cmd.none
+                                , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
+                                )
+                            else if value == 0 then
+                                (
+                                updatedModel
+                                , Cmd.batch [ requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
                                 )
                             else
                                 (
