@@ -42,9 +42,9 @@ checkForUnknownInstructions instructions =
 
     in
     if unknownCount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt unknownCount ++ " unknown instruction at position " ++ (String.join ", " (List.map String.fromInt unknownPositions)) ++ "." ))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt unknownCount ++ " unknown instruction at position " ++ (String.join ", " (List.map String.fromInt unknownPositions)) ++ "." ))
     else if unknownCount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt unknownCount ++ " unknown instructions at positions: " ++ (String.join ", " (List.map String.fromInt unknownPositions)) ++ "." ))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt unknownCount ++ " unknown instructions at positions: " ++ (String.join ", " (List.map String.fromInt unknownPositions)) ++ "." ))
     else
         Nothing
 
@@ -123,9 +123,9 @@ checkForNonExistingRegisters instructions =
 
     in
     if nERECount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt nERECount ++ " instruction that is referencing non-existing register at position " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instruction that is referencing non-existing register at position " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
     else if nERECount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt nERECount ++ " instructions that are referencing non-existing registers at positions: " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instructions that are referencing non-existing registers at positions: " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
     else
         Nothing
 
@@ -155,9 +155,9 @@ checkForDividingByZero instructions =
 
     in
     if dbzCount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt dbzCount ++ " instruction that is dividing by zero at position " ++ (String.join ", " (List.map String.fromInt dbzPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt dbzCount ++ " instruction that is dividing by zero at position " ++ (String.join ", " (List.map String.fromInt dbzPositions) ) ++ "."))
     else if dbzCount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt dbzCount ++ " instructions that are dividing by zero at positions: " ++ (String.join ", " (List.map String.fromInt dbzPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt dbzCount ++ " instructions that are dividing by zero at positions: " ++ (String.join ", " (List.map String.fromInt dbzPositions) ) ++ "."))
     else
         Nothing
 
@@ -186,9 +186,9 @@ checkForDuplicatedLabels instructions =
 
     in
     if duplicatedLabelsCount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated label: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated label: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
     else if duplicatedLabelsCount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated labels: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated labels: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
     else
         Nothing
 
@@ -232,8 +232,8 @@ checkForReferencingNonExistingLabel instructions =
 
     in
     if nERLCount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt nERLCount ++ " instruction that is referencing non-existing label at position " ++ (String.join ", " (List.map String.fromInt nERLPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERLCount ++ " instruction that is referencing non-existing label at position " ++ (String.join ", " (List.map String.fromInt nERLPositions) ) ++ "."))
     else if nERLCount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Error: Found " ++ String.fromInt nERLCount ++ " instructions that are referencing non-existing labels at positions: " ++ (String.join ", " (List.map String.fromInt nERLPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERLCount ++ " instructions that are referencing non-existing labels at positions: " ++ (String.join ", " (List.map String.fromInt nERLPositions) ) ++ "."))
     else
         Nothing

@@ -122,7 +122,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to load from a non-existent register.")
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to load from a non-existent register.")
                                                     )
                                                 Just value ->
                                                     let
@@ -228,7 +228,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store a non-existent value.") 
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store a non-existent value.") 
                                                     )
                                                 Just accVal ->
                                                     let
@@ -354,7 +354,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to add a non-existent value.")
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to add a non-existent value.")
                                                     )
                                                 Just value ->
                                                     let
@@ -482,7 +482,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to subtract a non-existent value.")
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to subtract a non-existent value.")
                                                     )
                                                 Just value ->
                                                     let
@@ -610,7 +610,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to multiply by a non-existent value.")
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to multiply by a non-existent value.")
                                                     )
                                                 Just value ->
                                                     let
@@ -743,12 +743,12 @@ executeInstruction model highlightDuration =
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
                                                 }
-                                                , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
+                                                , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
                                                 )
                                             else if value == 0 then
                                                 (
                                                 updatedModel
-                                                , Cmd.batch [ requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
+                                                , Cmd.batch [ requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
                                                 )
                                             else
                                                 (
@@ -775,7 +775,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by a non-existent value.")
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by a non-existent value.")
                                                     )
                                                 Just value ->
                                                     let
@@ -815,12 +815,12 @@ executeInstruction model highlightDuration =
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
                                                         }
-                                                        , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
                                                         )
                                                     else if value == 0 then
                                                         (
                                                         updatedModel
-                                                        , Cmd.batch [ requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
+                                                        , Cmd.batch [ requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
                                                         )
                                                     else
                                                         (
@@ -957,7 +957,7 @@ executeInstruction model highlightDuration =
                                             ( { model
                                                 | instructionPointer = nextInstructionPointer
                                             }
-                                            , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from a non-existent value.")
+                                            , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from a non-existent value.")
                                             )
 
                                 Indirect regIndex ->
@@ -980,7 +980,7 @@ executeInstruction model highlightDuration =
                                                             Nothing ->
                                                                 -- ERRORRRRRRRRRRRRRRRRRRR
                                                                 ( { model | instructionPointer = nextInstructionPointer }
-                                                                , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read a non-existent value.")
+                                                                , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read a non-existent value.")
                                                                 )
                                                             Just _ ->
                                                                 let
@@ -1019,7 +1019,7 @@ executeInstruction model highlightDuration =
                                             ( {
                                                 model | instructionPointer = nextInstructionPointer
                                             }
-                                            , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from a non-existent value.")
+                                            , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from a non-existent value.")
                                             )
                 
                 Write operand isError ->
@@ -1094,7 +1094,7 @@ executeInstruction model highlightDuration =
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to write a non-existent value.")
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to write a non-existent value.")
                                                     )
                                                 Just value ->
                                                     let
