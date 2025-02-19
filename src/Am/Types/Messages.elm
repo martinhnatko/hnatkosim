@@ -1,4 +1,7 @@
 module Am.Types.Messages exposing (..)
+
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType)
+
 import Time
 
 -- MESSAGES
@@ -11,8 +14,7 @@ type Msg
     | Step
     | ChangeSpeed Int
     | RemoveHighlight Int
-    -- | RequestAddMessage String
-    | AddMessageWithTime Time.Posix String
+    | AddMessageWithTime ConsoleMessageType Time.Posix String
     | DeleteInput
     | SaveSlot Int
     | LoadSlot Int

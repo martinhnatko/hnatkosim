@@ -1,15 +1,16 @@
 module Am.Utils.HelperFunctions exposing (..)
+
 import Am.Types.Messages exposing (Msg(..))
 import Am.Types.Instructions exposing (Instruction(..))
+
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType)
+
 import Time
 import Task
 
-requestAddMessages : List String -> Cmd Msg
-requestAddMessages msgs =
-    msgs
-        |> List.map (\msg -> Time.now |> Task.perform (\posix -> AddMessageWithTime posix msg))
-        |> Cmd.batch
-
+requestAddMessage : (ConsoleMessageType, String) -> Cmd Msg
+requestAddMessage (messageType, textOfMessage) =
+    Time.now |> Task.perform (\posix -> AddMessageWithTime messageType posix textOfMessage)
 
 checkForErrors : List Instruction -> List String
 checkForErrors instructions =

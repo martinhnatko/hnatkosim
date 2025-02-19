@@ -1,16 +1,22 @@
 module Am.Utils.Update exposing (..)
+
 import Am.Types.Messages exposing (Msg)
 import Am.Types.Model exposing (Model)
 import Am.Types.Messages exposing (Msg(..))
-import Am.Utils.AbacusParser exposing (parseInstructions)
+
+import Am.Utils.AbacusParser exposing (..)
 import Am.Utils.ExecuteInstruction exposing (executeInstruction)
 import Am.Utils.HelperFunctions exposing (..)
+import Am.Utils.PrintErrors exposing (printErrors)
+
+import Shared.Ports exposing (setItem, scrollToBottom)
+import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+
 import Dict
 import List exposing (range)
 import Array
-import Time
-import Task
-import Shared.Ports exposing (setItem, scrollToBottom)
+import Platform.Cmd as Cmd
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -18,8 +24,8 @@ update msg model =
     case msg of
         UpdateCode newCode ->
             let
-                input = String.toList newCode
-                newInstructions = parseInstructions [] [] 0 input False
+                newInstructions = parseAM newCode model
+
             in
             ( { model | inputText = newCode, instructions = newInstructions }, setItem ("am_current", newCode) )
 
@@ -49,18 +55,11 @@ update msg model =
                 ( { model | isRunning = True }, Cmd.none )
 
             else
-                -- We have not started before
-                let
-                    errors =
-                        checkForErrors model.instructions  
-                    messages =
-                        errors ++ [ "Simulation started" ]
-                in
                 ( { model
                     | isRunning = True
                     , simStarted = True
                 }
-                , requestAddMessages messages
+                , Cmd.batch [printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started")]
                 )
 
         Pause ->
@@ -72,42 +71,23 @@ update msg model =
                 , simStarted = False
                 , instructionPointer = 0
                 , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                , highlighted = Dict.empty
               }
-            , requestAddMessages ["Simulation stopped"]
+            , requestAddMessage (SimStopped, "Simulation stopped")
             )
         Step ->
             let
                 highlightDuration = 350
-                ( newModel1, removeHighlightCmd ) =
+                ( newModel, removeHighlightCmd ) =
                     executeInstruction model highlightDuration
-
-                -- If we haven't started before, create "Simulation started" messages.
-                -- Otherwise, no new messages.
-                messages =
-                    if not newModel1.simStarted then
-                        let
-                            errors = checkForErrors model.instructions
-                        in
-                        errors ++ [ "Simulation started" ]
-                    else
-                        []
-
-                -- Now set `simStarted = True` if not started yet.
-                newModel2 =
-                    if not newModel1.simStarted then
-                        { newModel1 | simStarted = True }
-                    else
-                        newModel1
-
-                -- Combine highlight removal + any new console messages.
-                combinedCmd =
-                    Cmd.batch
-                        [ removeHighlightCmd
-                        , requestAddMessages messages
-                        ]
             in
-            ( newModel2, combinedCmd )
-
+            if model.simStarted then
+                ( newModel, removeHighlightCmd )
+            else
+                ( { newModel
+                        | simStarted = True 
+                    }
+                , Cmd.batch [printErrors model.instructions, removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started")] )
         
         ChangeSpeed newSpeed ->
             ( { model | speedIdx = newSpeed }, Cmd.none )
@@ -119,15 +99,11 @@ update msg model =
             in
             ( { model | highlighted = newHighlighted }, Cmd.none )
 
-        -- RequestAddMessage newText ->
-        --     ( model
-        --     , Time.now |> Task.perform (\posix -> AddMessageWithTime posix newText)
-        --     )
-
-        AddMessageWithTime posix text ->
+        AddMessageWithTime messageType posix text ->
             let
                 newConsoleMessage =
-                    { timestamp = posix
+                    { messageType = messageType
+                    , timestamp = posix
                     , text = text
                     }
 
@@ -139,6 +115,7 @@ update msg model =
             in
             -- After adding the message, scroll to bottom
             ( updatedModel, scrollToBottom "consoleContainer" )
+
         DeleteInput ->
             ( { model
                 | isRunning = False
@@ -178,7 +155,13 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none ) 
                 Just code ->
-                    ( { model | inputText = code, instructions = parseInstructions [] [] 0 (String.toList code) False }
+                    ( { model 
+                        | inputText = code, instructions = parseAM code model
+                        , isRunning = False
+                        , simStarted = False
+                        , instructionPointer = 0
+                        , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                      }
                     , setItem ("am_current", code) 
                     )
         

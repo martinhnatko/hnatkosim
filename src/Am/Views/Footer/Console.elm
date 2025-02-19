@@ -1,25 +1,41 @@
 module Am.Views.Footer.Console exposing (..)
-import Html exposing (Html)
-import Html exposing (div, text)
-import Html.Attributes exposing (id)
-import Time
-import Am.Types.ConsoleMessage exposing (ConsoleMessage)
 
+import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
+import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (id, class)
+
+import Time
+        
 --Conole view
 viewConsole : List ConsoleMessage -> Html msg
 viewConsole consoleMessages =    
     div
         [ id "consoleContainer"
-        , Html.Attributes.class "font-mono text-sm h-24 overflow-y-auto"
+        , class "font-mono text-sm h-24 overflow-y-auto"
         ]
         (consoleMessages
             |> List.map (\msg ->
-                div [ Html.Attributes.class "py-1" ]
-                    [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                case msg.messageType of
+                    InfoMessage ->
+                        div [ class "py-1" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                    ErrorMessage ->
+                        div [ class "py-1 text-red-500" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                    SimStarted ->
+                        div [ class "py-1 text-green-300" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+
+                    SimStopped ->
+                        div [ class "py-1 text-red-300" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
             )
         )
-        
-
 
 formatTime : Time.Posix -> String
 formatTime posix =

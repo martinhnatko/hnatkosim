@@ -1,8 +1,11 @@
 module Am.Types.Model exposing (..)
+
+import Am.Types.Instructions exposing (Instruction)
+
+import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
+
 import Dict exposing (Dict)
 import Array exposing (Array)
-import Am.Types.ConsoleMessage exposing (ConsoleMessage)
-import Am.Types.Instructions exposing (Instruction)
 
 -- MODEL
 type alias Model =

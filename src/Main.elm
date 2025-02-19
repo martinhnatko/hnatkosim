@@ -214,7 +214,7 @@ update msg model =
                     "am_current" ->
                         let
                             instructions =
-                                AmParser.parseInstructions [] [] 0 (String.toList rawCode) False
+                                AmParser.parseAM rawCode model.abacusModel 
                             
                             innerAbacusModel = model.abacusModel
                             updatedAbacusModel =
@@ -224,7 +224,7 @@ update msg model =
                                 }
                         in
                         ( { model | abacusModel = updatedAbacusModel }
-                        , Cmd.map AbacusMsg (AmHelper.requestAddMessages ["Welcome to Abacus Machine Simulator"])
+                        , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator"))
                         )
 
                     _ ->

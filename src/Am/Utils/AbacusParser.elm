@@ -1,26 +1,40 @@
 module Am.Utils.AbacusParser exposing (..)
 
+import Am.Types.Instructions exposing (Instruction(..))
+import Am.Types.ErrorType exposing (ErrorType(..))
+import Am.Types.Model exposing (Model)
+
 import Char exposing (isDigit)
 import List exposing (drop)
 import Maybe
-import Am.Types.Instructions exposing (Instruction(..))
+import Dict
+
 
 type alias LoopStack =
     List Int -- StartLoop index
 
+parseAM : String -> Model -> List Instruction
+parseAM input model =
+    let
+        inputToList = String.toList input
 
-parseInstructions : List Instruction -> LoopStack -> Int -> List Char -> Bool -> List Instruction
-parseInstructions instructions stack currentIndex input parsingComment =
+        instructions = parseInstructions inputToList [] [] 0 False model
+    in
+    instructions
+
+
+parseInstructions : List Char -> List Instruction -> LoopStack -> Int -> Bool -> Model -> List Instruction
+parseInstructions input instructions stack currentIndex parsingComment model =
     if parsingComment then
         case input of
             [] ->
                 instructions
 
             '\n' :: rest ->
-                parseInstructions instructions stack currentIndex rest False
+                parseInstructions rest instructions stack currentIndex False model
 
             _ :: rest ->
-                parseInstructions instructions stack currentIndex rest True
+                parseInstructions rest instructions stack currentIndex True model
 
     else
         case input of
@@ -32,9 +46,9 @@ parseInstructions instructions stack currentIndex input parsingComment =
                     instructions
                         |> List.map (\instr ->
                             case instr of
-                                StartLoop endLoopIndex conditionIndex ->
+                                StartLoop endLoopIndex conditionIndex _ ->
                                     if endLoopIndex == -1 && conditionIndex == -1 then
-                                        UnknownInstruction
+                                        StartLoop currentIndex currentIndex (Just UnmatchedStartLoop)
                                     else
                                         instr
                                 other ->
@@ -46,22 +60,28 @@ parseInstructions instructions stack currentIndex input parsingComment =
                     digits = getFirstDigits rest
                     remaining = drop (List.length digits) rest
                     value = Maybe.withDefault 0 (String.fromList digits |> String.toInt)
-                    newInstruction = Increment value
+                    -- newInstruction = Increment value
                 in
-                parseInstructions (instructions ++ [newInstruction]) stack (currentIndex + 1) remaining False
+                if Dict.member value model.registers then
+                    parseInstructions remaining (instructions ++ [Increment value Nothing]) stack (currentIndex + 1) False model
+                else
+                    parseInstructions remaining (instructions ++ [Increment value (Just ReferencingNonExistingReg)]) stack (currentIndex + 1) False model
+                
+                -- parseInstructions remaining (instructions ++ [newInstruction]) stack (currentIndex + 1) False
 
             's' :: rest ->
                 let
                     digits = getFirstDigits rest
                     remaining = drop (List.length digits) rest
                     value = Maybe.withDefault 0 (String.fromList digits |> String.toInt)
-                    newInstruction = Decrement value
                 in
-                parseInstructions (instructions ++ [newInstruction]) stack (currentIndex + 1) remaining False
+                if Dict.member value model.registers then
+                    parseInstructions remaining (instructions ++ [Decrement value Nothing]) stack (currentIndex + 1) False model
+                else
+                    parseInstructions remaining (instructions ++ [Decrement value (Just ReferencingNonExistingReg)]) stack (currentIndex + 1) False model
 
             '(' :: rest ->
-                -- Parse StartLoop, condition is parsed after ')'
-                parseInstructions (instructions ++ [StartLoop -1 -1]) (currentIndex :: stack) (currentIndex + 1) rest False
+                parseInstructions rest (instructions ++ [StartLoop -1 -1 Nothing]) (currentIndex :: stack) (currentIndex + 1) False model
 
             ')' :: rest ->
                 let
@@ -69,38 +89,40 @@ parseInstructions instructions stack currentIndex input parsingComment =
                     remaining = drop (List.length digits) rest
                     conditionIndex = Maybe.withDefault 0 (String.fromList digits |> String.toInt)
                 in
-                case stack of
-                    [] ->
-                        parseInstructions (instructions ++ [UnknownInstruction]) stack (currentIndex + 1) rest False
+                if not (Dict.member conditionIndex model.registers) then
+                    parseInstructions remaining (instructions ++ [EndLoop -1 conditionIndex (Just ReferencingNonExistingReg)]) stack (currentIndex + 1) False model
+                else
+                    case stack of
+                        [] ->
+                            parseInstructions remaining (instructions ++ [ EndLoop -1 conditionIndex (Just UnmatchedEndLoop) ]) stack (currentIndex + 1) False model
 
-                    startLoopIndex :: remainingStack ->
-                        let
-                            endInstruction = EndLoop startLoopIndex conditionIndex
-                            updatedInstructions =
-                                List.indexedMap
-                                    (\i instr ->
-                                        case instr of
-                                            StartLoop _ _ ->
-                                                if i == startLoopIndex then
-                                                    StartLoop currentIndex conditionIndex
-                                                else
+                        startLoopIndex :: remainingStack ->
+                            let
+                                updatedInstructions =
+                                    List.indexedMap
+                                        (\i instr ->
+                                            case instr of
+                                                StartLoop _ _ _ ->
+                                                    if i == startLoopIndex then
+                                                        StartLoop currentIndex conditionIndex Nothing
+                                                    else
+                                                        instr
+
+                                                _ ->
                                                     instr
-
-                                            _ ->
-                                                instr
-                                    )
-                                    instructions
-                        in
-                        parseInstructions (updatedInstructions ++ [endInstruction]) remainingStack (currentIndex + 1) remaining False
+                                        )
+                                        instructions
+                            in
+                            parseInstructions remaining (updatedInstructions ++ [EndLoop startLoopIndex conditionIndex Nothing]) remainingStack (currentIndex + 1) False model
 
             '#' :: rest ->
-                parseInstructions instructions stack currentIndex rest True
+                parseInstructions rest instructions stack currentIndex True model
 
             c :: rest ->
                 if isWhitespace c then
-                    parseInstructions instructions stack currentIndex rest  False
+                    parseInstructions rest instructions stack currentIndex False model
                 else
-                    parseInstructions (instructions ++ [UnknownInstruction]) stack (currentIndex + 1) rest  False
+                    parseInstructions rest (instructions ++ [UnknownInstruction]) stack (currentIndex + 1) False model
 
 
 -- HELPER FUNCTION

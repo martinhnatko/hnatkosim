@@ -15,41 +15,55 @@ viewInstructions instructions pointer =
                     isActive =
                         index == pointer
 
-                    instructionText =
+                    -- instructionText =
+                    --     case instruction of
+                    --         Increment n isError ->
+                    --             "Add " ++ String.fromInt n
+
+                    --         Decrement n ->
+                    --             "Sub " ++ String.fromInt n
+
+                    --         StartLoop _ _ ->
+                    --             "("
+
+                    --         EndLoop _ conditionIndex ->
+                    --             ")" ++ String.fromInt conditionIndex
+
+                    --         UnknownInstruction ->
+                    --             "Unknown"
+
+                    (instructionText, typeColorClasses) =
                         case instruction of
-                            Increment n ->
-                                "Add " ++ String.fromInt n
+                            Increment n isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Add " ++ String.fromInt n, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Add " ++ String.fromInt n, " bg-green-200 text-green-800")
 
-                            Decrement n ->
-                                "Sub " ++ String.fromInt n
+                            Decrement n isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("Sub " ++ String.fromInt n, " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("Sub " ++ String.fromInt n, " bg-yellow-200 text-yellow-800")
 
-                            StartLoop _ _ ->
-                                "("
+                            StartLoop _ _ isError ->
+                                case isError of
+                                    Just _ ->
+                                        ("(",  " bg-red-200 text-red-800")
+                                    _ ->
+                                        ("(",  " bg-gray-200 text-gray-800")
 
-                            EndLoop _ conditionIndex ->
-                                ")" ++ String.fromInt conditionIndex
+                            EndLoop _ conditionIndex isError ->
+                                case isError of
+                                    Just _ ->
+                                        (")" ++ String.fromInt conditionIndex, " bg-red-200 text-red-800")
+                                    _ ->
+                                        (")" ++ String.fromInt conditionIndex, " bg-gray-200 text-gray-800")
 
                             UnknownInstruction ->
-                                "Unknown"
-
-                    -- Distinguish instruction types by background/text color.
-                    -- We handle each constructor explicitly, so we can give UnknownInstruction a unique color.
-                    typeColorClasses =
-                        case instruction of
-                            Increment _ ->
-                                " bg-green-200 text-green-800"
-
-                            Decrement _ ->
-                                " bg-red-200 text-red-800"
-
-                            StartLoop _ _ ->
-                                " bg-gray-200 text-gray-800"
-
-                            EndLoop _ _ ->
-                                " bg-gray-200 text-gray-800"
-
-                            UnknownInstruction ->
-                                " bg-yellow-200 text-yellow-800"
+                                ("Unknown", " bg-red-200 text-red-800")
 
                     -- Base classes: same border thickness & style for everyone
                     baseClasses =
@@ -75,10 +89,6 @@ viewInstructions instructions pointer =
 
                     , div [] [ text instructionText ]
                     ]
-                
-                -- div
-                --     [ class (baseClasses ++ typeColorClasses ++ activeClasses) ]
-                --     [ text instructionText ]
             )
         )
 

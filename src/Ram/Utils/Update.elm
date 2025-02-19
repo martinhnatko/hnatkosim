@@ -53,18 +53,11 @@ update msg model =
                 ( { model | isRunning = True }, Cmd.none )
 
             else
-                -- We have not started before
-                -- let
-                    -- errors =
-                    --     checkForErrors model.instructions  -- e.g. returns List String
-                    -- messages =
-                    --     errors ++ [ "Simulation started" ]
-                -- in
                 ( { model
                     | isRunning = True
                     , simStarted = True
                 }
-                , requestAddMessage (SimStarted, "Simulation started")
+                , Cmd.batch [ (printErrors model.instructions), requestAddMessage (SimStarted, "Simulation started")]
                 )
 
         Pause ->
