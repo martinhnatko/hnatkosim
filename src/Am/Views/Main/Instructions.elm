@@ -15,23 +15,6 @@ viewInstructions instructions pointer =
                     isActive =
                         index == pointer
 
-                    -- instructionText =
-                    --     case instruction of
-                    --         Increment n isError ->
-                    --             "Add " ++ String.fromInt n
-
-                    --         Decrement n ->
-                    --             "Sub " ++ String.fromInt n
-
-                    --         StartLoop _ _ ->
-                    --             "("
-
-                    --         EndLoop _ conditionIndex ->
-                    --             ")" ++ String.fromInt conditionIndex
-
-                    --         UnknownInstruction ->
-                    --             "Unknown"
-
                     (instructionText, typeColorClasses) =
                         case instruction of
                             Increment n isError ->
@@ -78,9 +61,7 @@ viewInstructions instructions pointer =
                 in
                 div
                     [ class
-                        ("flex items-center gap-2 font-mono " ++ baseClasses ++ typeColorClasses ++ activeClasses
-                            -- ++ highlightClass
-                        )
+                        ("flex items-center gap-2 font-mono " ++ baseClasses ++ typeColorClasses ++ activeClasses)
                     ]
                     [ div [ class "text-gray-400" ]
                         [ text (String.fromInt (index + 1)) ]

@@ -22,7 +22,6 @@ viewRegisters registers highlighted =
                         )
                     ]
                     [ div [ class "text-gray-500 w-8 text-right" ]
-                            
                         [ text (String.fromInt regNum) ]
                     , div [ class "h-5 w-px bg-gray-300" ] []
                     , div [ class "flex-1 text-left font-medium text-gray-900" ]

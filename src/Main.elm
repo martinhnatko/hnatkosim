@@ -257,7 +257,7 @@ update msg model =
                 case key of
                     "ram_current" ->
                         let
-                            (instructions, labels) =
+                            instructions =
                                 RamParser.parseRAM rawCode model.ramModel
 
                             innerRamModel = model.ramModel    
@@ -266,7 +266,6 @@ update msg model =
                                     innerRamModel
                                     | inputText = rawCode
                                     , instructions = instructions
-                                    , labels = labels
                                 }
                         in
                         ( { model | ramModel = updatedRamModel }

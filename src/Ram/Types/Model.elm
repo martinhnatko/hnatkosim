@@ -24,7 +24,6 @@ type alias Model =
     , slots : Array String
     , slots_input_tapes : Array (Array Int)
     , showSlotsModal : Bool
-    , labels : LabelDict
     , halted : Bool
     , inputTape : Array Int
     , inputTapePointer : Int

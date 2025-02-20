@@ -23,9 +23,9 @@ update msg model =
     case msg of
         UpdateCode newCode ->
             let
-                (newInstructions, newLabels) = parseRAM newCode model
+                newInstructions = parseRAM newCode model
             in
-            ( { model | inputText = newCode, instructions = newInstructions, labels = newLabels }, setItem ("ram_current", newCode) )
+            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("ram_current", newCode) )
 
         Tick _ ->
             if not model.isRunning then
@@ -242,12 +242,11 @@ update msg model =
                     ( model, Cmd.none ) 
                 Just code ->
                     let
-                        (instructions, labels) = parseRAM code model
+                        instructions = parseRAM code model
                     in
                     ( { model 
                         | inputText = code
                         , instructions = instructions
-                        , labels = labels
                         , inputTape = actualInputTape
                         , inputTapePointer = 0
                         , instructionPointer = 0

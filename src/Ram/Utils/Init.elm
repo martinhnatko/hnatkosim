@@ -5,7 +5,8 @@ import Array
 
 -- INIT
 
-init : { inputText : String, registers : Dict.Dict Int number, highlighted_registers : Dict.Dict k v, highlighted_input_tape : Dict.Dict a b, highlighted_output_tape : Dict.Dict c d, instructions : List e, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List f, slots : Array.Array String, slots_input_tapes : Array.Array (Array.Array g), showSlotsModal : Bool, labels : Dict.Dict h i, halted : Bool, inputTape : Array.Array j, inputTapePointer : number, outputTape : Array.Array l }
+
+init : { inputText : String, registers : Dict.Dict Int number, highlighted_registers : Dict.Dict k v, highlighted_input_tape : Dict.Dict a b, highlighted_output_tape : Dict.Dict c d, instructions : List e, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List f, slots : Array.Array String, slots_input_tapes : Array.Array (Array.Array g), showSlotsModal : Bool, halted : Bool, inputTape : Array.Array h, inputTapePointer : number, outputTape : Array.Array i }
 init =
     let
         initialModel =
@@ -24,7 +25,6 @@ init =
             , slots = Array.repeat 21 ""
             , slots_input_tapes = Array.repeat 21 Array.empty
             , showSlotsModal = False
-            , labels = Dict.empty
             , halted = False
             , inputTape = Array.empty
             , inputTapePointer = 0

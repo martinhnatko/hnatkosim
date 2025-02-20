@@ -9,7 +9,7 @@ import Ram.Types.ErrorType exposing (ErrorType(..))
 import Dict
 import Maybe
 
-parseRAM : String -> Model -> (List Instruction, LabelDict)
+parseRAM : String -> Model -> List Instruction
 parseRAM input model =
     let
         -- Split the input into raw lines.
@@ -31,7 +31,7 @@ parseRAM input model =
         instructions =
             List.indexedMap (\idx line -> parseInstruction labels line idx model) nonEmptyLines
     in
-    (instructions, labels)
+    instructions
 
 
 findLabels : List String -> LabelDict
