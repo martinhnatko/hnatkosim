@@ -1,13 +1,14 @@
 module Ram.Utils.RamParser exposing (..)
 
 import Ram.Types.Instructions exposing (Instruction(..))
-import Ram.Types.LabelDict exposing (LabelDict)
 import Ram.Types.Operand exposing (Operand(..))
 import Ram.Types.Model exposing (Model)
 import Ram.Types.ErrorType exposing (ErrorType(..))
 
-import Dict
+import Dict exposing (Dict)
 import Maybe
+
+type alias LabelDict = Dict String Int
 
 parseRAM : String -> Model -> List Instruction
 parseRAM input model =
