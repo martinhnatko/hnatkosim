@@ -1,7 +1,5 @@
 module Shared.Types.ConsoleMessage exposing (..)
 
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType)
-
 import Time
 
 type alias ConsoleMessage =
@@ -9,3 +7,9 @@ type alias ConsoleMessage =
     , timestamp : Time.Posix
     , text : String
     }
+
+type ConsoleMessageType
+    = InfoMessage
+    | ErrorMessage
+    | SimStarted
+    | SimStopped

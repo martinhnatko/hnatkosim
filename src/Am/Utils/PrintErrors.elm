@@ -6,7 +6,7 @@ import Am.Types.Messages exposing (Msg(..))
 
 import Am.Utils.HelperFunctions exposing (requestAddMessage)
 
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
 printErrors : List Instruction -> Cmd Msg
 printErrors instructions =

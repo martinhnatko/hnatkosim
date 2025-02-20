@@ -1,31 +1,21 @@
-module Ram.Views.Main.Instructions exposing (viewInstructions)
+module Ram.Components.Instructions exposing (viewInstructions)
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 
-import Ram.Types.Messages exposing (Msg)
-import Ram.Types.Instructions exposing (Instruction(..))
-import Ram.Types.Operand exposing (Operand(..))
+import Ram.Types.Instructions exposing (Instruction(..), Operand(..))
 
 import String
 
-
-operandToString : Operand -> String
-operandToString operand =
-    case operand of
-        Constant n ->
-            "=" ++ String.fromInt n
-
-        Direct n ->
-            String.fromInt n
-
-        Indirect n ->
-            "*" ++ String.fromInt n
-
-
-viewInstructions : List Instruction -> Int -> Html Msg
-viewInstructions instructions pointer =
-    div [ class "flex flex-col gap-2" ]
+viewInstructions : List Instruction -> Int -> Bool -> Bool -> Html msg
+viewInstructions instructions pointer simStarted halted =
+    div [ class ( "flex flex-col gap-2 w-1/3 p-3 shadow-lg rounded overflow-auto border-2 border-transparent " 
+            ++ if ((pointer >= List.length instructions) && simStarted) || halted then
+                    " bg-green-50 border-green-400"
+                else
+                    " bg-white"
+            )
+        ]
         (instructions
             |> List.indexedMap (\index instruction ->
                 let
@@ -147,3 +137,15 @@ viewInstructions instructions pointer =
                     ]
             )
         )
+
+operandToString : Operand -> String
+operandToString operand =
+    case operand of
+        Constant n ->
+            "=" ++ String.fromInt n
+
+        Direct n ->
+            String.fromInt n
+
+        Indirect n ->
+            "*" ++ String.fromInt n

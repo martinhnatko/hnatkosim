@@ -1,10 +1,12 @@
-module Ram.Views.Main.OutputTape exposing (viewOutputTape)
+module Ram.Components.OutputTape exposing (viewOutputTape)
 
+import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg(..))
+
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
+
 import String
-import Ram.Types.Model exposing (Model)
 import Array
 import Dict
 

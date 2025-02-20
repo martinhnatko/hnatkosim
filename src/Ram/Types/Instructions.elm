@@ -1,6 +1,5 @@
 module Ram.Types.Instructions exposing (..)
 
-import Ram.Types.Operand exposing (Operand)
 import Ram.Types.ErrorType exposing (ErrorType)
 
 type Instruction
@@ -18,3 +17,8 @@ type Instruction
     | Halt
     | Label String (Maybe ErrorType)
     | UnknownInstruction
+
+type Operand
+    = Constant Int
+    | Direct Int
+    | Indirect Int

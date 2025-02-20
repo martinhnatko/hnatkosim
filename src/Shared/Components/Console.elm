@@ -1,41 +1,42 @@
-module Am.Views.Footer.Console exposing (..)
+module Shared.Components.Console exposing (viewConsole)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+import Shared.Types.ConsoleMessage exposing (ConsoleMessage, ConsoleMessageType(..))
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (id, class)
 
 import Time
-        
+
 --Conole view
 viewConsole : List ConsoleMessage -> Html msg
 viewConsole consoleMessages =    
     div
         [ id "consoleContainer"
-        , class "font-mono text-sm h-24 overflow-y-auto"
+        , class "bg-gray-800 text-white p-3 rounded shadow-lg font-mono text-sm h-96 overflow-y-auto"
         ]
         (consoleMessages
             |> List.map (\msg ->
 
                 case msg.messageType of
                     InfoMessage ->
-                        div [ class "py-1" ]
+                        div [ ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
 
                     ErrorMessage ->
-                        div [ class "py-1 text-red-500" ]
+                        div [ class "text-red-500" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
 
                     SimStarted ->
-                        div [ class "py-1 text-green-300" ]
+                        div [ class "text-green-300" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
 
                     SimStopped ->
-                        div [ class "py-1 text-red-300" ]
+                        div [ class "text-red-300" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
             )
         )
+        
+
 
 formatTime : Time.Posix -> String
 formatTime posix =

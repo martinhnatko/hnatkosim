@@ -2,19 +2,21 @@ module Ram.Utils.ExecuteInstruction exposing (..)
 
 import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg(..))
-import Ram.Types.Instructions exposing (Instruction(..))
-import Ram.Types.Operand exposing (Operand(..))
+import Ram.Types.Instructions exposing (Instruction(..), Operand(..))
 import Ram.Types.ErrorType exposing (ErrorType(..))
 
 import Ram.Utils.HelperFunctions exposing (..)
 
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
 import Shared.Types.ConsoleMessage exposing (..)
 
 import Array
 import Dict
 import Task
 import Process
+
+getRegisterValue : Int -> Model -> Maybe Int
+getRegisterValue regIndex model =
+    Dict.get regIndex model.registers
 
 executeInstruction : Model -> Int -> (Model, Cmd Msg)
 executeInstruction model highlightDuration =

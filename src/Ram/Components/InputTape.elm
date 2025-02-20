@@ -1,4 +1,10 @@
-module Ram.Views.Main.InputTape exposing (viewInputTape)
+module Ram.Components.InputTape exposing (viewInputTape)
+
+import Ram.Types.Messages exposing (Msg(..))
+import Ram.Types.Model exposing (Model)
+
+import Shared.Icons.XSmall exposing (heroiconX)
+import Shared.Icons.Plus exposing (heroiconPlus)
 
 import Html exposing (Html, button, div, input)
 import Html.Attributes exposing (class, disabled, type_, value)
@@ -8,11 +14,32 @@ import Array
 import String
 import Dict
 
-import Ram.Types.Messages exposing (Msg(..))
-import Ram.Types.Model exposing (Model)
+viewInputTape : Model -> Html Msg
+viewInputTape model =
+    let
+        cellsList : List Int
+        cellsList =
+            Array.toList model.inputTape
+    in
+    div [ class "flex bg-white rounded space-x-2 p-3 overflow-x-auto" ]
+        ( (List.indexedMap
+                (\index cell ->
+                    renderInputCell index cell model
+                )
+                cellsList
+          )
+          ++ [ button
+                [ class (if model.simStarted then
+                            "w-20 h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0"
+                        else
+                            "w-20 h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0"
+                        )
+                , onClick AddCellToInputTape
+                ]
+                [ heroiconPlus ]
+             ]
 
-import Shared.Icons.XSmall exposing (heroiconX)
-import Shared.Icons.Plus exposing (heroiconPlus)
+        )
 
 renderInputCell : Int -> Int -> Model -> Html Msg
 renderInputCell index cell model =
@@ -70,31 +97,3 @@ renderInputCell index cell model =
             ]
     else
         inputElement
-
-
-viewInputTape : Model -> Html Msg
-viewInputTape model =
-    let
-        cellsList : List Int
-        cellsList =
-            Array.toList model.inputTape
-    in
-    div [ class "flex bg-white rounded space-x-2 p-3 overflow-x-auto" ]
-        ( (List.indexedMap
-                (\index cell ->
-                    renderInputCell index cell model
-                )
-                cellsList
-          )
-          ++ [ button
-                [ class (if model.simStarted then
-                            "w-20 h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0"
-                        else
-                            "w-20 h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0"
-                        )
-                , onClick AddCellToInputTape
-                ]
-                [ heroiconPlus ]
-             ]
-
-        )

@@ -1,31 +1,16 @@
-module Am.Views.Header.Menu exposing (menu, viewSlotsModal)
+module Shared.Components.SlotsModal exposing (..)
 
 import Html exposing (Html, div, button, text)
-import Html.Attributes exposing (class, disabled)
+import Html.Attributes exposing (disabled)
 import Html.Events exposing (onClick)
-import Array
 
-import Shared.Icons.Save exposing (heroiconSave)
+import Array exposing (Array)
+
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.TrashSmall exposing (heroiconTrashSmall)
 
-import Am.Types.Messages exposing (Msg(..))
-import Am.Types.Model exposing (Model)
-
-menu : Html Msg
-menu =
-    div [ class "flex gap-4 w-1/3" ]
-        [ -- Save/Load Slots Button
-          button
-              [ class "border border-blue-500 text-blue-500 bg-white w-1/3 px-1 py-2 flex items-center justify-center rounded"
-              , onClick ToggleSlotsModal
-              ]
-              [ heroiconSave, text "Save/Load" ]
-        ]
-
-
-viewSlotsModal : Model -> Html Msg
-viewSlotsModal model =
+viewSlotsModal : String -> Array String -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> Html msg
+viewSlotsModal inputText slots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot =
     div
         [ Html.Attributes.class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         ]
@@ -35,16 +20,16 @@ viewSlotsModal model =
             [ -- “X” button in the top-right
               button
                 [ Html.Attributes.class "absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                , onClick ToggleSlotsModal
+                , onClick onToggleSlotsModal
                 ]
                 [ heroiconX ]
 
-              , viewSlots model
+              , viewSlots inputText slots onSaveSlot onLoadSlot onDeleteSlot
             ]
         ]
 
-viewSlots : Model -> Html Msg
-viewSlots model =
+viewSlots : String -> Array String -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> Html msg
+viewSlots inputText slots onSaveSlot onLoadSlot onDeleteSlot =
     div [ Html.Attributes.class "grid grid-cols-5 gap-4 mt-8" ]
         (List.map
             (\i ->
@@ -53,7 +38,7 @@ viewSlots model =
                         "Slot " ++ String.fromInt i
 
                     maybeCode =
-                        Array.get i model.slots
+                        Array.get i slots
 
                     isEmpty =
                         case maybeCode of
@@ -75,12 +60,12 @@ viewSlots model =
                           button
                             [ Html.Attributes.class 
                                 ( "bg-blue-500 text-white px-2 py-1 rounded"
-                                    ++ if model.inputText == "" then
+                                    ++ if inputText == "" then
                                         " opacity-50 cursor-not-allowed"
                                     else
                                         ""
                                 )
-                            , onClick (SaveSlot i)
+                            , onClick (onSaveSlot i)
                             ]
                             [ text "Save" ]
 
@@ -93,7 +78,7 @@ viewSlots model =
                                        else
                                         ""
                                 )
-                            , onClick (LoadSlot i)
+                            , onClick (onLoadSlot i)
                             , disabled isEmpty
                             ]
                             [ text "Load" ]
@@ -107,7 +92,7 @@ viewSlots model =
                                        else
                                         ""
                                 )
-                            , onClick (DeleteSlot i)
+                            , onClick (onDeleteSlot i)
                             , disabled isEmpty
                             ]
                             [ heroiconTrashSmall ]

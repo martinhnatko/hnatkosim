@@ -1,15 +1,16 @@
 module Ram.Utils.PrintErrors exposing (printErrors)
 
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
-import Ram.Types.Instructions exposing (Instruction(..))
-import Ram.Types.Messages exposing (Msg)
 import Ram.Utils.HelperFunctions exposing (requestAddMessage)
-import Ram.Types.Operand exposing (Operand(..))
+
+import Ram.Types.Instructions exposing (Instruction(..), Operand(..))
+import Ram.Types.Messages exposing (Msg)
 import Ram.Types.Messages exposing (Msg(..))
+import Ram.Types.ErrorType exposing (ErrorType(..))
+
+import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
 import List
 import String
-import Ram.Types.ErrorType exposing (ErrorType(..))
 
 printErrors : List Instruction -> Cmd Msg
 printErrors instructions =

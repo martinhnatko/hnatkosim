@@ -1,7 +1,6 @@
 module Ram.Utils.RamParser exposing (..)
 
-import Ram.Types.Instructions exposing (Instruction(..))
-import Ram.Types.Operand exposing (Operand(..))
+import Ram.Types.Instructions exposing (Instruction(..), Operand(..))
 import Ram.Types.Model exposing (Model)
 import Ram.Types.ErrorType exposing (ErrorType(..))
 

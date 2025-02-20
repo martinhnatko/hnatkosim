@@ -10,8 +10,7 @@ import Am.Utils.HelperFunctions exposing (..)
 import Am.Utils.PrintErrors exposing (printErrors)
 
 import Shared.Ports exposing (setItem, scrollToBottom)
-import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
 import Dict
 import List exposing (range)

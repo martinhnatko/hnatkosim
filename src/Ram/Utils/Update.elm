@@ -8,7 +8,7 @@ import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
 import Ram.Utils.HelperFunctions exposing (..)
 
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
 import Dict
 import List exposing (range)
@@ -234,7 +234,7 @@ update msg model =
         LoadSlot i ->
             let
                 maybeCode = Array.get i model.slots
-                maybeInputTape = Debug.log "maaybeinpittape" (Array.get i model.slots_input_tapes)
+                maybeInputTape = Array.get i model.slots_input_tapes
                 actualInputTape = Maybe.withDefault Array.empty maybeInputTape
             in
             case maybeCode of

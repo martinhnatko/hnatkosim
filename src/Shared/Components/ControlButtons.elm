@@ -1,40 +1,30 @@
-module Am.Views.Header.ControlButtons exposing (controlButtons)
-import Html exposing (Html, div, button, text)
-import Html.Attributes exposing (class, disabled)
-import Html.Events exposing (onClick)
+module Shared.Components.ControlButtons exposing (controlButtons)
+
 import Shared.Icons.Play exposing (heroiconPlay)
 import Shared.Icons.Pause exposing (heroiconPause)
 import Shared.Icons.Step exposing (heroiconStep)
 import Shared.Icons.Reset exposing (heroiconReset)
-import Am.Types.Messages exposing (Msg(..))
-import Am.Types.Model exposing (Model)
 
+import Html exposing (Html, div, button, text)
+import Html.Attributes exposing (class, disabled)
+import Html.Events exposing (onClick)
 
-controlButtons : Model -> Html Msg
-controlButtons model =
-    let
-        atEndOfInstructions : Bool
-        atEndOfInstructions =
-            model.instructionPointer >= List.length model.instructions
-
-        isRunning = model.isRunning
-        isDisabledStart = atEndOfInstructions
-        isDisabledStep = atEndOfInstructions || model.isRunning
-    in
+controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Html msg
+controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset =
     div [ class "flex gap-4 w-1/3" ]
         [ -- Start/Pause Button
           if isRunning then
               button 
                   [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded"
-                  , onClick Pause 
+                  , onClick onPause 
                   ]
                   [ heroiconPause, text "Pause" ]
           else
               button
                   ( [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded"
-                    , onClick Start
+                    , onClick onStart
                     ]
-                    ++ ( if isDisabledStart then 
+                    ++ ( if halted || atEndOfInstructions then 
                             [ disabled True
                             , class "bg-gray-400 cursor-not-allowed"
                             ] 
@@ -47,9 +37,9 @@ controlButtons model =
           -- Step Button
         , button
             ( [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded"
-              , onClick Step
+              , onClick onStep
               ]
-              ++ ( if isDisabledStep then 
+              ++ ( if halted || isRunning || atEndOfInstructions then 
                       [ disabled True
                       , class "bg-gray-400 cursor-not-allowed"
                       ]
@@ -60,7 +50,7 @@ controlButtons model =
             [ heroiconStep, text "Step" ]
 
           -- Reset Button
-        , if not model.simStarted then
+        , if not simStarted then
               button 
                   [ class "w-1/3 px-4 py-2 bg-gray-400 text-white flex cursor-not-allowed items-center justify-center rounded"
                   , disabled True
@@ -69,7 +59,7 @@ controlButtons model =
           else
               button 
                   [ class "w-1/3 px-4 py-2 bg-red-500 text-white flex items-center justify-center rounded"
-                  , onClick Reset
+                  , onClick onReset
                   ]
                   [ heroiconReset, text "Stop" ]
         ]

@@ -1,35 +1,36 @@
 module Main exposing (main)
 
--- import Browser
 import Html exposing (div, text, button)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+
 import String
 import Time
 import Array
 
 import Browser
 import Browser.Navigation as Nav
+
 import Url exposing (Url)
 
 import Am.Types.Messages as AmMsg
 import Am.Types.Model as AmModel
-import Am.Views.View as AmView
+import Am.View as AmView
 import Am.Utils.Update as AmUpdate
 import Am.Utils.Init as AmInit
 import Am.Utils.AbacusParser as AmParser
 import Am.Utils.HelperFunctions as AmHelper
 
-import Ram.Types.Messages as RamMsg 
 import Ram.Types.Model as RamModel
-import Ram.Views.View as RamView
+import Ram.View as RamView
 import Ram.Utils.Update as RamUpdate
 import Ram.Utils.Init as RamInit
 import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
+import Ram.Types.Messages as RamMsg 
 
 import Shared.Ports exposing (getItem, gotItem)
-import Shared.Types.ConsoleMessageType exposing (ConsoleMessageType(..))
+import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
 -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
