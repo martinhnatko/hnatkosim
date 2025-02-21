@@ -166,3 +166,6 @@ update msg model =
         
         ToggleSlotsModal ->
             ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )
+        
+        GoBackToMenu ->
+            ( model, Cmd.none )

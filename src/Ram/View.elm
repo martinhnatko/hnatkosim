@@ -33,7 +33,7 @@ view model =
               div [ class "flex gap-4" ]
                   [ controlButtons (model.instructionPointer >= List.length model.instructions) model.isRunning model.halted model.simStarted Start Pause Step Reset
                   , speedSlider model.speedIdx model.speeds ChangeSpeed
-                  , menuButtons ToggleSlotsModal
+                  , menuButtons ToggleSlotsModal GoBackToMenu model.simStarted
                   ]
 
               -- Main Content Section

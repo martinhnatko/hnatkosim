@@ -166,29 +166,39 @@ update msg model =
                             "#ram"
 
                         Landing ->
-                            ""
+                            "#"
             in
             ( { model | page = newPage }
             , Nav.pushUrl model.key newUrl
             )
 
         AbacusMsg subMsg ->
-            let
-                ( newAbacusModel, cmd ) =
-                    AmUpdate.update subMsg model.abacusModel
-            in
-            ( { model | abacusModel = newAbacusModel }
-            , Cmd.map AbacusMsg cmd
-            )
+            case subMsg of
+                AmMsg.GoBackToMenu ->
+                    ( { model | page = Landing }
+                    , Nav.pushUrl model.key "#"
+                    )
+                _ ->
+                    let
+                        ( newAbacusModel, cmd ) = AmUpdate.update subMsg model.abacusModel
+                    in
+                    ( { model | abacusModel = newAbacusModel }
+                    , Cmd.map AbacusMsg cmd
+                    )
 
         RamMsg subMsg ->
-            let
-                ( newRamModel, cmd ) =
-                    RamUpdate.update subMsg model.ramModel
-            in
-            ( { model | ramModel = newRamModel }
-            , Cmd.map RamMsg cmd
-            )
+            case subMsg of
+                RamMsg.GoBackToMenu ->
+                    ( { model | page = Landing }
+                    , Nav.pushUrl model.key "#"
+                    )
+                _ ->
+                    let
+                        ( newRamModel, cmd ) = RamUpdate.update subMsg model.ramModel
+                    in
+                    ( { model | ramModel = newRamModel }
+                    , Cmd.map RamMsg cmd
+                    )
 
         UrlChanged url ->
             let

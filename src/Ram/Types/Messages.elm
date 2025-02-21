@@ -26,4 +26,5 @@ type Msg
     | UpdateInputTape Int Int
     | AddCellToInputTape
     | RemoveLastCell
+    | GoBackToMenu
     | NoOp

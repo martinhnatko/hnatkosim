@@ -7,9 +7,11 @@ input[type="number"]::-webkit-outer-spin-button {
 
 /* Remove spinner arrows in Firefox */
 input[type="number"] {
+  appearance: none;
   -moz-appearance: textfield;
 }
 
+/* Remove focus outline from textarea and input */
 textarea:focus, input:focus{
   outline: none;
 }

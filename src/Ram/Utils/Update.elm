@@ -294,6 +294,10 @@ update msg model =
                 ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape)) 
             else
                 ( model, Cmd.none )
+        
+        GoBackToMenu ->
+            ( model, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )
             

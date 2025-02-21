@@ -20,3 +20,4 @@ type Msg
     | LoadSlot Int
     | ToggleSlotsModal
     | DeleteSlot Int
+    | GoBackToMenu
