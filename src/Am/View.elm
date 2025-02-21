@@ -35,7 +35,7 @@ view model =
 
 
               -- Main Content Section
-            , div [ class "flex mt-5 mb-3 gap-4 overflow-hidden" ]
+            , div [ class "flex my-3 gap-3 overflow-hidden" ]
                   
                   -- Input text area
                   [ inputTextArea model.simStarted model.inputText UpdateCode DeleteInput

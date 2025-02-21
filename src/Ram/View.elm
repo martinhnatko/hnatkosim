@@ -37,7 +37,7 @@ view model =
                   ]
 
               -- Main Content Section
-            , div [ class "flex flex-col mt-6 mb-3 gap-3 overflow-hidden" ]
+            , div [ class "flex flex-col my-3 gap-3 overflow-hidden" ]
         
                   [ -- Input Tape
                   div []
@@ -46,7 +46,7 @@ view model =
                       ]
 
                     -- Main Section
-                  , div [ class "flex gap-4 overflow-hidden" ]
+                  , div [ class "flex gap-3 overflow-hidden" ]
                       [ 
                       -- Input text area
                       inputTextArea model.simStarted model.inputText UpdateCode DeleteInput

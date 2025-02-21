@@ -3,16 +3,16 @@ module Shared.Components.SpeedSlider exposing (..)
 import Shared.Icons.Rocket exposing (heroiconRocket)
 
 import Html exposing (Html, li, span, text, ul, div, input)
-import Html.Attributes exposing (type_, step, value)
+import Html.Attributes exposing (type_, step, value, class)
 import Html.Events exposing (onInput)
 
 import Array exposing (Array)
 
 speedSlider : Int -> Array Int -> (Int -> msg) -> Html msg
 speedSlider currentValue speeds onChangeSpeed =
-    div [ Html.Attributes.class "flex flex-col p-1 w-1/3" ]
+    div [ class "flex flex-col w-1/3 h-20" ]
         [ -- Title with Rocket Icon
-          div [ Html.Attributes.class "flex items-center gap-2 text-gray-700" ]
+          div [ class "flex items-center gap-2 text-gray-700" ]
             [ heroiconRocket
             , text "Time between instructions (seconds)"
             ]
@@ -20,7 +20,7 @@ speedSlider currentValue speeds onChangeSpeed =
         , -- Slider Input
           input
             [ type_ "range"
-            , Html.Attributes.class "w-full"
+            , class "w-full"
             , Html.Attributes.min "1"
             , Html.Attributes.max "7"
             , step "1"
@@ -30,7 +30,7 @@ speedSlider currentValue speeds onChangeSpeed =
             []
 
         , -- Labels for the Slider
-          ul [ Html.Attributes.class "flex justify-between w-full px-[10px]" ]
+          ul [ class "flex justify-between w-full px-[10px]" ]
             (List.map sliderLabel (Array.toList speeds))
         ]
         
@@ -51,8 +51,8 @@ sliderLabel ms =
             else
                 String.fromFloat inSeconds
     in
-    li [ Html.Attributes.class "flex justify-center relative" ]
-        [ span [ Html.Attributes.class "absolute" ]
+    li [ class "flex justify-center relative" ]
+        [ span [ class "absolute" ]
             [ text label ]
         ]
 
