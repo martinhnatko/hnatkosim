@@ -45,7 +45,7 @@ renderOutputCell index cell model =
         ( displayValue, bgClass ) =
             ( String.fromInt cell
             , if highlightClass /= "" then
-                "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white " ++ highlightClass
+                "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono " ++ highlightClass
               else
                 "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white"
             )
