@@ -34,8 +34,7 @@ import Ram.Utils.HelperFunctions as RamHelper
 import Shared.Ports exposing (getItem, gotItem)
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
-import Json.Decode as Decode exposing (Decoder)
-import Html exposing (input)
+import Json.Decode as Decode
 
 -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
