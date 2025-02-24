@@ -21,3 +21,4 @@ type Msg
     | ToggleSlotsModal
     | DeleteSlot Int
     | GoBackToMenu
+    | UpdateSlotName Int String

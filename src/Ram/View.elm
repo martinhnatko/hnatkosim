@@ -9,8 +9,8 @@ import Ram.Components.Registers exposing (viewRegisters)
 import Ram.Components.InputTape exposing (viewInputTape)
 import Ram.Components.OutputTape exposing (viewOutputTape)
 
-import Shared.Components.Console exposing (viewConsole)
 import Shared.Components.SlotsModal exposing (viewSlotsModal)
+import Shared.Components.Console exposing (viewConsole)
 import Shared.Components.MenuButtons exposing (menuButtons)
 import Shared.Components.ControlButtons exposing (controlButtons)
 import Shared.Components.SpeedSlider exposing (speedSlider)
@@ -20,6 +20,7 @@ import Html exposing (div, text)
 import Html.Attributes exposing (class)
 
 import Browser
+import Array
 
 
 -- VIEW
@@ -70,7 +71,7 @@ view model =
 
               -- Slots Modal
             , if model.showSlotsModal then
-                  viewSlotsModal model.inputText model.slots ToggleSlotsModal SaveSlot LoadSlot DeleteSlot
+                  viewSlotsModal (model.inputText == "") (Array.map (\slot -> ( slot.name, slot.inputText == "" )) model.slots) ToggleSlotsModal SaveSlot LoadSlot DeleteSlot UpdateSlotName
               else
                   text ""
             ]

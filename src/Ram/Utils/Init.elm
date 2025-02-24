@@ -5,8 +5,6 @@ import Array
 
 -- INIT
 
-
-init : { inputText : String, registers : Dict.Dict Int number, highlighted_registers : Dict.Dict k v, highlighted_input_tape : Dict.Dict a b, highlighted_output_tape : Dict.Dict c d, instructions : List e, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List f, slots : Array.Array String, slots_input_tapes : Array.Array (Array.Array g), showSlotsModal : Bool, halted : Bool, inputTape : Array.Array h, inputTapePointer : number, outputTape : Array.Array i }
 init =
     let
         initialModel =
@@ -22,8 +20,29 @@ init =
             , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 300, 100, 0 ]
             , speedIdx = 4
             , consoleMessages = []
-            , slots = Array.repeat 21 ""
-            , slots_input_tapes = Array.repeat 21 Array.empty
+            , slots = Array.fromList
+                [ { name = "", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 1", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 2", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 3", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 4", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 5", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 6", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 7", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 8", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 9", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 10", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 11", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 12", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 13", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 14", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 15", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 16", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 17", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 18", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 19", inputText = "", inputTape = Array.empty }
+                , { name = "Slot 20", inputText = "", inputTape = Array.empty }
+                ]
             , showSlotsModal = False
             , halted = False
             , inputTape = Array.empty

@@ -4,6 +4,8 @@ import Dict exposing (Dict)
 import Array exposing (Array)
 
 import Ram.Types.Instructions exposing (Instruction)
+import Ram.Types.Slot exposing (Slot)
+
 import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
 
 -- MODEL
@@ -20,8 +22,7 @@ type alias Model =
     , speeds : Array Int
     , speedIdx : Int
     , consoleMessages : List ConsoleMessage
-    , slots : Array String
-    , slots_input_tapes : Array (Array Int)
+    , slots : Array Slot
     , showSlotsModal : Bool
     , halted : Bool
     , inputTape : Array Int

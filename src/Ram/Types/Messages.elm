@@ -27,4 +27,5 @@ type Msg
     | AddCellToInputTape
     | RemoveLastCell
     | GoBackToMenu
+    | UpdateSlotName Int String
     | NoOp

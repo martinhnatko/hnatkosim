@@ -3,6 +3,7 @@ module Am.Utils.Update exposing (..)
 import Am.Types.Messages exposing (Msg)
 import Am.Types.Model exposing (Model)
 import Am.Types.Messages exposing (Msg(..))
+import Am.Types.Slot exposing (Slot)
 
 import Am.Utils.AbacusParser exposing (..)
 import Am.Utils.ExecuteInstruction exposing (executeInstruction)
@@ -25,8 +26,9 @@ update msg model =
             let
                 newInstructions = parseAM newCode model
 
+                encodedSlot = encodeSlot { name = "", inputText = newCode }
             in
-            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("am_current", newCode) )
+            ( { model | inputText = newCode, instructions = newInstructions}, setItem ("am_current", encodedSlot) )
 
         Tick _ ->
             if not model.isRunning then
@@ -74,6 +76,7 @@ update msg model =
               }
             , requestAddMessage (SimStopped, "Simulation stopped")
             )
+
         Step ->
             let
                 highlightDuration = 350
@@ -124,45 +127,65 @@ update msg model =
                 , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
                 , instructions = []
               }
-            , setItem ("am_current", "")
+            , setItem ("am_current", { name = "", inputText = "" } |> encodeSlot)
             )
 
         SaveSlot i ->
-            let
-                -- Update the local model, so the slot is not empty.
-                updatedSlots =
-                    Array.set i model.inputText model.slots
-            in
-            ( { model | slots = updatedSlots }
-            , setItem ("am_slot_" ++ String.fromInt i, model.inputText)
-            )
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot = { slot | inputText = model.inputText }
+                        encodedSlot = encodeSlot updatedSlot
+                    in
+                    ( { model | slots = Array.set i updatedSlot model.slots }, setItem ("am_slot_" ++ String.fromInt i, encodedSlot) )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         DeleteSlot i ->
-            let
-                updatedSlots =
-                    Array.set i "" model.slots
-            in
-            ( { model | slots = updatedSlots }
-            , setItem ("am_slot_" ++ String.fromInt i, "") 
-            )
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot = { slot | inputText = "" }
+                        encodedSlot = encodeSlot updatedSlot
+                    in
+                    ( { model | slots = Array.set i updatedSlot model.slots }
+                    , setItem ("am_slot_" ++ String.fromInt i, encodedSlot) 
+                    )
+                
+                _ ->
+                    ( model, Cmd.none )
 
         LoadSlot i ->
-            let
-                maybeCode = Array.get i model.slots
-            in
-            case maybeCode of
-                Nothing ->
-                    ( model, Cmd.none ) 
-                Just code ->
+            case Array.get i model.slots of
+                Just slot ->
                     ( { model 
-                        | inputText = code, instructions = parseAM code model
+                        | inputText = slot.inputText
+                        , instructions = parseAM slot.inputText model
                         , isRunning = False
                         , simStarted = False
                         , instructionPointer = 0
                         , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
-                      }
-                    , setItem ("am_current", code) 
+                    }
+                    , setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot) 
                     )
+                
+                Nothing ->
+                    ( model, Cmd.none )
+        
+        UpdateSlotName i newName ->
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot : Slot
+                        updatedSlot = { slot | name = newName }
+                        
+                        encodedSlot = encodeSlot updatedSlot
+                    in
+                    ( { model | slots = Array.set i updatedSlot model.slots }, setItem ("am_slot_" ++ String.fromInt i, encodedSlot) )
+
+                Nothing ->
+                    ( model, Cmd.none )
         
         ToggleSlotsModal ->
             ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )

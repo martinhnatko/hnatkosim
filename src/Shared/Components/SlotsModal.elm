@@ -1,16 +1,16 @@
 module Shared.Components.SlotsModal exposing (..)
 
-import Html exposing (Html, div, button, text)
-import Html.Attributes exposing (disabled)
-import Html.Events exposing (onClick)
+import Html exposing (Html, div, button, text, input)
+import Html.Attributes exposing (disabled, class, type_, value)
+import Html.Events exposing (onClick, onInput)
 
 import Array exposing (Array)
 
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.TrashSmall exposing (heroiconTrashSmall)
 
-viewSlotsModal : String -> Array String -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> Html msg
-viewSlotsModal inputText slots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot =
+viewSlotsModal : Bool -> Array (String, Bool) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
+viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
     div
         [ Html.Attributes.class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         ]
@@ -24,59 +24,56 @@ viewSlotsModal inputText slots onToggleSlotsModal onSaveSlot onLoadSlot onDelete
                 ]
                 [ heroiconX ]
 
-              , viewSlots inputText slots onSaveSlot onLoadSlot onDeleteSlot
+              , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
             ]
         ]
 
-viewSlots : String -> Array String -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> Html msg
-viewSlots inputText slots onSaveSlot onLoadSlot onDeleteSlot =
+viewSlots : Bool -> Array (String, Bool) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
+viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
     div [ Html.Attributes.class "grid grid-cols-5 gap-4 mt-8" ]
         (List.map
             (\i ->
                 let
-                    label =
-                        "Slot " ++ String.fromInt i
-
-                    maybeCode =
-                        Array.get i slots
-
-                    isEmpty =
-                        case maybeCode of
-                            Just code ->
-                                code == ""
-
-                            Nothing ->
-                                True
+                    (slotName, isEmpty) = 
+                        Array.get i arrayOfSlots |> Maybe.withDefault ("", True)
                 in
                 -- A small box for each slot
-                div [ Html.Attributes.class "border p-3 rounded bg-white shadow-sm w-full" ]
-                    [ -- The slot label
-                      div [ Html.Attributes.class "font-bold text-gray-700" ]
-                        [ text label ]
+                div (if isEmpty then 
+                        [ class "border p-3 rounded bg-gray-100 shadow-sm w-full" ]
+                     else
+                        [ class "border p-3 rounded bg-white shadow-sm w-full" ])
+                    [ -- Editable slot name input:
+                      input
+                        [ type_ "text"
+                        , class "font-bold text-gray-700 border border-gray-300 rounded p-1 w-full mb-2"
+                        , value slotName
+                        , onInput (\newName -> onUpdateSlotName i newName)
+                        ]
+                        []
 
                       -- The row of 3 buttons
-                    , div [ Html.Attributes.class "flex gap-2 mt-2" ]
+                    , div [ class "flex gap-2 mt-2" ]
                         [ -- Save button
                           button
-                            [ Html.Attributes.class 
-                                ( "bg-blue-500 text-white px-2 py-1 rounded"
-                                    ++ if inputText == "" then
-                                        " opacity-50 cursor-not-allowed"
-                                    else
-                                        ""
-                                )
+                            [ class 
+                                ( if inputTextEmpty then
+                                    "bg-gray-500 text-white px-2 py-1 rounded opacity-50 cursor-not-allowed"
+                                  else
+                                    "bg-blue-500 text-white px-2 py-1 rounded"
+                                ) 
+    
                             , onClick (onSaveSlot i)
+                            , disabled inputTextEmpty
                             ]
                             [ text "Save" ]
 
                           -- Load button
                         , button
-                            [ Html.Attributes.class
-                                ( "bg-blue-500 text-white px-2 py-1 rounded"
-                                    ++ if isEmpty then
-                                        " opacity-50 cursor-not-allowed"
-                                       else
-                                        ""
+                            [ class
+                                ( if not isEmpty then
+                                    "bg-blue-500 text-white px-2 py-1 rounded"
+                                  else
+                                    "bg-gray-500 text-white px-2 py-1 rounded opacity-50 cursor-not-allowed"
                                 )
                             , onClick (onLoadSlot i)
                             , disabled isEmpty
@@ -85,12 +82,11 @@ viewSlots inputText slots onSaveSlot onLoadSlot onDeleteSlot =
 
                           -- Delete (trash icon)
                         , button
-                            [ Html.Attributes.class
-                                ( "bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
-                                    ++ if isEmpty then
-                                        " opacity-50 cursor-not-allowed"
-                                       else
-                                        ""
+                            [ class
+                                ( if not isEmpty then
+                                    "bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
+                                  else  
+                                    "bg-gray-500 text-white px-2 py-1 rounded flex items-center justify-center opacity-50 cursor-not-allowed"
                                 )
                             , onClick (onDeleteSlot i)
                             , disabled isEmpty

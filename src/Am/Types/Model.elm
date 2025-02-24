@@ -1,6 +1,7 @@
 module Am.Types.Model exposing (..)
 
 import Am.Types.Instructions exposing (Instruction)
+import Am.Types.Slot exposing (Slot)
 
 import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
 
@@ -19,6 +20,6 @@ type alias Model =
     , speeds : Array Int
     , speedIdx : Int
     , consoleMessages : List ConsoleMessage
-    , slots : Array String
+    , slots : Array Slot
     , showSlotsModal : Bool
     }

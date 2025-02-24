@@ -15,22 +15,27 @@ import Url exposing (Url)
 
 import Am.Types.Messages as AmMsg
 import Am.Types.Model as AmModel
+import Am.Types.Slot as AmSlot
 import Am.View as AmView
 import Am.Utils.Update as AmUpdate
 import Am.Utils.Init as AmInit
 import Am.Utils.AbacusParser as AmParser
 import Am.Utils.HelperFunctions as AmHelper
 
+import Ram.Types.Messages as RamMsg 
 import Ram.Types.Model as RamModel
+import Ram.Types.Slot as RamSlot
 import Ram.View as RamView
 import Ram.Utils.Update as RamUpdate
 import Ram.Utils.Init as RamInit
 import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
-import Ram.Types.Messages as RamMsg 
 
 import Shared.Ports exposing (getItem, gotItem)
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+
+import Json.Decode as Decode exposing (Decoder)
+import Html exposing (input)
 
 -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
@@ -138,10 +143,6 @@ init _ url key =
                     List.map (\i -> getItem ("am_slot_" ++ String.fromInt i)) (List.range 1 20)
                 , Cmd.batch <|
                     List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
-                
-                , getItem "ram_current_input_tape"
-                , Cmd.batch <|
-                    List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i ++ "_input_tape")) (List.range 1 20)
                 ]
     in
     ( { page = pageFromUrl
@@ -151,6 +152,30 @@ init _ url key =
       }
     , cmdToLoad
     )
+
+decodeSlotAm : String -> Maybe AmSlot.Slot
+decodeSlotAm str =
+    let
+        decodedSlot = Decode.map2 AmSlot.Slot
+                    (Decode.field "name" Decode.string)
+                    (Decode.field "inputText" Decode.string)
+    in
+    Decode.decodeString decodedSlot str |> Result.toMaybe
+
+decodeSlotRam : String -> Maybe RamSlot.Slot
+decodeSlotRam str =
+    let
+        decodedSlot = Decode.map3 RamSlot.Slot
+                    (Decode.field "name" Decode.string)
+                    (Decode.field "inputText" Decode.string)
+                    (Decode.field "inputTape" (Decode.array Decode.int))
+    in
+    Decode.decodeString decodedSlot str |> Result.toMaybe
+
+-- decodeInputTape : String -> Maybe (Array Int)
+-- decodeInputTape str =
+--     Decode.decodeString (Decode.array Decode.int) str
+--         |> Result.toMaybe
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -216,136 +241,119 @@ update msg model =
             ( { model | page = newPage }, Cmd.none )
         
         GotItem (key, code) ->
-            let
-                rawCode =
-                    Maybe.withDefault "" code
-            in
             if String.startsWith "am_" key then
-                case key of
-                    "am_current" ->
-                        let
-                            instructions =
-                                AmParser.parseAM rawCode model.abacusModel 
-                            
-                            innerAbacusModel = model.abacusModel
-                            updatedAbacusModel =
-                                { innerAbacusModel
-                                    | inputText = rawCode
-                                    , instructions = instructions
-                                }
-                        in
-                        ( { model | abacusModel = updatedAbacusModel }
-                        , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator"))
-                        )
-
-                    _ ->
-                        let
-                            maybeSlotIndex =
-                                if String.startsWith "am_slot_" key then
-                                    String.dropLeft 8 key |> String.toInt
-                                else
-                                    Nothing
-                        in
-                        case maybeSlotIndex of
-                            Just i ->
+                let
+                    decodedSlot = decodeSlotAm (Maybe.withDefault "" code)
+                in
+                case decodedSlot of
+                    Just slot ->
+                        case key of
+                            "am_current" ->
                                 let
-                                    updatedSlots =
-                                        Array.set i rawCode model.abacusModel.slots
-
+                                    instructions = AmParser.parseAM slot.inputText model.abacusModel
+                                    
                                     innerAbacusModel = model.abacusModel
                                     updatedAbacusModel =
-                                        {
-                                            innerAbacusModel
-                                            | slots = updatedSlots
+                                        { innerAbacusModel
+                                            | inputText = slot.inputText
+                                            , instructions = instructions
                                         }
                                 in
-                                ( { model | abacusModel = updatedAbacusModel }, Cmd.none )
+                                ( { model | abacusModel = updatedAbacusModel }
+                                , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator"))
+                                )
 
-                            Nothing ->
-                                ( model, Cmd.none )
+                            _ ->
+                                let
+                                    maybeSlotIndex =
+                                        if String.startsWith "am_slot_" key then
+                                            String.dropLeft 8 key |> String.toInt
+                                        else
+                                            Nothing
+                                in
+                                case maybeSlotIndex of
+                                    Just i ->
+                                        case Array.get i model.abacusModel.slots of
+                                            Just updatingThisSlot ->
+                                                let
+                                                    updatedSlot = { updatingThisSlot | inputText = slot.inputText, name = slot.name }
+                                                    innerAbacusModel = model.abacusModel
+                                                    updatedAbacusModel = 
+                                                        { 
+                                                            innerAbacusModel 
+                                                            | slots = Array.set i updatedSlot model.abacusModel.slots 
+                                                        }
+
+                                                in
+                                                ( { model | abacusModel = updatedAbacusModel }
+                                                , Cmd.none
+                                                )
+
+                                            Nothing ->
+                                                ( model, Cmd.none )
+
+                                    Nothing ->
+                                        ( model, Cmd.none )
+                    Nothing ->
+                        ( model, Cmd.none )
 
             else if String.startsWith "ram_" key then
-                case key of
-                    "ram_current" ->
-                        let
-                            instructions =
-                                RamParser.parseRAM rawCode model.ramModel
-
-                            innerRamModel = model.ramModel    
-                            updatedRamModel =
-                                {   
-                                    innerRamModel
-                                    | inputText = rawCode
-                                    , instructions = instructions
-                                }
-                        in
-                        ( { model | ramModel = updatedRamModel }
-                        , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )
-                        )
-
-                    "ram_current_input_tape" -> 
-                        let
-                            decodedTape =
-                                RamHelper.decodeInputTape rawCode
-                        in
-                        case decodedTape of
-                            Just tape ->
+                let
+                    decodedSlot = decodeSlotRam (Maybe.withDefault "" code)
+                in
+                case decodedSlot of
+                    Just slot ->
+                        case key of
+                            "ram_current" ->
                                 let
-                                    innerRamModel = model.ramModel
+                                    instructions = RamParser.parseRAM slot.inputText model.ramModel
+
+                                    innerRamModel = model.ramModel    
                                     updatedRamModel =
-                                        { innerRamModel | inputTape = tape }
+                                        {   
+                                            innerRamModel
+                                            | inputText = slot.inputText
+                                            , instructions = instructions
+                                            , inputTape = slot.inputTape
+                                        }
                                 in
-                                ( { model | ramModel = updatedRamModel }, Cmd.none )
+                                ( { model | ramModel = updatedRamModel }
+                                , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )
+                                )
 
-                            Nothing ->
-                                ( model, Cmd.none )
-                    _ ->
-                        if String.endsWith "_input_tape" key then
-                            let
-                                maybeSlotIndex = String.dropRight 11 key |> String.dropLeft 9 |> String.toInt
-                                maybeTape = RamHelper.decodeInputTape rawCode
-                            in
-                            case maybeSlotIndex of
-                                Just i ->
-                                    let
-                                        updatedTape = Maybe.withDefault Array.empty maybeTape
-                                        updatedSlots = Array.set i updatedTape model.ramModel.slots_input_tapes
-                                        innerRamModel = model.ramModel
-                                        updatedRamModel =
-                                            {
-                                                innerRamModel
-                                                | slots_input_tapes = updatedSlots
-                                            }
-                                    in
-                                    ( { model | ramModel = updatedRamModel }, Cmd.none )
+                            _ ->
+                                let
+                                    maybeSlotIndex =
+                                        if String.startsWith "ram_slot_" key then
+                                            String.dropLeft 9 key |> String.toInt
+                                        else
+                                            Nothing
+                                in
+                                case maybeSlotIndex of
+                                    Just i ->
+                                        case Array.get i model.ramModel.slots of
+                                            Just updatingThisSlot ->
+                                                let
+                                                    updatedSlots = { updatingThisSlot | inputText = slot.inputText, name = slot.name, inputTape = slot.inputTape }
 
-                                Nothing ->
-                                    ( model, Cmd.none )
-                        else
-                            let
-                                maybeSlotIndex =
-                                    if String.startsWith "ram_slot_" key then
-                                        String.dropLeft 9 key |> String.toInt
-                                    else
-                                        Nothing
-                            in
-                            case maybeSlotIndex of
-                                Just i ->
-                                    let
-                                        updatedSlots =
-                                            Array.set i rawCode model.ramModel.slots
+                                                    innerRamModel = model.ramModel
+                                                    updatedRamModel =
+                                                        {
+                                                            innerRamModel
+                                                            | slots = Array.set i updatedSlots model.ramModel.slots
+                                                        }
+                                                in
+                                                ( { model | ramModel = updatedRamModel }
+                                                , Cmd.none 
+                                                )
 
-                                        innerRamModel = model.ramModel
-                                        updatedRamModel =
-                                            {
-                                                innerRamModel
-                                                | slots = updatedSlots
-                                            }
-                                    in
-                                    ( { model | ramModel = updatedRamModel }, Cmd.none )
+                                            Nothing ->
+                                                ( model, Cmd.none )
 
-                                Nothing ->
-                                    ( model, Cmd.none )
+                                    Nothing ->
+                                        ( model, Cmd.none )
+                    Nothing ->
+                            ( model, Cmd.none )
 
             else
                 ( model, Cmd.none )

@@ -3,6 +3,7 @@ module Ram.Utils.Update exposing (..)
 import Ram.Types.Messages exposing (Msg)
 import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg(..))
+import Ram.Types.Slot exposing (Slot)
 
 import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
@@ -16,6 +17,7 @@ import Array
 
 import Shared.Ports exposing (setItem, scrollToBottom)
 import Ram.Utils.PrintErrors exposing (printErrors)
+import Platform.Cmd as Cmd
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -24,8 +26,10 @@ update msg model =
         UpdateCode newCode ->
             let
                 newInstructions = parseRAM newCode model
+
+                encodedSlot = encodeSlot { name = "", inputText = newCode, inputTape = model.inputTape }
             in
-            ( { model | inputText = newCode, instructions = newInstructions }, setItem ("ram_current", newCode) )
+            ( { model | inputText = newCode, instructions = newInstructions}, setItem ("ram_current", encodedSlot) )
 
         Tick _ ->
             if not model.isRunning then
@@ -203,51 +207,43 @@ update msg model =
             )
 
         SaveSlot i ->
-            let
-                updatedSlots =
-                    Array.set i model.inputText model.slots
-                updatedInputTapeSlots = 
-                    Array.set i model.inputTape model.slots_input_tapes
-            in
-            ( { model | slots = updatedSlots 
-                      , slots_input_tapes = updatedInputTapeSlots
-              }
-            ,
-            Cmd.batch
-                [ setItem ("ram_slot_" ++ String.fromInt i, model.inputText)
-                , setItem ("ram_slot_" ++ String.fromInt i ++ "_input_tape", encodeInputTape model.inputTape)
-                ]
-            )
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot = { slot | inputText = model.inputText, inputTape = model.inputTape }
+                        encodedSlot = encodeSlot updatedSlot
+
+                    in
+                    ( 
+                    { model | slots = Array.set i updatedSlot model.slots } 
+                    , setItem ("ram_slot_" ++ String.fromInt i, encodedSlot)
+                    )
+                    
+                Nothing ->
+                    ( model, Cmd.none )
 
         DeleteSlot i ->
-            let
-                updatedSlots =
-                    Array.set i "" model.slots
-            in
-            ( { model | slots = updatedSlots }
-            , Cmd.batch
-                [ setItem ("ram_slot_" ++ String.fromInt i ++ "_input_tape", "")
-                , setItem ("ram_slot_" ++ String.fromInt i, "")
-                ] 
-            )
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot = { slot | inputText = "", inputTape = Array.empty }
+                        encodedSlot = encodeSlot updatedSlot
+                    in
+                    (
+                    { model | slots = Array.set i updatedSlot model.slots }
+                    , setItem ("ram_slot_" ++ String.fromInt i, encodedSlot) 
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         LoadSlot i ->
-            let
-                maybeCode = Array.get i model.slots
-                maybeInputTape = Array.get i model.slots_input_tapes
-                actualInputTape = Maybe.withDefault Array.empty maybeInputTape
-            in
-            case maybeCode of
-                Nothing ->
-                    ( model, Cmd.none ) 
-                Just code ->
-                    let
-                        instructions = parseRAM code model
-                    in
+            case Array.get i model.slots of
+                Just slot ->
                     ( { model 
-                        | inputText = code
-                        , instructions = instructions
-                        , inputTape = actualInputTape
+                        | inputText = slot.inputText
+                        , instructions = parseRAM slot.inputText model
+                        , inputTape = slot.inputTape
                         , inputTapePointer = 0
                         , instructionPointer = 0
                         , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
@@ -259,11 +255,11 @@ update msg model =
                         , isRunning = False
                         , outputTape = Array.empty
                         }
-                    , Cmd.batch
-                        [ setItem ("ram_current", code)
-                        , setItem ("ram_current_input_tape", encodeInputTape actualInputTape)
-                        ]
+                    , setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot )
                     )
+
+                _ ->
+                    (model, Cmd.none)
         
         ToggleSlotsModal ->
             ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )
@@ -271,16 +267,18 @@ update msg model =
         UpdateInputTape idx value ->
             let
                 updatedTape = Array.set idx value model.inputTape
-                encodedTape = encodeInputTape updatedTape
             in
-            ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape) )
+            ( { model | inputTape = updatedTape }
+            , setItem ("ram_current", { name = "", inputText = model.inputText, inputTape = updatedTape } |> encodeSlot)
+            )
         
         AddCellToInputTape ->
             let
                 updatedTape = Array.push 0 model.inputTape
-                encodedTape = encodeInputTape updatedTape
             in
-            ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape))
+            ( { model | inputTape = updatedTape }
+            , setItem ("ram_current", { name = "", inputText = model.inputText, inputTape = updatedTape } |> encodeSlot)
+            )
         
         RemoveLastCell ->
             let
@@ -289,9 +287,10 @@ update msg model =
             if len > 0 then
                 let
                     updatedTape = Array.slice 0 (len - 1) model.inputTape
-                    encodedTape = encodeInputTape updatedTape
                 in
-                ( { model | inputTape = updatedTape }, setItem ("ram_current_input_tape", encodedTape)) 
+                ( { model | inputTape = updatedTape }
+                , setItem ("ram_current", { name = "", inputText = model.inputText, inputTape = updatedTape } |> encodeSlot)
+                ) 
             else
                 ( model, Cmd.none )
         
@@ -300,4 +299,18 @@ update msg model =
 
         NoOp ->
             ( model, Cmd.none )
+        
+        UpdateSlotName i newName ->
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot : Slot
+                        updatedSlot = { slot | name = newName }
+                        
+                        encodedSlot = encodeSlot updatedSlot
+                    in
+                    ( { model | slots = Array.set i updatedSlot model.slots }, setItem ("ram_slot_" ++ String.fromInt i, encodedSlot) )
+
+                Nothing ->
+                    ( model, Cmd.none )
             

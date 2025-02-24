@@ -4,8 +4,6 @@ import List exposing (range)
 import Array
 
 -- INIT
-
-init : { inputText : String, registers : Dict.Dict Int number, highlighted : Dict.Dict k v, instructions : List a, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List b, slots : Array.Array String, showSlotsModal : Bool }
 init =
     let
         initialModel =
@@ -19,7 +17,29 @@ init =
             , speeds = Array.fromList [ 4000 , 2000, 1000, 500, 300, 100, 0 ]
             , speedIdx = 4
             , consoleMessages = []
-            , slots = Array.repeat 21 ""
+            , slots = Array.fromList
+                [ { name = "", inputText = "" }
+                , { name = "Slot 1", inputText = "" }
+                , { name = "Slot 2", inputText = "" }
+                , { name = "Slot 3", inputText = "" }
+                , { name = "Slot 4", inputText = "" }
+                , { name = "Slot 5", inputText = "" }
+                , { name = "Slot 6", inputText = "" }
+                , { name = "Slot 7", inputText = "" }
+                , { name = "Slot 8", inputText = "" }
+                , { name = "Slot 9", inputText = "" }
+                , { name = "Slot 10", inputText = "" }
+                , { name = "Slot 11", inputText = "" }
+                , { name = "Slot 12", inputText = "" }
+                , { name = "Slot 13", inputText = "" }
+                , { name = "Slot 14", inputText = "" }
+                , { name = "Slot 15", inputText = "" }
+                , { name = "Slot 16", inputText = "" }
+                , { name = "Slot 17", inputText = "" }
+                , { name = "Slot 18", inputText = "" }
+                , { name = "Slot 19", inputText = "" }
+                , { name = "Slot 20", inputText = "" }
+                ]
             , showSlotsModal = False
             }
         
