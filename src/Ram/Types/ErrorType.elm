@@ -5,6 +5,7 @@ type ErrorType
     | ReferencingNonExistingReg
     | DuplicatedLabel
     | ReferencingNonExistingLabel
+    | InvalidInstruction
     -- | UnknownInstructionError
 
     -- | ReadingFromEmptyInputTape

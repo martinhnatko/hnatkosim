@@ -25,7 +25,9 @@ printErrors instructions =
 
         referencingNonExistingLabelMsg = checkForReferencingNonExistingLabel instructions
 
-        cmds = List.filterMap identity [ unknownInstructionsMsg, nonExistingRegErrorMsg, dbzMsg, duplicatedLabelsMsg, referencingNonExistingLabelMsg ]
+        invalidInstructionsMsg = checkForInvalidInstructions instructions
+
+        cmds = List.filterMap identity [ unknownInstructionsMsg, nonExistingRegErrorMsg, dbzMsg, duplicatedLabelsMsg, referencingNonExistingLabelMsg, invalidInstructionsMsg ]
     in
     Cmd.batch cmds
 
@@ -236,5 +238,49 @@ checkForReferencingNonExistingLabel instructions =
         Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERLCount ++ " instruction that is referencing non-existing label at position " ++ (String.join ", " (List.map String.fromInt nERLPositions) ) ++ "."))
     else if nERLCount > 1 then
         Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERLCount ++ " instructions that are referencing non-existing labels at positions: " ++ (String.join ", " (List.map String.fromInt nERLPositions) ) ++ "."))
+    else
+        Nothing
+
+checkForInvalidInstructions : List Instruction -> Maybe (Cmd Msg)
+checkForInvalidInstructions instructions =
+    let
+        invalidPositions : List Int
+        invalidPositions =
+            instructions
+                |> List.indexedMap
+                    (\i instr ->
+                        case instr of
+                            Store _ isError ->
+                                case isError of
+                                    Just InvalidInstruction ->
+                                        Just (i + 1)
+                                    _ ->
+                                        Nothing
+
+                            Read _ isError ->
+                                case isError of
+                                    Just InvalidInstruction ->
+                                        Just (i + 1)
+                                    _ ->
+                                        Nothing
+
+                            Write _ isError ->
+                                case isError of
+                                    Just InvalidInstruction ->
+                                        Just (i + 1)
+                                    _ ->
+                                        Nothing
+
+                            _ ->
+                                Nothing
+                    )
+                |> List.filterMap identity
+
+        invalidCount = List.length invalidPositions
+    in 
+    if invalidCount == 1 then
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt invalidCount ++ " invalid instruction at position " ++ (String.join ", " (List.map String.fromInt invalidPositions) ) ++ "."))
+    else if invalidCount > 1 then
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt invalidCount ++ " invalid instructions at positions: " ++ (String.join ", " (List.map String.fromInt invalidPositions) ) ++ "."))
     else
         Nothing

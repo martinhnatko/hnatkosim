@@ -134,7 +134,7 @@ parseInstruction labels line idx model =
                             "STORE" ->
                                 case operand of
                                     Constant _ -> 
-                                        Store operand Nothing
+                                        Store operand (Just InvalidInstruction)
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
@@ -222,7 +222,7 @@ parseInstruction labels line idx model =
                             "READ" ->
                                 case operand of
                                     Constant _ -> 
-                                        Read operand Nothing
+                                        Read operand (Just InvalidInstruction)
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
@@ -239,7 +239,7 @@ parseInstruction labels line idx model =
                             "WRITE" ->
                                 case operand of
                                     Constant _ -> 
-                                        Write operand Nothing
+                                        Write operand (Just InvalidInstruction)
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
