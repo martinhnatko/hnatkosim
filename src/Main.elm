@@ -145,6 +145,8 @@ init _ url key =
                         List.map (\i -> getItem ("am_slot_" ++ String.fromInt i)) (List.range 1 20)
                     , Cmd.batch <|
                         List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
+                    , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator") )
+                    , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )    
                     , subToTextArea ()
                     ]
             else
@@ -155,6 +157,8 @@ init _ url key =
                         List.map (\i -> getItem ("am_slot_" ++ String.fromInt i)) (List.range 1 20)
                     , Cmd.batch <|
                         List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
+                    , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator") )
+                    , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )    
                     ]
     in
     ( { page = pageFromUrl
@@ -277,7 +281,7 @@ update msg model =
                                         }
                                 in
                                 ( { model | abacusModel = updatedAbacusModel }
-                                , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator"))
+                                , Cmd.none
                                 )
 
                             _ ->
@@ -335,7 +339,7 @@ update msg model =
                                         }
                                 in
                                 ( { model | ramModel = updatedRamModel }
-                                , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )
+                                , Cmd.none
                                 )
 
                             _ ->
