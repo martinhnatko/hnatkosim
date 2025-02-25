@@ -24,6 +24,26 @@
     node: document.getElementById('myapp')
   });
 
+  app.ports.subToTextArea.subscribe(function() {
+    var textbox = document.getElementById('textbox');
+    if (textbox) {
+      textbox.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var start = this.selectionStart;
+          var end = this.selectionEnd;
+
+          // Insert a tab character at the cursor position
+          this.value = this.value.substring(0, start) +
+            "\t" + this.value.substring(end);
+
+          // Move the cursor to the correct position after inserting the tab
+          this.selectionStart = this.selectionEnd = start + 1;
+        }
+      });
+    }
+  });
+
   app.ports.scrollToBottom.subscribe(function (elementId) {
     requestAnimationFrame(() => {
         const el = document.getElementById(elementId);

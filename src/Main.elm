@@ -1,18 +1,5 @@
 module Main exposing (main)
 
-import Html exposing (div, text, button)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
-
-import String
-import Time
-import Array
-
-import Browser
-import Browser.Navigation as Nav
-
-import Url exposing (Url)
-
 import Am.Types.Messages as AmMsg
 import Am.Types.Model as AmModel
 import Am.Types.Slot as AmSlot
@@ -31,20 +18,35 @@ import Ram.Utils.Init as RamInit
 import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
 
-import Shared.Ports exposing (getItem, gotItem)
+import Shared.Ports exposing (getItem, gotItem, subToTextArea)
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
+import Html exposing (div, text, button)
+import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
+
+import String
+import Time
+import Array
+import Task
+import Process
+
+import Browser
+import Browser.Navigation as Nav
+
+import Url exposing (Url)
+
 import Json.Decode as Decode
+
 
 -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
 abacusSubscriptions model =
     if model.isRunning then
         let
-            defaultSpeed = 1000
             speed =
                 Array.get (model.speedIdx - 1) model.speeds
-                    |> Maybe.withDefault defaultSpeed
+                    |> Maybe.withDefault 1000
         in
         Time.every (toFloat speed) AmMsg.Tick
     else
@@ -55,10 +57,9 @@ ramSubscriptions : RamModel.Model -> Sub RamMsg.Msg
 ramSubscriptions model =
     if model.isRunning then
         let
-            defaultSpeed = 1000
             speed =
                 Array.get (model.speedIdx - 1) model.speeds
-                    |> Maybe.withDefault defaultSpeed
+                    |> Maybe.withDefault 1000
         in
         Time.every (toFloat speed) RamMsg.Tick
     else
@@ -117,6 +118,7 @@ type Msg
     | RamMsg RamMsg.Msg
     | UrlChanged Url
     | GotItem (String, Maybe String)
+    | DelayedSubToTextArea
     | NoOp
 
 
@@ -135,20 +137,31 @@ init _ url key =
                     Landing
 
         cmdToLoad =
-            Cmd.batch
-                [ getItem "am_current"
-                , getItem "ram_current"
-                , Cmd.batch <|
-                    List.map (\i -> getItem ("am_slot_" ++ String.fromInt i)) (List.range 1 20)
-                , Cmd.batch <|
-                    List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
-                ]
+            if pageFromUrl == AbacusPage || pageFromUrl == RamPage then
+                Cmd.batch
+                    [ getItem "am_current"
+                    , getItem "ram_current"
+                    , Cmd.batch <|
+                        List.map (\i -> getItem ("am_slot_" ++ String.fromInt i)) (List.range 1 20)
+                    , Cmd.batch <|
+                        List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
+                    , subToTextArea ()
+                    ]
+            else
+                Cmd.batch
+                    [ getItem "am_current"
+                    , getItem "ram_current"
+                    , Cmd.batch <|
+                        List.map (\i -> getItem ("am_slot_" ++ String.fromInt i)) (List.range 1 20)
+                    , Cmd.batch <|
+                        List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
+                    ]
     in
     ( { page = pageFromUrl
-      , abacusModel = AmInit.init
-      , ramModel = RamInit.init
-      , key = key
-      }
+    , abacusModel = AmInit.init
+    , ramModel = RamInit.init
+    , key = key
+    }
     , cmdToLoad
     )
 
@@ -171,11 +184,6 @@ decodeSlotRam str =
     in
     Decode.decodeString decodedSlot str |> Result.toMaybe
 
--- decodeInputTape : String -> Maybe (Array Int)
--- decodeInputTape str =
---     Decode.decodeString (Decode.array Decode.int) str
---         |> Result.toMaybe
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -191,9 +199,11 @@ update msg model =
 
                         Landing ->
                             "#"
+
             in
             ( { model | page = newPage }
-            , Nav.pushUrl model.key newUrl
+            , 
+            Nav.pushUrl model.key newUrl
             )
 
         AbacusMsg subMsg ->
@@ -236,8 +246,16 @@ update msg model =
 
                         _ ->
                             Landing
+                
+                cmdToLoad =
+                    if newPage == AbacusPage || newPage == RamPage then
+                        Task.perform (\_ -> DelayedSubToTextArea) (Process.sleep (100))
+                    else
+                        Cmd.none
             in
-            ( { model | page = newPage }, Cmd.none )
+            ( { model | page = newPage }
+             , cmdToLoad
+            )
         
         GotItem (key, code) ->
             if String.startsWith "am_" key then
@@ -360,9 +378,9 @@ update msg model =
 
         NoOp ->
             ( model , Cmd.none )
-
-
-
+    
+        DelayedSubToTextArea ->
+            ( model, subToTextArea () )
 
 view : Model -> Browser.Document Msg
 view model =
