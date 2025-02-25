@@ -216,7 +216,7 @@ update msg model =
                     in
                     ( 
                     { model | slots = Array.set i updatedSlot model.slots } 
-                    , setItem ("ram_slot_" ++ String.fromInt i, encodedSlot)
+                    , Cmd.batch [ setItem ("ram_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Current code saved to slot "  ++ String.fromInt i ++ "." ) ]
                     )
                     
                 Nothing ->
@@ -231,7 +231,7 @@ update msg model =
                     in
                     (
                     { model | slots = Array.set i updatedSlot model.slots }
-                    , setItem ("ram_slot_" ++ String.fromInt i, encodedSlot) 
+                    , Cmd.batch [ setItem ("ram_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " deleted.") ]
                     )
 
                 Nothing ->
@@ -255,7 +255,7 @@ update msg model =
                         , isRunning = False
                         , outputTape = Array.empty
                         }
-                    , setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot )
+                    , Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot ), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ]
                     )
 
                 _ ->

@@ -137,7 +137,9 @@ update msg model =
                         updatedSlot = { slot | inputText = model.inputText }
                         encodedSlot = encodeSlot updatedSlot
                     in
-                    ( { model | slots = Array.set i updatedSlot model.slots }, setItem ("am_slot_" ++ String.fromInt i, encodedSlot) )
+                    ( { model | slots = Array.set i updatedSlot model.slots }
+                    , Cmd.batch [ setItem ("am_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Current code saved to slot " ++ String.fromInt i ++ ".") ]
+                    )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -150,7 +152,7 @@ update msg model =
                         encodedSlot = encodeSlot updatedSlot
                     in
                     ( { model | slots = Array.set i updatedSlot model.slots }
-                    , setItem ("am_slot_" ++ String.fromInt i, encodedSlot) 
+                    , Cmd.batch [ setItem ("am_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " deleted.") ]
                     )
                 
                 _ ->
@@ -167,7 +169,7 @@ update msg model =
                         , instructionPointer = 0
                         , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
                     }
-                    , setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot) 
+                    , Cmd.batch [ setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ]
                     )
                 
                 Nothing ->
