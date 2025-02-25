@@ -7,6 +7,7 @@ import Am.Types.Instructions exposing (Instruction(..))
 import Dict
 import Task
 import Process
+import Array
 
 executeInstruction : Model -> Int -> (Model, Cmd Msg)
 executeInstruction model highlightDuration =
@@ -24,48 +25,60 @@ executeInstruction model highlightDuration =
             ( { model | isRunning = False }, Cmd.none )
 
         Just instr ->
+            let 
+                dontHighlight : Bool
+                dontHighlight = model.speedIdx == List.length ( Array.toList model.speeds ) && model.isRunning
+            in
             case instr of
                 Increment reg isError ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
-                            let
-                                updatedRegisters =
-                                    Dict.update reg (Maybe.map (\val -> val + 1)) model.registers
+                            if dontHighlight then
+                                ( { model | registers = (Dict.update reg (Maybe.map (\val -> val + 1)) model.registers), instructionPointer = nextInstructionPointer }
+                                , Cmd.none )
+                            else
+                                let
+                                    updatedRegisters =
+                                        Dict.update reg (Maybe.map (\val -> val + 1)) model.registers
 
-                                updatedModel =
-                                    { model
-                                        | registers = updatedRegisters
-                                        , instructionPointer = nextInstructionPointer
-                                        , highlighted =
-                                            Dict.insert reg "bg-green-200" model.highlighted
-                                    }
-                            in
-                            ( updatedModel
-                            , Task.perform (\_ -> RemoveHighlight reg) (Process.sleep (toFloat highlightDuration))
-                            )
+                                    updatedModel =
+                                        { model
+                                            | registers = updatedRegisters
+                                            , instructionPointer = nextInstructionPointer
+                                            , highlighted =
+                                                Dict.insert reg "bg-green-200" model.highlighted
+                                        }
+                                in
+                                ( updatedModel
+                                , Task.perform (\_ -> RemoveHighlight reg) (Process.sleep (toFloat highlightDuration))
+                                )
 
                 Decrement reg isError ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
-                            let
-                                updatedRegisters =
-                                    Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers
+                            if dontHighlight then
+                                ( { model | registers = (Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers), instructionPointer = nextInstructionPointer }
+                                , Cmd.none )
+                            else
+                                let
+                                    updatedRegisters =
+                                        Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers
 
-                                updatedModel =
-                                    { model
-                                        | registers = updatedRegisters
-                                        , instructionPointer = nextInstructionPointer
-                                        , highlighted =
-                                            Dict.insert reg "bg-yellow-200" model.highlighted
-                                    }
-                            in
-                            ( updatedModel
-                            , Task.perform (\_ -> RemoveHighlight reg) (Process.sleep (toFloat highlightDuration))
-                            )
+                                    updatedModel =
+                                        { model
+                                            | registers = updatedRegisters
+                                            , instructionPointer = nextInstructionPointer
+                                            , highlighted =
+                                                Dict.insert reg "bg-yellow-200" model.highlighted
+                                        }
+                                in
+                                ( updatedModel
+                                , Task.perform (\_ -> RemoveHighlight reg) (Process.sleep (toFloat highlightDuration))
+                                )
 
                 StartLoop endLoopIndex conditionIndex isError ->
                     case isError of

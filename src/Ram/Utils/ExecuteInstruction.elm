@@ -78,25 +78,6 @@ executeInstruction model highlightDuration =
                                             )
                                         
                                         Just value ->
-                                            let
-                                                updatedModel =
-                                                    { model
-                                                        | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert 0 value model.registers
-                                                        , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
-                                                    }
-                                                
-                                                -- After `highlightDuration`, switch the highlight from the source register to the accumulator.
-                                                switchHighlightCmd =
-                                                    Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
-                                                        (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                -- After an additional delay, remove the highlight from the accumulator.
-                                                removeHighlightCmd =
-                                                    Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                        (Process.sleep (toFloat (highlightDuration)))
-
-                                            in
                                             if dontHighlight then
                                                 ( { model
                                                         | instructionPointer = nextInstructionPointer
@@ -104,6 +85,25 @@ executeInstruction model highlightDuration =
                                                     }
                                                 , Cmd.none )
                                             else
+                                                let
+                                                    updatedModel =
+                                                        { model
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , registers = Dict.insert 0 value model.registers
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                        }
+                                                    
+                                                    -- After `highlightDuration`, switch the highlight from the source register to the accumulator.
+                                                    switchHighlightCmd =
+                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
+                                                            (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    -- After an additional delay, remove the highlight from the accumulator.
+                                                    removeHighlightCmd =
+                                                        Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                            (Process.sleep (toFloat (highlightDuration)))
+
+                                                in
                                                 ( updatedModel, Cmd.batch [ switchHighlightCmd, removeHighlightCmd ] )
 
                                 Indirect regIndex ->
@@ -127,22 +127,6 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to load from a non-existent register.")
                                                     )
                                                 Just value ->
-                                                    let
-                                                        updatedModel =
-                                                            { model
-                                                                | instructionPointer = nextInstructionPointer
-                                                                , registers = Dict.insert 0 value model.registers
-                                                                , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
-                                                            }
-
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-                                                        
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                                (Process.sleep (toFloat (highlightDuration)))
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
@@ -150,6 +134,22 @@ executeInstruction model highlightDuration =
                                                         }
                                                         , Cmd.none )
                                                     else
+                                                        let
+                                                            updatedModel =
+                                                                { model
+                                                                    | instructionPointer = nextInstructionPointer
+                                                                    , registers = Dict.insert 0 value model.registers
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                }
+
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+                                                            
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                                    (Process.sleep (toFloat (highlightDuration)))
+                                                        in
                                                         ( updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                         )
@@ -164,13 +164,9 @@ executeInstruction model highlightDuration =
                         _ ->
                             case operand of
                                 Constant _ ->
-                                    -- A STORE with a constant operand doesn't make sense, do nothing.
-                                    let
-                                        updatedModel =
-                                            { model | instructionPointer = nextInstructionPointer }
-                                    in
+                                    -- error detected by parsing
                                     (
-                                    updatedModel
+                                    { model | instructionPointer = nextInstructionPointer }
                                     , Cmd.none 
                                     )
 
@@ -185,22 +181,6 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just accVal ->
-                                            let
-                                                updatedModel =
-                                                    { model
-                                                        | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert regIndex accVal model.registers
-                                                        , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
-                                                    }
-                                                
-                                                switchHighlightCmd =
-                                                    Task.perform (\_ -> SwitchHighlight (1, 0) (1, regIndex, "bg-blue-200"))
-                                                        (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                removeHighlightCmd =
-                                                    Task.perform (\_ -> RemoveHighlightFromRegisters regIndex)
-                                                        (Process.sleep (toFloat (highlightDuration)))
-                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
@@ -208,6 +188,22 @@ executeInstruction model highlightDuration =
                                                 }
                                                 , Cmd.none )
                                             else
+                                                let
+                                                    updatedModel =
+                                                        { model
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , registers = Dict.insert regIndex accVal model.registers
+                                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                        }
+                                                    
+                                                    switchHighlightCmd =
+                                                        Task.perform (\_ -> SwitchHighlight (1, 0) (1, regIndex, "bg-blue-200"))
+                                                            (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    removeHighlightCmd =
+                                                        Task.perform (\_ -> RemoveHighlightFromRegisters regIndex)
+                                                            (Process.sleep (toFloat (highlightDuration)))
+                                                in
                                                 ( updatedModel
                                                 , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                 )
@@ -233,22 +229,6 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store a non-existent value.") 
                                                     )
                                                 Just accVal ->
-                                                    let
-                                                        updatedModel =
-                                                            { model
-                                                                | instructionPointer = nextInstructionPointer
-                                                                , registers = Dict.insert pointer accVal model.registers
-                                                                , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
-                                                            }
-                                                        
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (1, 0) (1, pointer, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-                                                        
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters pointer)
-                                                                (Process.sleep (toFloat (highlightDuration)))
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
@@ -256,6 +236,22 @@ executeInstruction model highlightDuration =
                                                         }
                                                         , Cmd.none )
                                                     else
+                                                        let
+                                                            updatedModel =
+                                                                { model
+                                                                    | instructionPointer = nextInstructionPointer
+                                                                    , registers = Dict.insert pointer accVal model.registers
+                                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                                }
+                                                            
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (1, 0) (1, pointer, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+                                                            
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters pointer)
+                                                                    (Process.sleep (toFloat (highlightDuration)))
+                                                        in
                                                         ( updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                         )
@@ -270,29 +266,29 @@ executeInstruction model highlightDuration =
                         _ ->    
                             case operand of
                                 Constant n ->
-                                    let
-                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                        value = n
-
-                                        updatedModel =
-                                            { model
-                                                | instructionPointer = nextInstructionPointer
-                                                , registers = Dict.insert 0 (accVal + value) model.registers
-                                                , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
-                                            }
-                                        
-                                        removeHighlightCmd =
-                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                (Process.sleep (toFloat highlightDuration))
-                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 (accVal + value) model.registers
+                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) + n) model.registers
                                         }
                                         , Cmd.none
                                         )
                                     else
+                                        let
+                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                            value = n
+
+                                            updatedModel =
+                                                { model
+                                                    | instructionPointer = nextInstructionPointer
+                                                    , registers = Dict.insert 0 (accVal + value) model.registers
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                }
+                                            
+                                            removeHighlightCmd =
+                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                    (Process.sleep (toFloat highlightDuration))
+                                        in
                                         ( updatedModel
                                         , removeHighlightCmd
                                         )
@@ -309,22 +305,6 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
-                                            let
-                                                updatedModel =
-                                                    { model
-                                                        | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert 0 (accVal + value) model.registers
-                                                        , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
-                                                    }
-                                                
-                                                switchHighlightCmd =
-                                                    Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
-                                                        (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                removeHighlightCmd =    
-                                                    Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                        (Process.sleep (toFloat highlightDuration))
-                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
@@ -333,6 +313,22 @@ executeInstruction model highlightDuration =
                                                 , Cmd.none
                                                 )
                                             else
+                                                let
+                                                    updatedModel =
+                                                        { model
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , registers = Dict.insert 0 (accVal + value) model.registers
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                        }
+                                                    
+                                                    switchHighlightCmd =
+                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
+                                                            (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    removeHighlightCmd =    
+                                                        Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                            (Process.sleep (toFloat highlightDuration))
+                                                in
                                                 ( updatedModel
                                                 , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                 )
@@ -359,22 +355,6 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to add a non-existent value.")
                                                     )
                                                 Just value ->
-                                                    let
-                                                        updatedModel =
-                                                            { model
-                                                                | instructionPointer = nextInstructionPointer
-                                                                , registers = Dict.insert 0 (accVal + value) model.registers
-                                                                , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
-                                                            }
-
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                                (Process.sleep (toFloat highlightDuration))
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
@@ -383,6 +363,22 @@ executeInstruction model highlightDuration =
                                                         , Cmd.none
                                                         )
                                                     else
+                                                        let
+                                                            updatedModel =
+                                                                { model
+                                                                    | instructionPointer = nextInstructionPointer
+                                                                    , registers = Dict.insert 0 (accVal + value) model.registers
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                }
+
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                                    (Process.sleep (toFloat highlightDuration))
+                                                        in
                                                         (
                                                         updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
@@ -398,29 +394,29 @@ executeInstruction model highlightDuration =
                         _ ->
                             case operand of
                                 Constant n ->
-                                    let
-                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                        value = n
-
-                                        updatedModel =
-                                            { model
-                                                | instructionPointer = nextInstructionPointer
-                                                , registers = Dict.insert 0 (accVal - value) model.registers
-                                                , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
-                                            }
-                                        
-                                        removeHighlightCmd =
-                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                (Process.sleep (toFloat highlightDuration))
-                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 (accVal - value) model.registers
+                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) - n) model.registers
                                         }
                                         , Cmd.none
                                         )
                                     else
+                                        let
+                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                            value = n
+
+                                            updatedModel =
+                                                { model
+                                                    | instructionPointer = nextInstructionPointer
+                                                    , registers = Dict.insert 0 (accVal - value) model.registers
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                }
+                                            
+                                            removeHighlightCmd =
+                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                    (Process.sleep (toFloat highlightDuration))
+                                        in
                                         ( updatedModel
                                         , removeHighlightCmd
                                         )
@@ -437,22 +433,6 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
-                                            let
-                                                updatedModel =
-                                                    { model
-                                                        | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert 0 (accVal - value) model.registers
-                                                        , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
-                                                    }
-                                                
-                                                switchHighlightCmd =
-                                                    Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
-                                                        (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                removeHighlightCmd =    
-                                                    Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                        (Process.sleep (toFloat highlightDuration))
-                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
@@ -461,6 +441,22 @@ executeInstruction model highlightDuration =
                                                 , Cmd.none
                                                 )
                                             else
+                                                let
+                                                    updatedModel =
+                                                        { model
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , registers = Dict.insert 0 (accVal - value) model.registers
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                        }
+                                                    
+                                                    switchHighlightCmd =
+                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
+                                                            (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    removeHighlightCmd =    
+                                                        Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                            (Process.sleep (toFloat highlightDuration))
+                                                in
                                                 ( updatedModel
                                                 , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                 )
@@ -487,22 +483,6 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to subtract a non-existent value.")
                                                     )
                                                 Just value ->
-                                                    let
-                                                        updatedModel =
-                                                            { model
-                                                                | instructionPointer = nextInstructionPointer
-                                                                , registers = Dict.insert 0 (accVal - value) model.registers
-                                                                , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
-                                                            }
-
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                                (Process.sleep (toFloat highlightDuration))
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
@@ -511,6 +491,22 @@ executeInstruction model highlightDuration =
                                                         , Cmd.none
                                                         )
                                                     else
+                                                        let
+                                                            updatedModel =
+                                                                { model
+                                                                    | instructionPointer = nextInstructionPointer
+                                                                    , registers = Dict.insert 0 (accVal - value) model.registers
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                }
+
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                                    (Process.sleep (toFloat highlightDuration))
+                                                        in
                                                         (
                                                         updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
@@ -526,29 +522,29 @@ executeInstruction model highlightDuration =
                         _ ->
                             case operand of
                                 Constant n ->
-                                    let
-                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                        value = n
-
-                                        updatedModel =
-                                            { model
-                                                | instructionPointer = nextInstructionPointer
-                                                , registers = Dict.insert 0 (accVal * value) model.registers
-                                                , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
-                                            }
-                                        
-                                        removeHighlightCmd =
-                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                (Process.sleep (toFloat highlightDuration))
-                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 (accVal * value) model.registers
+                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) * n) model.registers
                                         }
                                         , Cmd.none
                                         )
                                     else
+                                        let
+                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                            value = n
+
+                                            updatedModel =
+                                                { model
+                                                    | instructionPointer = nextInstructionPointer
+                                                    , registers = Dict.insert 0 (accVal * value) model.registers
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                }
+                                            
+                                            removeHighlightCmd =
+                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                    (Process.sleep (toFloat highlightDuration))
+                                        in
                                         ( updatedModel
                                         , removeHighlightCmd
                                         )
@@ -565,22 +561,6 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
-                                            let
-                                                updatedModel =
-                                                    { model
-                                                        | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert 0 (accVal * value) model.registers
-                                                        , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
-                                                    }
-                                                
-                                                switchHighlightCmd =
-                                                    Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
-                                                        (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                removeHighlightCmd =    
-                                                    Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                        (Process.sleep (toFloat highlightDuration))
-                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
@@ -589,6 +569,22 @@ executeInstruction model highlightDuration =
                                                 , Cmd.none
                                                 )
                                             else
+                                                let
+                                                    updatedModel =
+                                                        { model
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , registers = Dict.insert 0 (accVal * value) model.registers
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                        }
+                                                    
+                                                    switchHighlightCmd =
+                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
+                                                            (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    removeHighlightCmd =    
+                                                        Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                            (Process.sleep (toFloat highlightDuration))
+                                                in
                                                 ( updatedModel
                                                 , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                 )
@@ -615,22 +611,6 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to multiply by a non-existent value.")
                                                     )
                                                 Just value ->
-                                                    let
-                                                        updatedModel =
-                                                            { model
-                                                                | instructionPointer = nextInstructionPointer
-                                                                , registers = Dict.insert 0 (accVal * value) model.registers
-                                                                , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
-                                                            }
-
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                                (Process.sleep (toFloat highlightDuration))
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
@@ -639,6 +619,22 @@ executeInstruction model highlightDuration =
                                                         , Cmd.none
                                                         )
                                                     else
+                                                        let
+                                                            updatedModel =
+                                                                { model
+                                                                    | instructionPointer = nextInstructionPointer
+                                                                    , registers = Dict.insert 0 (accVal * value) model.registers
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                }
+
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                                    (Process.sleep (toFloat highlightDuration))
+                                                        in
                                                         (
                                                         updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
@@ -654,42 +650,42 @@ executeInstruction model highlightDuration =
                         _ ->
                             case operand of
                                 Constant n ->
-                                    let
-                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                        value = n
-
-                                        updatedModel =
-                                            if value /= 0 then
-                                                { model
-                                                    | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal // value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
-                                                }
-                                            else
-                                                {
-                                                    model | instructionPointer = nextInstructionPointer
-                                                    , highlighted_registers = Dict.insert 0 "bg-red-200" model.highlighted_registers
-                                                }
-                                        
-                                        removeHighlightCmd =
-                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                (Process.sleep (toFloat highlightDuration))
-
-                                    in
-                                    if dontHighlight && value /= 0 then
+                                    if dontHighlight && n /= 0 then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 (accVal // value) model.registers
+                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) // n) model.registers
                                         }
                                         , Cmd.none
                                         )
-                                    else if dontHighlight && value == 0 then
+                                    else if dontHighlight && n == 0 then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
                                         }
                                         , Cmd.none
                                         )
                                     else
+                                        let
+                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                            value = n
+
+                                            updatedModel =
+                                                if value /= 0 then
+                                                    { model
+                                                        | instructionPointer = nextInstructionPointer
+                                                        , registers = Dict.insert 0 (accVal // value) model.registers
+                                                        , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                    }
+                                                else
+                                                    {
+                                                        model | instructionPointer = nextInstructionPointer
+                                                        , highlighted_registers = Dict.insert 0 "bg-red-200" model.highlighted_registers
+                                                    }
+                                            
+                                            removeHighlightCmd =
+                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                    (Process.sleep (toFloat highlightDuration))
+
+                                        in
                                         (
                                         updatedModel
                                         , removeHighlightCmd
@@ -707,33 +703,6 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
-                                            let
-                                                updatedModel =
-                                                    if value /= 0 then
-                                                        { model
-                                                            | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal // value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
-                                                        }
-                                                    else
-                                                        {
-                                                            model | instructionPointer = nextInstructionPointer
-                                                            , highlighted_registers = Dict.insert regIndex "bg-red-200" model.highlighted_registers
-                                                        }
-                                                
-                                                switchHighlightCmd =
-                                                    if value /= 0 then
-                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
-                                                            (Process.sleep (toFloat (highlightDuration // 2)))
-                                                    else
-                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-red-200"))
-                                                            (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                removeHighlightCmd =    
-                                                    Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                        (Process.sleep (toFloat highlightDuration))
-
-                                            in
                                             if dontHighlight && value /= 0 then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
@@ -747,16 +716,44 @@ executeInstruction model highlightDuration =
                                                 }
                                                 , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
                                                 )
-                                            else if value == 0 then
-                                                (
-                                                updatedModel
-                                                , Cmd.batch [ requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
-                                                )
-                                            else
-                                                (
-                                                updatedModel
-                                                , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
-                                                )
+                                            else 
+                                                let
+                                                    updatedModel =
+                                                        if value /= 0 then
+                                                            { model
+                                                                | instructionPointer = nextInstructionPointer
+                                                                , registers = Dict.insert 0 (accVal // value) model.registers
+                                                                , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                            }
+                                                        else
+                                                            {
+                                                                model | instructionPointer = nextInstructionPointer
+                                                                , highlighted_registers = Dict.insert regIndex "bg-red-200" model.highlighted_registers
+                                                            }
+                                                    
+                                                    switchHighlightCmd =
+                                                        if value /= 0 then
+                                                            Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-blue-200"))
+                                                                (Process.sleep (toFloat (highlightDuration // 2)))
+                                                        else
+                                                            Task.perform (\_ -> SwitchHighlight (1, regIndex) (1, 0, "bg-red-200"))
+                                                                (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    removeHighlightCmd =    
+                                                        Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                            (Process.sleep (toFloat highlightDuration))
+
+                                                in
+                                                if value == 0 then
+                                                    (
+                                                    updatedModel
+                                                    , Cmd.batch [ requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
+                                                    )
+                                                else
+                                                    (
+                                                    updatedModel
+                                                    , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
+                                                    )
 
                                 Indirect regIndex ->
                                     let
@@ -780,32 +777,6 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by a non-existent value.")
                                                     )
                                                 Just value ->
-                                                    let
-                                                        updatedModel =
-                                                            if value /= 0 then
-                                                                { model
-                                                                    | instructionPointer = nextInstructionPointer
-                                                                    , registers = Dict.insert 0 (accVal // value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
-                                                                }
-                                                            else
-                                                                {
-                                                                    model | instructionPointer = nextInstructionPointer
-                                                                    , highlighted_registers = Dict.insert pointer "bg-red-200" model.highlighted_registers
-                                                                }
-                                                        
-                                                        switchHighlightCmd =
-                                                            if value /= 0 then
-                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
-                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
-                                                            else
-                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-red-200"))
-                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
-                                                        
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters 0)
-                                                                (Process.sleep (toFloat highlightDuration))
-                                                    in
                                                     if dontHighlight && value /= 0 then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
@@ -819,16 +790,43 @@ executeInstruction model highlightDuration =
                                                         }
                                                         , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
                                                         )
-                                                    else if value == 0 then
-                                                        (
-                                                        updatedModel
-                                                        , Cmd.batch [ requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
-                                                        )
-                                                    else
-                                                        (
-                                                        updatedModel
-                                                        , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
-                                                        )
+                                                    else 
+                                                        let
+                                                            updatedModel =
+                                                                if value /= 0 then
+                                                                    { model
+                                                                        | instructionPointer = nextInstructionPointer
+                                                                        , registers = Dict.insert 0 (accVal // value) model.registers
+                                                                        , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                    }
+                                                                else
+                                                                    {
+                                                                        model | instructionPointer = nextInstructionPointer
+                                                                        , highlighted_registers = Dict.insert pointer "bg-red-200" model.highlighted_registers
+                                                                    }
+                                                            
+                                                            switchHighlightCmd =
+                                                                if value /= 0 then
+                                                                    Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-blue-200"))
+                                                                        (Process.sleep (toFloat (highlightDuration // 2)))
+                                                                else
+                                                                    Task.perform (\_ -> SwitchHighlight (1, pointer) (1, 0, "bg-red-200"))
+                                                                        (Process.sleep (toFloat (highlightDuration // 2)))
+                                                            
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters 0)
+                                                                    (Process.sleep (toFloat highlightDuration))
+                                                        in
+                                                        if value == 0 then
+                                                            (
+                                                            updatedModel
+                                                            , Cmd.batch [ requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero."), switchHighlightCmd, removeHighlightCmd ]
+                                                            )
+                                                        else
+                                                            (
+                                                            updatedModel
+                                                            , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
+                                                            )
 
                 -- JUMP: Set the instruction pointer to the target label.
                 Jump idx _ isError ->
@@ -921,35 +919,35 @@ executeInstruction model highlightDuration =
                                                     , Cmd.none
                                                     )
                                                 Just _ -> 
-                                                    let
-                                                        newTapePointer = model.inputTapePointer + 1
-                                                        
-                                                        updatedModel = { model
-                                                                        | instructionPointer = nextInstructionPointer
-                                                                        , inputTapePointer = newTapePointer
-                                                                        , registers = Dict.insert regIndex val model.registers
-                                                                        , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" model.highlighted_input_tape
-                                                                    }
-                                                        
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (0, model.inputTapePointer) (1, regIndex, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-                                                        
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromRegisters regIndex)
-                                                                (Process.sleep (toFloat highlightDuration))
-                
-                                                            
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , inputTapePointer = newTapePointer
+                                                            , inputTapePointer = model.inputTapePointer + 1
                                                             , registers = Dict.insert regIndex val model.registers
                                                         }
                                                         , Cmd.none
                                                         )
                                                     else
+                                                        let
+                                                            newTapePointer = model.inputTapePointer + 1
+                                                            
+                                                            updatedModel = { model
+                                                                            | instructionPointer = nextInstructionPointer
+                                                                            , inputTapePointer = newTapePointer
+                                                                            , registers = Dict.insert regIndex val model.registers
+                                                                            , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" model.highlighted_input_tape
+                                                                        }
+                                                            
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (0, model.inputTapePointer) (1, regIndex, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+                                                            
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromRegisters regIndex)
+                                                                    (Process.sleep (toFloat highlightDuration))
+                    
+                                                                
+                                                        in
                                                         ( updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                         )
@@ -985,33 +983,33 @@ executeInstruction model highlightDuration =
                                                                 , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read a non-existent value.")
                                                                 )
                                                             Just _ ->
-                                                                let
-                                                                    newTapePointer = model.inputTapePointer + 1
-                                                                    
-                                                                    updatedModel = { model
-                                                                                    | instructionPointer = nextInstructionPointer
-                                                                                    , inputTapePointer = newTapePointer
-                                                                                    , registers = Dict.insert pointer val model.registers
-                                                                                    , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" model.highlighted_input_tape
-                                                                                }
-                                                                    switchHighlightCmd =
-                                                                        Task.perform (\_ -> SwitchHighlight (0, model.inputTapePointer) (1, pointer, "bg-blue-200"))
-                                                                            (Process.sleep (toFloat (highlightDuration // 2)))
-                                                                    
-                                                                    removeHighlightCmd =
-                                                                        Task.perform (\_ -> RemoveHighlightFromRegisters pointer)
-                                                                            (Process.sleep (toFloat highlightDuration))
-
-                                                                in
                                                                 if dontHighlight then
                                                                     ( { model
                                                                         | instructionPointer = nextInstructionPointer
-                                                                        , inputTapePointer = newTapePointer
+                                                                        , inputTapePointer = model.inputTapePointer + 1
                                                                         , registers = Dict.insert pointer val model.registers
                                                                     }
                                                                     , Cmd.none
                                                                     )
                                                                 else
+                                                                    let
+                                                                        newTapePointer = model.inputTapePointer + 1
+                                                                        
+                                                                        updatedModel = { model
+                                                                                        | instructionPointer = nextInstructionPointer
+                                                                                        , inputTapePointer = newTapePointer
+                                                                                        , registers = Dict.insert pointer val model.registers
+                                                                                        , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" model.highlighted_input_tape
+                                                                                    }
+                                                                        switchHighlightCmd =
+                                                                            Task.perform (\_ -> SwitchHighlight (0, model.inputTapePointer) (1, pointer, "bg-blue-200"))
+                                                                                (Process.sleep (toFloat (highlightDuration // 2)))
+                                                                        
+                                                                        removeHighlightCmd =
+                                                                            Task.perform (\_ -> RemoveHighlightFromRegisters pointer)
+                                                                                (Process.sleep (toFloat highlightDuration))
+
+                                                                    in
                                                                     ( updatedModel
                                                                     , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                                     )
@@ -1047,33 +1045,33 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
-                                            let
-                                                updatedOutputTape = Array.push value model.outputTape
-                                                lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
-
-                                                updatedModel = { model
-                                                                | instructionPointer = nextInstructionPointer
-                                                                , outputTape = updatedOutputTape
-                                                                , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers
-                                                            }
-
-                                                switchHighlightCmd =
-                                                    Task.perform (\_ -> SwitchHighlight (1, regIndex) (2, lastIdx, "bg-blue-200"))
-                                                        (Process.sleep (toFloat (highlightDuration // 2)))
-                                                
-                                                removeHighlightCmd =
-                                                    Task.perform (\_ -> RemoveHighlightFromOutputTape lastIdx)
-                                                        (Process.sleep (toFloat highlightDuration))
-
-                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , outputTape = updatedOutputTape
+                                                    , outputTape = (Array.push value model.outputTape)
                                                 }
                                                 , Cmd.none
                                                 )
                                             else
+                                                let
+                                                    updatedOutputTape = Array.push value model.outputTape
+                                                    lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
+
+                                                    updatedModel = { model
+                                                                    | instructionPointer = nextInstructionPointer
+                                                                    , outputTape = updatedOutputTape
+                                                                    , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers
+                                                                }
+
+                                                    switchHighlightCmd =
+                                                        Task.perform (\_ -> SwitchHighlight (1, regIndex) (2, lastIdx, "bg-blue-200"))
+                                                            (Process.sleep (toFloat (highlightDuration // 2)))
+                                                    
+                                                    removeHighlightCmd =
+                                                        Task.perform (\_ -> RemoveHighlightFromOutputTape lastIdx)
+                                                            (Process.sleep (toFloat highlightDuration))
+
+                                                in
                                                 ( updatedModel
                                                 , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
                                                 )
@@ -1099,32 +1097,32 @@ executeInstruction model highlightDuration =
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to write a non-existent value.")
                                                     )
                                                 Just value ->
-                                                    let
-                                                        updatedOutputTape = Array.push value model.outputTape
-                                                        lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
-
-                                                        updatedModel = { model
-                                                                        | instructionPointer = nextInstructionPointer
-                                                                        , outputTape = updatedOutputTape
-                                                                        , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers
-                                                                    }
-                                                        
-                                                        switchHighlightCmd =
-                                                            Task.perform (\_ -> SwitchHighlight (1, pointer) (2, lastIdx, "bg-blue-200"))
-                                                                (Process.sleep (toFloat (highlightDuration // 2)))
-                                                        
-                                                        removeHighlightCmd =
-                                                            Task.perform (\_ -> RemoveHighlightFromOutputTape lastIdx)
-                                                                (Process.sleep (toFloat highlightDuration))
-                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , outputTape = updatedOutputTape
+                                                            , outputTape = (Array.push value model.outputTape)
                                                         }
                                                         , Cmd.none
                                                         )
                                                     else
+                                                        let
+                                                            updatedOutputTape = Array.push value model.outputTape
+                                                            lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
+
+                                                            updatedModel = { model
+                                                                            | instructionPointer = nextInstructionPointer
+                                                                            , outputTape = updatedOutputTape
+                                                                            , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers
+                                                                        }
+                                                            
+                                                            switchHighlightCmd =
+                                                                Task.perform (\_ -> SwitchHighlight (1, pointer) (2, lastIdx, "bg-blue-200"))
+                                                                    (Process.sleep (toFloat (highlightDuration // 2)))
+                                                            
+                                                            removeHighlightCmd =
+                                                                Task.perform (\_ -> RemoveHighlightFromOutputTape lastIdx)
+                                                                    (Process.sleep (toFloat highlightDuration))
+                                                        in
                                                         (
                                                         updatedModel
                                                         , Cmd.batch [ switchHighlightCmd, removeHighlightCmd ]
