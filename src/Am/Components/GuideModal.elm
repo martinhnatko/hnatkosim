@@ -1,6 +1,6 @@
 module Am.Components.GuideModal exposing (..)
 
-import Html exposing (Html, div, button, text, h2, p, ul, li, span)
+import Html exposing (Html, div, button, text, h2, p, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 

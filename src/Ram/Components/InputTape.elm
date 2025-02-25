@@ -87,10 +87,10 @@ renderInputCell index cell model =
             input (commonAttrs ++ editableAttrs ++ isDisabled) []
     in
     if index == Array.length model.inputTape - 1 && not model.simStarted then
-        div [ class "relative group" ]
+        div [ class "relative" ]
             [ inputElement
             , button
-                [ class "absolute top-0 right-0 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                [ class "absolute top-0 right-0 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs cursor-pointer"
                 , onClick RemoveLastCell
                 ]
                 [ heroiconX ]
