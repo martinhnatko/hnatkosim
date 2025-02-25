@@ -43,11 +43,12 @@ init =
                 , { name = "Slot 19", inputText = "", inputTape = Array.empty }
                 , { name = "Slot 20", inputText = "", inputTape = Array.empty }
                 ]
-            , showSlotsModal = False
             , halted = False
             , inputTape = Array.empty
             , inputTapePointer = 0
             , outputTape = Array.empty
+            , showSlotsModal = False
+            , showGuideModal = False
             }
     in
     initialModel

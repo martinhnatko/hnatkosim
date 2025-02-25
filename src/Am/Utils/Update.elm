@@ -190,5 +190,8 @@ update msg model =
         ToggleSlotsModal ->
             ( { model | showSlotsModal = not model.showSlotsModal }, Cmd.none )
         
+        ToggleGuideModal ->
+            ( { model | showGuideModal = not model.showGuideModal }, Cmd.none )
+        
         GoBackToMenu ->
             ( model, Cmd.none )

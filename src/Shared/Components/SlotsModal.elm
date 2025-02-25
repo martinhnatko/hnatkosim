@@ -1,6 +1,6 @@
 module Shared.Components.SlotsModal exposing (..)
 
-import Html exposing (Html, div, button, text, input)
+import Html exposing (Html, div, button, text, input, h2)
 import Html.Attributes exposing (disabled, class, type_, value)
 import Html.Events exposing (onClick, onInput)
 
@@ -24,13 +24,15 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
                 ]
                 [ heroiconX ]
 
+              , h2 [ class "text-xl font-bold" ] [ text "Save/Load" ]
+
               , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
             ]
         ]
 
 viewSlots : Bool -> Array (String, Bool) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
 viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
-    div [ Html.Attributes.class "grid grid-cols-5 gap-4 mt-8" ]
+    div [ Html.Attributes.class "grid grid-cols-5 gap-4 mt-3" ]
         (List.map
             (\i ->
                 let

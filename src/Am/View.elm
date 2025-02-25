@@ -5,6 +5,7 @@ import Am.Types.Messages exposing (Msg(..))
 
 import Am.Components.Instructions exposing (viewInstructions)
 import Am.Components.Registers exposing (viewRegisters)
+import Am.Components.GuideModal exposing (viewGuideModal)
 
 import Shared.Components.SlotsModal exposing (viewSlotsModal)
 import Shared.Components.Console exposing (viewConsole)
@@ -31,7 +32,7 @@ view model =
               div [ class "flex gap-4" ]
                     [ controlButtons (model.instructionPointer >= List.length model.instructions) model.isRunning False model.simStarted Start Pause Step Reset
                     , speedSlider model.speedIdx model.speeds ChangeSpeed
-                    , menuButtons ToggleSlotsModal GoBackToMenu model.simStarted
+                    , menuButtons ToggleSlotsModal GoBackToMenu ToggleGuideModal model.simStarted
                     ]
 
 
@@ -58,5 +59,10 @@ view model =
               else
                   text ""
             ]
+
+            , if model.showGuideModal then
+                viewGuideModal ToggleGuideModal LoadSlot
+              else
+                text ""
         ]
     }

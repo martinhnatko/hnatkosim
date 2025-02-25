@@ -313,4 +313,7 @@ update msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+        
+        ToggleGuideModal ->
+            ( { model | showGuideModal = not model.showGuideModal }, Cmd.none )
             

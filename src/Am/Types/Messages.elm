@@ -19,6 +19,7 @@ type Msg
     | SaveSlot Int
     | LoadSlot Int
     | ToggleSlotsModal
+    | ToggleGuideModal
     | DeleteSlot Int
     | GoBackToMenu
     | UpdateSlotName Int String

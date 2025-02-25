@@ -23,9 +23,10 @@ type alias Model =
     , speedIdx : Int
     , consoleMessages : List ConsoleMessage
     , slots : Array Slot
-    , showSlotsModal : Bool
     , halted : Bool
     , inputTape : Array Int
     , inputTapePointer : Int
     , outputTape : Array Int
+    , showSlotsModal : Bool
+    , showGuideModal : Bool
     }

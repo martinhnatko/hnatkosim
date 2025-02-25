@@ -22,4 +22,5 @@ type alias Model =
     , consoleMessages : List ConsoleMessage
     , slots : Array Slot
     , showSlotsModal : Bool
+    , showGuideModal : Bool
     }

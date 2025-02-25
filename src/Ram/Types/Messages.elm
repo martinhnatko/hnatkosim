@@ -22,6 +22,7 @@ type Msg
     | SaveSlot Int
     | LoadSlot Int
     | ToggleSlotsModal
+    | ToggleGuideModal
     | DeleteSlot Int
     | UpdateInputTape Int Int
     | AddCellToInputTape
