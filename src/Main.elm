@@ -18,7 +18,7 @@ import Ram.Utils.Init as RamInit
 import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
 
-import Shared.Ports exposing (getItem, gotItem, subToTextArea)
+import Shared.Ports exposing (getItem, gotItem, subToTextArea, scrollToBottom)
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
 import Html exposing (div, text, button)
@@ -253,7 +253,7 @@ update msg model =
                 
                 cmdToLoad =
                     if newPage == AbacusPage || newPage == RamPage then
-                        Task.perform (\_ -> DelayedSubToTextArea) (Process.sleep (100))
+                        Cmd.batch [ Task.perform (\_ -> DelayedSubToTextArea) (Process.sleep (100)), scrollToBottom "consoleContainer"]
                     else
                         Cmd.none
             in
