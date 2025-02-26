@@ -1,12 +1,10 @@
 module Ram.Components.GuideModal exposing (..)
 
-import Html exposing (Html, div, button, text, h2, p, span, table, thead, tr, th, tbody, td)
+import Html exposing (Html, div, button, text, h2, p,  h3, span, table, thead, tr, th, tbody, td)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
 import Shared.Icons.X exposing (heroiconX)
-import Html exposing (h3)
-import Html exposing (h4)
 
 viewGuideModal : msg -> (Int -> msg) -> Html msg
 viewGuideModal onToggleGuideModal onLoadSlot =
