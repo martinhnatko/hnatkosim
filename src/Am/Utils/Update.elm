@@ -169,7 +169,15 @@ update msg model =
                         , instructionPointer = 0
                         , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
                     }
-                    , Cmd.batch [ setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ]
+                    , (
+                        if i == 21 then
+                            Cmd.batch [ setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot), requestAddMessage (InfoMessage, "Example 1 loaded." ) ]
+                        else if i == 22 then 
+                            Cmd.batch [ setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot), requestAddMessage (InfoMessage, "Example 2 loaded." ) ]
+                        else if i == 23 then
+                            Cmd.batch [ setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot), requestAddMessage (InfoMessage, "Example 3 loaded." ) ]
+                        else
+                            Cmd.batch [ setItem ("am_current", { name = "", inputText = slot.inputText } |> encodeSlot), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ])
                     )
                 
                 Nothing ->
