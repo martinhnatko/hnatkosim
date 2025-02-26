@@ -317,8 +317,18 @@ update msg model =
                         , simulationStartTime = Nothing
                         , executedInstructions = 0
                         }
-                    , Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot ), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ]
+                    , (
+                        if i == 21 then
+                            Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot), requestAddMessage (InfoMessage, "Example 1 loaded." ) ]
+                        else if i == 22 then 
+                            Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot), requestAddMessage (InfoMessage, "Example 2 loaded." ) ]
+                        else if i == 23 then
+                            Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot), requestAddMessage (InfoMessage, "Example 3 loaded." ) ]
+                        else
+                            Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot ), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ]
+                      )
                     )
+                    
 
                 _ ->
                     (model, Cmd.none)

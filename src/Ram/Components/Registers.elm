@@ -31,7 +31,7 @@ viewRegisters model =
                         [ div 
                             (
                             if regNum == 0 then
-                                [ class "text-fuchsia-500 w-8 text-right" ]
+                                [ class "text-blue-500 w-8 text-right" ]
                             else 
                                 [ class "text-gray-500 w-8 text-right" ]
                             )

@@ -1,16 +1,11 @@
 module Am.Components.GuideModal exposing (..)
 
-import Html exposing (Html, div, button, text, h2, p, span)
+import Html exposing (Html, div, button, text, h2, p, span, table, thead, tr, th, tbody, td)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
 import Shared.Icons.X exposing (heroiconX)
-import Html exposing (table)
-import Html exposing (thead)
-import Html exposing (tr)
-import Html exposing (th)
-import Html exposing (tbody)
-import Html exposing (td)
+import Html exposing (h3)
 
 viewGuideModal : msg -> (Int -> msg) -> Html msg
 viewGuideModal onToggleGuideModal onLoadSlot =
@@ -32,31 +27,32 @@ viewGuideModal onToggleGuideModal onLoadSlot =
                 
                 , p []
                     [ text "Abacus Machine is an abstract model of a simple computing device that operates with an unlimited number of registers, where each register can hold arbitrarily large natural numbers." ]
-                
+
                 , p []
-                    [ span [ class "text-red-500 font-bold" ]
-                        [ text "Errors " ]
-                    , text " are printed to the console below. Comments in the code can be written using the '#' symbol." ]
+                    [ text "Comments in the code can be written using the '#' symbol." ]
                 
+                    -- [ span [ class "text-red-500 font-bold" ]
+                    --     [ text "Errors " ]
+                    
                 , p [ class "mt-4" ]
-                    [ text "Operations:" ]
+                    [ h3 [ class "text-md font-bold" ] [ text "Operations:" ] ]
                 
                 , table [ class "min-w-full table-fixed mt-2" ]
                         [ thead []
                             [ tr []
-                                [ th [ class "px-4 py-2 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" ]
+                                [ th [ class "px-4 py-2 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" ]
                                     [ text "Instruction" ]
-                                , th [ class "px-4 py-2 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" ]
+                                , th [ class "px-4 py-2 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" ]
                                     [ text "Example" ]
-                                , th [ class "px-4 py-2 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" ]
+                                , th [ class "px-4 py-2 bg-gray-100 text-left text-xs font-medium text-gray-600 uppercase tracking-wider" ]
                                     [ text "Description" ]
                                 ]
                             ]
-                        , tbody [ class "bg-white divide-y divide-gray-200" ]
+                        , tbody [ class "bg-white divide-y divide-gray-300" ]
                             [ 
                             
                             -- Increment operation row
-                            tr []
+                            tr [ class "bg-green-50" ]
                                 [ td [ class "px-4 py-2 whitespace-normal" ]
                                     [ span [ class "text-green-500 font-bold" ]
                                         [ text "Increment" ]
@@ -68,7 +64,7 @@ viewGuideModal onToggleGuideModal onLoadSlot =
                                 ]
                             
                             -- Decrement operation row
-                            , tr []
+                            , tr [ class "bg-yellow-50" ]
                                 [ td [ class "px-4 py-2 whitespace-normal" ]
                                     [ span [ class "text-yellow-500 font-bold" ]
                                         [ text "Decrement" ]
@@ -80,12 +76,12 @@ viewGuideModal onToggleGuideModal onLoadSlot =
                                 ]
                             
                             -- Loop operation row
-                            , tr []
+                            , tr [ class "bg-gray-50" ]
                                 [ td [ class "px-4 py-2 whitespace-normal" ]
                                     [ span [ class "text-gray-500 font-bold" ]
                                         [ text "Loop" ]
                                     ]
-                                , td [ class "px-4 py-2 whitespace-normal text-center" ]
+                                , td [ class "px-4 py-2 whitespace-normal text-left" ]
                                     [ text "(a7s8)8" ]
                                 , td [ class "px-4 py-2 whitespace-normal" ]
                                     [ text "A loop is implemented with the notation '(<loop body>)<condition register>', where the value in the condition register is tested first. If non-zero, the loop body is executed repeatedly until the condition register becomes zero, at which point the loop terminates." ]
@@ -94,7 +90,7 @@ viewGuideModal onToggleGuideModal onLoadSlot =
                         ]
                 
                 , p [ class "mt-4" ]
-                    [ text "Example codes:" ]
+                    [ h3 [ class "text-md font-bold" ] [ text "Example codes:" ] ]
 
                 , div [ class "flex flex-row gap-4 mt-2" ] 
                     [

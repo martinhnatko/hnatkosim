@@ -5,7 +5,7 @@ import Ram.Types.Messages exposing (Msg(..))
 
 import Ram.Components.Instructions exposing (viewInstructions)
 import Ram.Components.Registers exposing (viewRegisters)
-
+import Ram.Components.GuideModal exposing (viewGuideModal)
 import Ram.Components.InputTape exposing (viewInputTape)
 import Ram.Components.OutputTape exposing (viewOutputTape)
 
@@ -74,6 +74,13 @@ view model =
                   viewSlotsModal (model.inputText == "") (Array.map (\slot -> ( slot.name, slot.inputText == "" )) model.slots) ToggleSlotsModal SaveSlot LoadSlot DeleteSlot UpdateSlotName
               else
                   text ""
+            
+                -- Guide Modal
+            , if model.showGuideModal then
+                viewGuideModal ToggleGuideModal LoadSlot
+              else
+                text ""
+
             ]
         ]
     }
