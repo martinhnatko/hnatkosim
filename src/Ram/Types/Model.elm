@@ -2,6 +2,7 @@ module Ram.Types.Model exposing (..)
 
 import Dict exposing (Dict)
 import Array exposing (Array)
+import Time exposing (Posix)
 
 import Ram.Types.Instructions exposing (Instruction)
 import Ram.Types.Slot exposing (Slot)
@@ -29,4 +30,6 @@ type alias Model =
     , outputTape : Array Int
     , showSlotsModal : Bool
     , showGuideModal : Bool
+    , simulationStartTime : Maybe Posix
+    , executedInstructions : Int
     }

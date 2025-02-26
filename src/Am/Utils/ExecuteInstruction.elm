@@ -36,7 +36,11 @@ executeInstruction model highlightDuration =
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
                             if dontHighlight then
-                                ( { model | registers = (Dict.update reg (Maybe.map (\val -> val + 1)) model.registers), instructionPointer = nextInstructionPointer }
+                                ( { model 
+                                    | registers = (Dict.update reg (Maybe.map (\val -> val + 1)) model.registers)
+                                    , instructionPointer = nextInstructionPointer
+                                    , executedInstructions = model.executedInstructions + 1    
+                                 }
                                 , Cmd.none )
                             else
                                 let
@@ -47,8 +51,8 @@ executeInstruction model highlightDuration =
                                         { model
                                             | registers = updatedRegisters
                                             , instructionPointer = nextInstructionPointer
-                                            , highlighted =
-                                                Dict.insert reg "bg-green-200" model.highlighted
+                                            , highlighted = Dict.insert reg "bg-green-200" model.highlighted
+                                            , executedInstructions = model.executedInstructions + 1   
                                         }
                                 in
                                 ( updatedModel
@@ -61,7 +65,12 @@ executeInstruction model highlightDuration =
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
                             if dontHighlight then
-                                ( { model | registers = (Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers), instructionPointer = nextInstructionPointer }
+                                (
+                                { model 
+                                    | registers = (Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers)
+                                    , instructionPointer = nextInstructionPointer
+                                    , executedInstructions = model.executedInstructions + 1
+                                }
                                 , Cmd.none )
                             else
                                 let
@@ -72,8 +81,8 @@ executeInstruction model highlightDuration =
                                         { model
                                             | registers = updatedRegisters
                                             , instructionPointer = nextInstructionPointer
-                                            , highlighted =
-                                                Dict.insert reg "bg-yellow-200" model.highlighted
+                                            , highlighted = Dict.insert reg "bg-yellow-200" model.highlighted
+                                            , executedInstructions = model.executedInstructions + 1   
                                         }
                                 in
                                 ( updatedModel
@@ -91,11 +100,19 @@ executeInstruction model highlightDuration =
                                         |> Maybe.withDefault 0
                             in
                             if conditionValue == 0 then
-                                -- Skip to instruction after EndLoop
-                                ( { model | instructionPointer = endLoopIndex }, Cmd.none )
+                                -- Skip to EndLoop
+                                ( { model 
+                                    | instructionPointer = endLoopIndex
+                                    , executedInstructions = model.executedInstructions + 1
+                                }
+                                , Cmd.none )
                             else
                                 -- Proceed to the next instruction
-                                ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
+                                ( { model 
+                                    | instructionPointer = nextInstructionPointer 
+                                    , executedInstructions = model.executedInstructions + 1    
+                                }
+                                , Cmd.none )
 
                 EndLoop startLoopIndex conditionIndex isError ->
                     case isError of
@@ -108,11 +125,19 @@ executeInstruction model highlightDuration =
                                         |> Maybe.withDefault 0
                             in
                             if conditionValue == 0 then
-                                -- Go next instruction after EndLoop
-                                ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
+                                -- Go to EndLoop
+                                ( { model 
+                                    | instructionPointer = nextInstructionPointer
+                                    , executedInstructions = model.executedInstructions + 1    
+                                }
+                                , Cmd.none )
                             else
                                 -- Return to the matching StartLoop
-                                ( { model | instructionPointer = startLoopIndex }, Cmd.none )
+                                ( { model
+                                    | instructionPointer = startLoopIndex
+                                    , executedInstructions = model.executedInstructions + 1   
+                                 }
+                                 , Cmd.none )
 
                 UnknownInstruction ->
                     -- Ignore unknown instructions and continue

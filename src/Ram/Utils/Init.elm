@@ -49,6 +49,8 @@ init =
             , outputTape = Array.empty
             , showSlotsModal = False
             , showGuideModal = False
+            , simulationStartTime = Nothing
+            , executedInstructions = 0
             }
     in
     initialModel

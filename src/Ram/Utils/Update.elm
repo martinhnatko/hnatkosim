@@ -7,17 +7,18 @@ import Ram.Types.Slot exposing (Slot)
 
 import Ram.Utils.RamParser exposing (parseRAM)
 import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
-import Ram.Utils.HelperFunctions exposing (..)
+import Ram.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
+import Ram.Utils.PrintErrors exposing (printErrors)
 
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+import Shared.Ports exposing (setItem, scrollToBottom)
 
 import Dict
 import List exposing (range)
 import Array
-
-import Shared.Ports exposing (setItem, scrollToBottom)
-import Ram.Utils.PrintErrors exposing (printErrors)
 import Platform.Cmd as Cmd
+import Time
+import Task
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -36,19 +37,39 @@ update msg model =
                 (model, Cmd.none)
             else
                 let
-                    defaultSpeed = 1000
-                    speed =
-                        Array.get (model.speedIdx - 1) model.speeds
-                            |> Maybe.withDefault defaultSpeed
+                    speed = Array.get (model.speedIdx - 1) model.speeds|> Maybe.withDefault 1000
 
                     -- half the speed in ms
-                    highlightDuration =
-                        speed // 2
+                    highlightDuration = speed // 2
 
-                    ( updatedModel, removalCmd ) =
-                        executeInstruction model highlightDuration
+                    ( updatedModel, removalCmd ) = executeInstruction model highlightDuration
                 in
-                ( updatedModel, removalCmd )
+                if updatedModel.instructionPointer >= List.length updatedModel.instructions then
+                    ( { updatedModel | isRunning = False }, Cmd.batch [removalCmd, Task.perform (ComputeAndPrintDuration False) Time.now] )
+                else
+                    ( updatedModel, removalCmd )
+
+        
+        Step ->
+            let
+                highlightDuration = 600
+                ( newModel, removeHighlightCmd ) = executeInstruction model highlightDuration
+            in
+            if not model.simStarted && newModel.instructionPointer >= List.length newModel.instructions then
+                ( { newModel | simStarted = True }
+                , Cmd.batch [printErrors model.instructions, removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started"), Task.perform (ComputeAndPrintDuration False) Time.now, Task.perform SetStartTime Time.now]
+                )
+            else if not model.simStarted then
+                ( { newModel | simStarted = True }
+                , Cmd.batch [printErrors model.instructions, removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now]
+                )
+            else if newModel.instructionPointer >= List.length newModel.instructions then
+                ( { newModel | isRunning = False }, Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now] )
+            
+            else if model.simStarted then
+                ( newModel, removeHighlightCmd )
+            else
+                ( model, Cmd.none )
 
 
         Start ->
@@ -61,8 +82,57 @@ update msg model =
                     | isRunning = True
                     , simStarted = True
                 }
-                , Cmd.batch [ (printErrors model.instructions), requestAddMessage (SimStarted, "Simulation started")]
+                , Cmd.batch [ (printErrors model.instructions), requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now ]
                 )
+
+        SetStartTime now ->
+            ( { model | simulationStartTime = Just now }, Cmd.none )
+        
+        ComputeAndPrintDuration byHalting now ->
+            case model.simulationStartTime of
+                Just startTime ->
+                    let
+                        duration = Time.posixToMillis now - Time.posixToMillis startTime
+
+                        fromFloatWithDecimals decimals no =
+                            (no * (10 ^ decimals))
+                                |> round
+                                |> toFloat
+                                |> (\n -> n / (10 ^ decimals))
+                                |> String.fromFloat
+                        
+                        numOfInstructions = model.executedInstructions
+                        speed = fromFloatWithDecimals 2 ((toFloat numOfInstructions) / (toFloat duration * 0.001))
+                    in
+                    if numOfInstructions == 0 then
+                        (
+                            { model
+                                | simulationStartTime = Nothing
+                                , executedInstructions = 0
+                            }
+                            , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ".")
+                        )
+                    else
+                        if byHalting then
+                            (
+                                { model
+                                    | simulationStartTime = Nothing
+                                    , executedInstructions = 0
+                                }
+                                , requestAddMessage (InfoMessage, "Program halted. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.")
+                            )
+                        else
+                            (
+                                { model
+                                    | simulationStartTime = Nothing
+                                    , executedInstructions = 0
+                                }
+                                , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.")
+                            )
+
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         Pause ->
             ( 
@@ -73,7 +143,7 @@ update msg model =
                     , highlighted_registers = Dict.empty
                     , highlighted_output_tape = Dict.empty
                 }
-            , Cmd.none 
+                , Cmd.none 
             )
 
         Reset ->
@@ -88,21 +158,11 @@ update msg model =
                 , highlighted_input_tape = Dict.empty
                 , highlighted_registers = Dict.empty
                 , highlighted_output_tape = Dict.empty
+                , simulationStartTime = Nothing
+                , executedInstructions = 0
               }
             , requestAddMessage (SimStopped, "Simulation stopped")
             )
-        
-        Step ->
-            let
-                highlightDuration = 550
-                
-                ( newModel, removeHighlightCmd ) = executeInstruction model highlightDuration
-            in
-            if model.simStarted then
-                ( { newModel | simStarted = True }, removeHighlightCmd )
-
-            else
-                ( { newModel | simStarted = True }, Cmd.batch [ (printErrors model.instructions), removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started") ] )
                 
 
         
@@ -254,6 +314,8 @@ update msg model =
                         , simStarted = False
                         , isRunning = False
                         , outputTape = Array.empty
+                        , simulationStartTime = Nothing
+                        , executedInstructions = 0
                         }
                     , Cmd.batch [ setItem ("ram_current", { name = "", inputText = slot.inputText, inputTape = slot.inputTape } |> encodeSlot ), requestAddMessage (InfoMessage, "Slot " ++ String.fromInt i ++ " loaded.") ]
                     )

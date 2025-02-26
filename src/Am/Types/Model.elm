@@ -7,6 +7,7 @@ import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
 
 import Dict exposing (Dict)
 import Array exposing (Array)
+import Time exposing (Posix)
 
 -- MODEL
 type alias Model =
@@ -23,4 +24,6 @@ type alias Model =
     , slots : Array Slot
     , showSlotsModal : Bool
     , showGuideModal : Bool
+    , simulationStartTime : Maybe Posix
+    , executedInstructions : Int
     }

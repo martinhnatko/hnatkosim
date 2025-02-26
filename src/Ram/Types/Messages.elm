@@ -1,6 +1,6 @@
 module Ram.Types.Messages exposing (..)
 
-import Time
+import Time exposing (Posix)
 
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType)
 
@@ -8,7 +8,7 @@ import Shared.Types.ConsoleMessage exposing (ConsoleMessageType)
 type Msg
     = UpdateCode String
     | Start
-    | Tick Time.Posix
+    | Tick Posix
     | Pause
     | Reset
     | Step
@@ -17,7 +17,7 @@ type Msg
     | RemoveHighlightFromInputTape Int
     | RemoveHighlightFromOutputTape Int
     | SwitchHighlight (Int, Int) (Int, Int, String)
-    | AddMessageWithTime ConsoleMessageType Time.Posix String
+    | AddMessageWithTime ConsoleMessageType Posix String
     | DeleteInput
     | SaveSlot Int
     | LoadSlot Int
@@ -30,3 +30,5 @@ type Msg
     | GoBackToMenu
     | UpdateSlotName Int String
     | NoOp
+    | SetStartTime Posix
+    | ComputeAndPrintDuration Bool Posix
