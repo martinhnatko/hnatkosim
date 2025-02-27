@@ -90,7 +90,7 @@ renderInputCell index cell model =
         div [ class "relative" ]
             [ inputElement
             , button
-                [ class "absolute top-0 right-0 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs cursor-pointer"
+                [ class "absolute top-0 right-0 w-5 h-5 bg-gray-300 text-white rounded-full flex items-center justify-center text-xs cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
                 , onClick RemoveLastCell
                 ]
                 [ heroiconX ]

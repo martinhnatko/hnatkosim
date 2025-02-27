@@ -30,7 +30,7 @@ inputTextArea simStarted inputText onUpdateCode onDeleteInput =
             []
         , if not simStarted then
               button 
-                  [ class "absolute bottom-9 right-10 text-gray-500 hover:text-red-500"
+                  [ class "absolute bottom-8 right-11 text-gray-500 hover:text-red-500 transition-colors duration-200 focus:outline-none"
                   , onClick onDeleteInput
                   ]
                   [ heroiconTrash ]
