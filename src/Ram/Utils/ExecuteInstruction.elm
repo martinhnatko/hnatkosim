@@ -15,6 +15,16 @@ import Task
 import Process
 import Time
 
+runAllInstructions : Model -> Model
+runAllInstructions model =
+    if (model.instructionPointer >= List.length model.instructions) || model.halted then
+        model
+    else
+        let
+            (nextModel, _) = executeInstruction model 0
+        in
+        runAllInstructions nextModel
+
 getRegisterValue : Int -> Model -> Maybe Int
 getRegisterValue regIndex model =
     Dict.get regIndex model.registers
@@ -37,7 +47,7 @@ executeInstruction model highlightDuration =
         Just instr ->
             let 
                 dontHighlight : Bool
-                dontHighlight = model.speedIdx == List.length ( Array.toList model.speeds ) && model.isRunning
+                dontHighlight = (model.speedIdx == 7 ) || (model.speedIdx == 6 && model.isRunning)
             in
             case instr of
                 

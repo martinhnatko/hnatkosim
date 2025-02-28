@@ -6,7 +6,7 @@ import Am.Types.Messages exposing (Msg(..))
 import Am.Types.Slot exposing (Slot)
 
 import Am.Utils.AbacusParser exposing (parseAM)
-import Am.Utils.ExecuteInstruction exposing (executeInstruction)
+import Am.Utils.ExecuteInstruction exposing (executeInstruction, runAllInstructions)
 import Am.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Am.Utils.PrintErrors exposing (printErrors)
 
@@ -73,18 +73,46 @@ update msg model =
             
 
         Start ->
-            if model.simStarted then
-                -- Already started once, so just set isRunning = True
-                ( { model | isRunning = True }, Cmd.none )
+            if model.speedIdx == 7 && not model.simStarted then
+                (
+                    { model | simStarted = True }
+                    , Cmd.batch
+                        [ printErrors model.instructions
+                        , Task.perform (\now -> StartInstantSimulation now) Time.now
+                        , requestAddMessage (SimStarted, "Simulation started")
+                        ]
+                )
+            
+            else if model.speedIdx == 7 && model.simStarted then
+                let
+                    finalModel = runAllInstructions model
+                in
+                ( finalModel
+                , Task.perform ComputeAndPrintDuration Time.now
+                )
 
             else
-                ( { model
-                    | isRunning = True
-                    , simStarted = True
-                }
-                , Cmd.batch [printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now]
-                )
+                if model.simStarted then
+                    -- Already started once, so just set isRunning = True
+                    ( { model | isRunning = True }, Cmd.none )
+
+                else
+                    ( { model
+                        | isRunning = True
+                        , simStarted = True
+                    }
+                    , Cmd.batch [printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now]
+                    )
         
+        StartInstantSimulation now ->
+            let
+                updatedModel = { model | simulationStartTime = Just now }
+                finalModel = runAllInstructions updatedModel
+            in
+            ( finalModel
+            , Task.perform ComputeAndPrintDuration Time.now
+            )
+
         SetStartTime now ->
             ( { model | simulationStartTime = Just now }, Cmd.none )
         
@@ -148,7 +176,15 @@ update msg model =
             )
 
         ChangeSpeed newSpeed ->
-            ( { model | speedIdx = newSpeed }, Cmd.none )
+            if newSpeed == 7 && model.isRunning then
+                let
+                    finalModel = runAllInstructions { model | speedIdx = newSpeed, isRunning = False }
+                in
+
+                ( finalModel
+                , Task.perform ComputeAndPrintDuration Time.now )
+            else
+                ( { model | speedIdx = newSpeed }, Cmd.none )
         
         RemoveHighlight reg ->
             let

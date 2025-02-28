@@ -30,30 +30,37 @@ speedSlider currentValue speeds onChangeSpeed =
             []
 
         , -- Labels for the Slider
-          ul [ class "flex justify-between w-full px-[10px]" ]
-            (List.map sliderLabel (Array.toList speeds))
+          ul [ class "flex justify-between w-full px-[12px]" ]
+            (List.indexedMap sliderLabel (Array.toList speeds))
         ]
         
 
 -- Transform your slider speeds from ms to s in the labels
-sliderLabel : Int -> Html msg
-sliderLabel ms =
+sliderLabel : Int -> Int -> Html msg
+sliderLabel index ms =
     let
-        toOneDecimal f =
-            (toFloat (round (f * 10))) / 10
+        toOneDecimal f = (toFloat (round (f * 10))) / 10
 
-        inSeconds =
-            toOneDecimal ((toFloat ms) / 1000)
+        inSeconds = toOneDecimal ((toFloat ms) / 1000)
 
-        label =
-            if ms == 0 then
-                "0"
+        label = 
+          (
+            if index == 6 then
+              "Instant"
             else
-                String.fromFloat inSeconds
+              String.fromFloat inSeconds
+          )
+
     in
-    li [ class "flex justify-center relative" ]
-        [ span [ class "absolute" ]
-            [ text label ]
-        ]
+    if index == 6 then
+      li [ class "flex justify-center relative text-red-500" ]
+          [ span [ class "absolute" ]
+              [ text label ]
+          ]
+    else
+      li [ class "flex justify-center relative" ]
+          [ span [ class "absolute" ]
+              [ text label ]
+          ]
 
 

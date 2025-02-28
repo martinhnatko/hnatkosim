@@ -32,3 +32,4 @@ type Msg
     | NoOp
     | SetStartTime Posix
     | ComputeAndPrintDuration Bool Posix
+    | StartInstantSimulation Posix

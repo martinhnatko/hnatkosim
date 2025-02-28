@@ -6,7 +6,7 @@ import Ram.Types.Messages exposing (Msg(..))
 import Ram.Types.Slot exposing (Slot)
 
 import Ram.Utils.RamParser exposing (parseRAM)
-import Ram.Utils.ExecuteInstruction exposing (executeInstruction)
+import Ram.Utils.ExecuteInstruction exposing (executeInstruction, runAllInstructions)
 import Ram.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Ram.Utils.PrintErrors exposing (printErrors)
 
@@ -73,18 +73,57 @@ update msg model =
 
 
         Start ->
-            if model.simStarted then
-                -- Already started once, so just set isRunning = True
-                ( { model | isRunning = True }, Cmd.none )
+            if model.speedIdx == 7 && not model.simStarted then
+                (
+                    { model | simStarted = True }
+                    , Cmd.batch
+                        [ printErrors model.instructions
+                        , Task.perform (\now -> StartInstantSimulation now) Time.now
+                        , requestAddMessage (SimStarted, "Simulation started")
+                        ]
+                )
+            
+            else if model.speedIdx == 7 && model.simStarted then
+                let
+                    finalModel = runAllInstructions model
+                in
+                if finalModel.halted then
+                    ( finalModel
+                    , Task.perform (ComputeAndPrintDuration True) Time.now
+                    )
+                else
+                    ( finalModel
+                    , Task.perform (ComputeAndPrintDuration False) Time.now
+                    )
 
             else
-                ( { model
-                    | isRunning = True
-                    , simStarted = True
-                }
-                , Cmd.batch [ (printErrors model.instructions), requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now ]
-                )
+                if model.simStarted then
+                    -- Already started once, so just set isRunning = True
+                    ( { model | isRunning = True }, Cmd.none )
 
+                else
+                    ( { model
+                        | isRunning = True
+                        , simStarted = True
+                    }
+                    , Cmd.batch [printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now]
+                    )
+
+        
+        StartInstantSimulation now ->
+            let
+                updatedModel = { model | simulationStartTime = Just now }
+                finalModel = runAllInstructions updatedModel
+            in
+            if finalModel.halted then
+                ( finalModel
+                , Task.perform (ComputeAndPrintDuration True) Time.now
+                )
+            else
+                ( finalModel
+                , Task.perform (ComputeAndPrintDuration False) Time.now
+                )
+            
         SetStartTime now ->
             ( { model | simulationStartTime = Just now }, Cmd.none )
         
@@ -167,8 +206,21 @@ update msg model =
 
         
         ChangeSpeed newSpeed ->
-            ( { model | speedIdx = newSpeed }, Cmd.none )
+            if newSpeed == 7 && model.isRunning then
+                let
+                    finalModel = runAllInstructions { model | speedIdx = newSpeed, isRunning = False }
+                in
+                if finalModel.halted then
+                    ( finalModel
+                    , Task.perform (ComputeAndPrintDuration True) Time.now
+                    )
+                else
+                    ( finalModel
+                    , Task.perform (ComputeAndPrintDuration False) Time.now )
+            else
+                ( { model | speedIdx = newSpeed }, Cmd.none )
         
+
         RemoveHighlightFromRegisters reg ->
             let
                 newHighlighted =

@@ -25,3 +25,4 @@ type Msg
     | UpdateSlotName Int String
     | SetStartTime Posix
     | ComputeAndPrintDuration Posix
+    | StartInstantSimulation Posix

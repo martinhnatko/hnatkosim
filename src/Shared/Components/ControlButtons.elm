@@ -13,41 +13,43 @@ controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Htm
 controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset =
     div [ class "flex gap-4 w-1/3" ]
         [ -- Start/Pause Button
-          if isRunning then
-              button 
-                  [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
-                  , onClick onPause 
-                  ]
-                  [ heroiconPause, text "Pause" ]
-          else
-              button
-                  ( [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
-                    , onClick onStart
+            if isRunning then
+                button 
+                    [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
+                    , onClick onPause 
                     ]
-                    ++ ( if halted || atEndOfInstructions then 
-                            [ disabled True
-                            , class "bg-gray-400 cursor-not-allowed"
-                            ] 
-                        else 
-                            []
-                    )
-                  )
-                  [ heroiconPlay, text "Start" ]
-
-          -- Step Button
-        , button
-            ( [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
-              , onClick onStep
-              ]
-              ++ ( if halted || isRunning || atEndOfInstructions then 
-                      [ disabled True
-                      , class "bg-gray-400 cursor-not-allowed"
-                      ]
-                  else
-                      []
+                    [ heroiconPause, text "Pause" ]
+            else
+                (
+                if halted || atEndOfInstructions then 
+                    button 
+                        [ class "w-1/3 px-4 py-2 bg-gray-400 text-white flex items-center justify-center rounded cursor-not-allowed"
+                        , disabled True
+                        ]
+                        [ heroiconPlay, text "Start" ]
+                else
+                    button
+                        ( [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
+                          , onClick onStart
+                          ]
+                        )
+                        [ heroiconPlay, text "Start" ]
                 )
-            )
-            [ heroiconStep, text "Step" ]
+
+        ,(
+        if halted || isRunning || atEndOfInstructions then 
+            button 
+                [ class "w-1/3 px-4 py-2 bg-gray-400 text-white flex items-center justify-center rounded cursor-not-allowed"
+                , disabled True
+                ]
+                [ heroiconStep, text "Step" ]
+        else
+            button
+                [ class "w-1/3 px-4 py-2 bg-blue-500 text-white flex items-center justify-center rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
+                , onClick onStep
+                ]
+                [ heroiconStep, text "Step" ]
+        )
 
           -- Reset Button
         , if not simStarted then
