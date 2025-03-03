@@ -60,7 +60,7 @@ executeInstruction model highlightDuration =
                                         { model
                                             | registers = updatedRegisters
                                             , instructionPointer = nextInstructionPointer
-                                            , highlighted = Dict.insert reg "bg-green-200" model.highlighted
+                                            , highlighted = Dict.insert reg "bg-green-200" Dict.empty
                                             , executedInstructions = model.executedInstructions + 1   
                                         }
                                 in
@@ -90,7 +90,7 @@ executeInstruction model highlightDuration =
                                         { model
                                             | registers = updatedRegisters
                                             , instructionPointer = nextInstructionPointer
-                                            , highlighted = Dict.insert reg "bg-yellow-200" model.highlighted
+                                            , highlighted = Dict.insert reg "bg-yellow-200" Dict.empty
                                             , executedInstructions = model.executedInstructions + 1   
                                         }
                                 in

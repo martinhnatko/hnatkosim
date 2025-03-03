@@ -264,19 +264,19 @@ update msg model =
 
                 finalHighlightedInputTape =
                     if typeDest == 0 then
-                        Dict.insert dest style newHighlightedInputTape
+                        Dict.insert dest style Dict.empty
                     else
                         newHighlightedInputTape
                 
                 finalHighlightedRegisters =
                     if typeDest == 1 then
-                        Dict.insert dest style newHighlightedRegisters
+                        Dict.insert dest style Dict.empty
                     else
                         newHighlightedRegisters
                 
                 finalHighlightedOutputTape =
                     if typeDest == 2 then
-                        Dict.insert dest style newHighlightedOutputTape
+                        Dict.insert dest style Dict.empty
                     else
                         newHighlightedOutputTape
 

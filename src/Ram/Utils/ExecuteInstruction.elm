@@ -73,7 +73,7 @@ executeInstruction model highlightDuration =
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
                                             , registers = Dict.insert 0 n model.registers
-                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers
+                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                             , executedInstructions = model.executedInstructions + 1
                                         }
                                         , Task.perform (\_ -> RemoveHighlightFromRegisters 0) (Process.sleep (toFloat highlightDuration))
@@ -104,7 +104,7 @@ executeInstruction model highlightDuration =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
                                                             , registers = Dict.insert 0 value model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                             , executedInstructions = model.executedInstructions + 1
                                                         }
                                                     
@@ -155,7 +155,7 @@ executeInstruction model highlightDuration =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
                                                                     , registers = Dict.insert 0 value model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                     , executedInstructions = model.executedInstructions + 1
                                                                 }
 
@@ -211,7 +211,7 @@ executeInstruction model highlightDuration =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
                                                             , registers = Dict.insert regIndex accVal model.registers
-                                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers
+                                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                             , executedInstructions = model.executedInstructions + 1
                                                         }
                                                     
@@ -261,7 +261,7 @@ executeInstruction model highlightDuration =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
                                                                     , registers = Dict.insert pointer accVal model.registers
-                                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                                     , executedInstructions = model.executedInstructions + 1
                                                                 }
                                                             
@@ -304,7 +304,7 @@ executeInstruction model highlightDuration =
                                                 { model
                                                     | instructionPointer = nextInstructionPointer
                                                     , registers = Dict.insert 0 (accVal + value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                     , executedInstructions = model.executedInstructions + 1
                                                 }
                                             
@@ -342,7 +342,7 @@ executeInstruction model highlightDuration =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
                                                             , registers = Dict.insert 0 (accVal + value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                             , executedInstructions = model.executedInstructions + 1
                                                         }
                                                     
@@ -394,7 +394,7 @@ executeInstruction model highlightDuration =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
                                                                     , registers = Dict.insert 0 (accVal + value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                     , executedInstructions = model.executedInstructions + 1
                                                                 }
 
@@ -438,7 +438,7 @@ executeInstruction model highlightDuration =
                                                 { model
                                                     | instructionPointer = nextInstructionPointer
                                                     , registers = Dict.insert 0 (accVal - value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                     , executedInstructions = model.executedInstructions + 1
                                                 }
                                             
@@ -476,7 +476,7 @@ executeInstruction model highlightDuration =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
                                                             , registers = Dict.insert 0 (accVal - value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                             , executedInstructions = model.executedInstructions + 1
                                                         }
                                                     
@@ -528,7 +528,7 @@ executeInstruction model highlightDuration =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
                                                                     , registers = Dict.insert 0 (accVal - value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                     , executedInstructions = model.executedInstructions + 1
                                                                 }
 
@@ -572,7 +572,7 @@ executeInstruction model highlightDuration =
                                                 { model
                                                     | instructionPointer = nextInstructionPointer
                                                     , registers = Dict.insert 0 (accVal * value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                     , executedInstructions = model.executedInstructions + 1
                                                 }
                                             
@@ -610,7 +610,7 @@ executeInstruction model highlightDuration =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
                                                             , registers = Dict.insert 0 (accVal * value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                             , executedInstructions = model.executedInstructions + 1
                                                         }
                                                     
@@ -662,7 +662,7 @@ executeInstruction model highlightDuration =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
                                                                     , registers = Dict.insert 0 (accVal * value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty 
                                                                     , executedInstructions = model.executedInstructions + 1
                                                                 }
 
@@ -713,13 +713,13 @@ executeInstruction model highlightDuration =
                                                     { model
                                                         | instructionPointer = nextInstructionPointer
                                                         , registers = Dict.insert 0 (accVal // value) model.registers
-                                                        , highlighted_registers = Dict.insert 0 "bg-blue-200" model.highlighted_registers 
+                                                        , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                         , executedInstructions = model.executedInstructions + 1
                                                     }
                                                 else
                                                     {
                                                         model | instructionPointer = nextInstructionPointer
-                                                        , highlighted_registers = Dict.insert 0 "bg-red-200" model.highlighted_registers
+                                                        , highlighted_registers = Dict.insert 0 "bg-red-200" Dict.empty
                                                     }
                                             
                                             removeHighlightCmd =
@@ -766,13 +766,13 @@ executeInstruction model highlightDuration =
                                                             { model
                                                                 | instructionPointer = nextInstructionPointer
                                                                 , registers = Dict.insert 0 (accVal // value) model.registers
-                                                                , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers 
+                                                                , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                                 , executedInstructions = model.executedInstructions + 1
                                                             }
                                                         else
                                                             {
                                                                 model | instructionPointer = nextInstructionPointer
-                                                                , highlighted_registers = Dict.insert regIndex "bg-red-200" model.highlighted_registers
+                                                                , highlighted_registers = Dict.insert regIndex "bg-red-200" Dict.empty
                                                                 , executedInstructions = model.executedInstructions + 1
                                                             }
                                                     
@@ -844,13 +844,13 @@ executeInstruction model highlightDuration =
                                                                     { model
                                                                         | instructionPointer = nextInstructionPointer
                                                                         , registers = Dict.insert 0 (accVal // value) model.registers
-                                                                        , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers 
+                                                                        , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty 
                                                                         , executedInstructions = model.executedInstructions + 1
                                                                     }
                                                                 else
                                                                     {
                                                                         model | instructionPointer = nextInstructionPointer
-                                                                        , highlighted_registers = Dict.insert pointer "bg-red-200" model.highlighted_registers
+                                                                        , highlighted_registers = Dict.insert pointer "bg-red-200" Dict.empty
                                                                         , executedInstructions = model.executedInstructions + 1
                                                                     }
                                                             
@@ -995,7 +995,7 @@ executeInstruction model highlightDuration =
                                                                             | instructionPointer = nextInstructionPointer
                                                                             , inputTapePointer = newTapePointer
                                                                             , registers = Dict.insert regIndex val model.registers
-                                                                            , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" model.highlighted_input_tape
+                                                                            , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" Dict.empty
                                                                             , executedInstructions = model.executedInstructions + 1
                                                                         }
                                                             
@@ -1062,7 +1062,7 @@ executeInstruction model highlightDuration =
                                                                                         | instructionPointer = nextInstructionPointer
                                                                                         , inputTapePointer = newTapePointer
                                                                                         , registers = Dict.insert pointer val model.registers
-                                                                                        , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" model.highlighted_input_tape
+                                                                                        , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" Dict.empty
                                                                                         , executedInstructions = model.executedInstructions + 1
                                                                                         }
                                                                         switchHighlightCmd =
@@ -1118,7 +1118,7 @@ executeInstruction model highlightDuration =
                                                     updatedModel = { model
                                                                     | instructionPointer = nextInstructionPointer
                                                                     , outputTape = updatedOutputTape
-                                                                    , highlighted_registers = Dict.insert regIndex "bg-blue-200" model.highlighted_registers
+                                                                    , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                                     , executedInstructions = model.executedInstructions + 1
                                                                 }
 
@@ -1172,7 +1172,7 @@ executeInstruction model highlightDuration =
                                                             updatedModel = { model
                                                                             | instructionPointer = nextInstructionPointer
                                                                             , outputTape = updatedOutputTape
-                                                                            , highlighted_registers = Dict.insert pointer "bg-blue-200" model.highlighted_registers
+                                                                            , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                             , executedInstructions = model.executedInstructions + 1
                                                                         }
                                                             
