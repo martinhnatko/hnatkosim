@@ -10,13 +10,16 @@ import Process
 
 runAllInstructions : Model -> Model
 runAllInstructions model =
-    if model.instructionPointer >= List.length model.instructions then
+    if model.executedInstructions >= model.totalMaxExecutedInstructions then
         model
     else
-        let
-            (nextModel, _) = executeInstruction model 0
-        in
-        runAllInstructions nextModel
+        if model.instructionPointer >= List.length model.instructions then
+            model
+        else
+            let
+                (nextModel, _) = executeInstruction model 0
+            in
+            runAllInstructions nextModel
 
 executeInstruction : Model -> Int -> (Model, Cmd Msg)
 executeInstruction model highlightDuration =
@@ -36,7 +39,7 @@ executeInstruction model highlightDuration =
         Just instr ->
             let 
                 dontHighlight : Bool
-                dontHighlight = (model.speedIdx == 7 ) || (model.speedIdx == 6 && model.isRunning)
+                dontHighlight = (model.speedIdx == 7 || model.speedIdx == 6 ) && model.isRunning
             in
             case instr of
                 Increment reg isError ->

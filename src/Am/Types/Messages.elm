@@ -20,9 +20,15 @@ type Msg
     | LoadSlot Int
     | ToggleSlotsModal
     | ToggleGuideModal
+    | ToggleSettingsModal
     | DeleteSlot Int
     | GoBackToMenu
     | UpdateSlotName Int String
     | SetStartTime Posix
     | ComputeAndPrintDuration Posix
     | StartInstantSimulation Posix
+    | ChangeNumOfRegisters Int
+    | ChangeMaxExecutedInstructions Int
+    | TypedRegsNum String
+    | TypedMaxExecutedInstructions String
+    | NoOp

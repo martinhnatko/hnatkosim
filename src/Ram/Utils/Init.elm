@@ -53,8 +53,13 @@ init =
             , outputTape = Array.empty
             , showSlotsModal = False
             , showGuideModal = False
+            , showSettingsModal = False
             , simulationStartTime = Nothing
             , executedInstructions = 0
+            , totalNumberOfRegisters = 100
+            , totalMaxExecutedInstructions = 100000
+            , typedTotalNumberOfRegisters = ""
+            , typedTotalMaxExecutedInstructions = ""
             }
     in
     initialModel

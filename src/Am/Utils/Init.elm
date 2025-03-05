@@ -46,8 +46,13 @@ init =
                 ]
             , showSlotsModal = False
             , showGuideModal = False
+            , showSettingsModal = False
             , simulationStartTime = Nothing
             , executedInstructions = 0
+            , totalNumberOfRegisters = 100
+            , totalMaxExecutedInstructions = 1000000
+            , typedTotalNumberOfRegisters = ""
+            , typedTotalMaxExecutedInstructions = ""
             }
         
     in

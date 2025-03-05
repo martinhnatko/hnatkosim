@@ -30,6 +30,11 @@ type alias Model =
     , outputTape : Array Int
     , showSlotsModal : Bool
     , showGuideModal : Bool
+    , showSettingsModal : Bool
     , simulationStartTime : Maybe Posix
     , executedInstructions : Int
+    , totalNumberOfRegisters : Int
+    , totalMaxExecutedInstructions : Int
+    , typedTotalNumberOfRegisters : String
+    , typedTotalMaxExecutedInstructions : String
     }

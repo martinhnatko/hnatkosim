@@ -1,19 +1,30 @@
 module Am.Components.GuideModal exposing (..)
 
-import Html exposing (Html, div, button, text, h2, p, span, table, thead, tr, th, tbody, td)
+import Html exposing (Html, div, button, text, h2, p, span, table, thead, tr, th, tbody, td, h3)
 import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, stopPropagationOn)
+
+import Json.Decode as Decode
 
 import Shared.Icons.X exposing (heroiconX)
-import Html exposing (h3)
 
 
-viewGuideModal : msg -> (Int -> msg) -> Html msg
-viewGuideModal onToggleGuideModal onLoadSlot =
+stopPropagationClick : msg -> Html.Attribute msg
+stopPropagationClick noOpMsg =
+    stopPropagationOn "click" <|
+        Decode.succeed ( noOpMsg, True )
+
+
+viewGuideModal : msg -> (Int -> msg) -> msg -> Html msg
+viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
     div
-        [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" ]
+        [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        , onClick onToggleGuideModal
+        ]
         [ div
-            [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-4xl overflow-y-auto" ]
+            [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-4xl overflow-y-auto"
+            , stopPropagationClick onNoOp
+            ]
             [ -- Close Button (top-right)
               button
                 [ class "absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"

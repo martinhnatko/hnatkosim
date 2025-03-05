@@ -13,3 +13,4 @@ type ConsoleMessageType
     | ErrorMessage
     | SimStarted
     | SimStopped
+    | Warning

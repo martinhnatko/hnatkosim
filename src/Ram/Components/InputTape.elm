@@ -21,7 +21,7 @@ viewInputTape model =
         cellsList =
             Array.toList model.inputTape
     in
-    div [ class "flex bg-white rounded space-x-2 p-3 overflow-x-auto" ]
+    div [ class "flex bg-white rounded space-x-2 p-2 overflow-x-auto" ]
         ( (List.indexedMap
                 (\index cell ->
                     renderInputCell index cell model

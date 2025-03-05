@@ -10,7 +10,7 @@ import Array exposing (Array)
 
 speedSlider : Int -> Array Int -> (Int -> msg) -> Html msg
 speedSlider currentValue speeds onChangeSpeed =
-    div [ class "flex flex-col w-1/3 h-20" ]
+    div [ class "flex flex-col w-1/3 h-20 px-2" ]
         [ -- Title with Rocket Icon
           div [ class "flex items-center mt-1 gap-2 text-gray-700" ]
             [ heroiconRocket
@@ -30,7 +30,7 @@ speedSlider currentValue speeds onChangeSpeed =
             []
 
         , -- Labels for the Slider
-          ul [ class "flex justify-between w-full px-[12px]" ]
+          ul [ class "flex justify-between w-full px-[10px]" ]
             (List.indexedMap sliderLabel (Array.toList speeds))
         ]
         
@@ -52,15 +52,9 @@ sliderLabel index ms =
           )
 
     in
-    if index == 6 then
-      li [ class "flex justify-center relative text-red-500" ]
-          [ span [ class "absolute" ]
-              [ text label ]
-          ]
-    else
-      li [ class "flex justify-center relative" ]
-          [ span [ class "absolute" ]
-              [ text label ]
-          ]
+    li [ class "flex justify-center relative" ]
+        [ span [ class "absolute" ]
+            [ text label ]
+        ]
 
 

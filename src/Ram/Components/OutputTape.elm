@@ -21,7 +21,7 @@ viewOutputTape model =
                 |> Array.toList
 
     in
-    div [ class "flex rounded bg-white space-x-2 p-3 overflow-x-auto" ]
+    div [ class "flex rounded bg-white space-x-2 p-2 overflow-x-auto" ]
         (if List.isEmpty cells then
             -- Render a placeholder cell that is invisible but takes up the same space
             [ div [ class "w-20 h-20 border rounded invisible" ] [] ]
@@ -45,9 +45,9 @@ renderOutputCell index cell model =
         ( displayValue, bgClass ) =
             ( String.fromInt cell
             , if highlightClass /= "" then
-                "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono " ++ highlightClass
+                "w-20 h-20 border cursor-not-allowed overflow-x-auto rounded text-center flex items-center justify-center font-mono " ++ highlightClass
               else
-                "w-20 h-20 border cursor-not-allowed rounded text-center flex items-center justify-center font-mono bg-white"
+                "w-20 h-20 border cursor-not-allowed overflow-x-auto rounded text-center flex items-center justify-center font-mono bg-white"
             )
 
         inputElement =

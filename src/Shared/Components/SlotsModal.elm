@@ -1,21 +1,33 @@
 module Shared.Components.SlotsModal exposing (..)
 
+import Ram.Types.Messages exposing (Msg(..))
+
 import Html exposing (Html, div, button, text, input, h2)
 import Html.Attributes exposing (disabled, class, type_, value)
-import Html.Events exposing (onClick, onInput)
-import Array exposing (Array)
+import Html.Attributes exposing (placeholder)
+import Html.Events exposing (onClick, onInput, stopPropagationOn)
 
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.TrashSmall exposing (heroiconTrashSmall)
 
+import Array exposing (Array)
+import Json.Decode as Decode
 
-viewSlotsModal : Bool -> Array (String, Bool) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
-viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
+stopPropagationClick : msg -> Html.Attribute msg
+stopPropagationClick noOpMsg =
+    stopPropagationOn "click" <|
+        Decode.succeed ( noOpMsg, True )
+
+
+viewSlotsModal : Bool -> Array (String, Bool) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> msg -> Html msg
+viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onNoOp =
     div
         [ Html.Attributes.class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        , onClick onToggleSlotsModal
         ]
         [ div
             [ Html.Attributes.class "bg-white p-4 rounded shadow-lg relative"
+            , stopPropagationClick onNoOp
             ]
             [ -- “X” button in the top-right
               button
@@ -49,6 +61,7 @@ viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdat
                         , class "font-bold text-gray-700 border border-gray-300 rounded p-1 w-full mb-2 focus:outline-none focus:ring focus:ring-blue-200"
                         , value slotName
                         , onInput (\newName -> onUpdateSlotName i newName)
+                        , placeholder ("Slot " ++ String.fromInt i)
                         ]
                         []
                       -- Row of 3 buttons

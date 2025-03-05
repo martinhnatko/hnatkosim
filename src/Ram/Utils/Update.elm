@@ -57,11 +57,11 @@ update msg model =
             in
             if not model.simStarted && newModel.instructionPointer >= List.length newModel.instructions then
                 ( { newModel | simStarted = True }
-                , Cmd.batch [printErrors model.instructions, removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started"), Task.perform (ComputeAndPrintDuration False) Time.now, Task.perform SetStartTime Time.now]
+                , Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now, Task.perform SetStartTime Time.now, printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started")]
                 )
             else if not model.simStarted then
                 ( { newModel | simStarted = True }
-                , Cmd.batch [printErrors model.instructions, removeHighlightCmd, requestAddMessage (SimStarted, "Simulation started"), Task.perform SetStartTime Time.now]
+                , Cmd.batch [removeHighlightCmd, Task.perform SetStartTime Time.now, printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started")]
                 )
             else if newModel.instructionPointer >= List.length newModel.instructions then
                 ( { newModel | isRunning = False }, Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now] )
@@ -75,7 +75,7 @@ update msg model =
         Start ->
             if model.speedIdx == 7 && not model.simStarted then
                 (
-                    { model | simStarted = True }
+                    { model | simStarted = True, isRunning = True }
                     , Cmd.batch
                         [ printErrors model.instructions
                         , Task.perform (\now -> StartInstantSimulation now) Time.now
@@ -85,16 +85,21 @@ update msg model =
             
             else if model.speedIdx == 7 && model.simStarted then
                 let
-                    finalModel = runAllInstructions model
+                    (finalModel, someCmds) = runAllInstructions ({ model | isRunning = True }, Cmd.none) 
                 in
-                if finalModel.halted then
-                    ( finalModel
-                    , Task.perform (ComputeAndPrintDuration True) Time.now
+                if finalModel.executedInstructions >= model.totalMaxExecutedInstructions then
+                    ( { finalModel | isRunning = False }
+                    , Cmd.batch [ requestAddMessage(Warning, "Warning: Maximum number of instant-speed instructions exceeded (" ++ String.fromInt finalModel.executedInstructions ++ "). Your code may contain an infinite loop or be too complex. You can change this limit in settings, or continue with slower speed or step mode to debug."), someCmds ]
                     )
                 else
-                    ( finalModel
-                    , Task.perform (ComputeAndPrintDuration False) Time.now
-                    )
+                    if finalModel.halted then
+                        ( finalModel
+                        , Cmd.batch [ Task.perform (ComputeAndPrintDuration True) Time.now, someCmds ]
+                        )
+                    else
+                        ( finalModel
+                        , Cmd.batch [ Task.perform (ComputeAndPrintDuration False) Time.now, someCmds ]
+                        )
 
             else
                 if model.simStarted then
@@ -113,16 +118,21 @@ update msg model =
         StartInstantSimulation now ->
             let
                 updatedModel = { model | simulationStartTime = Just now }
-                finalModel = runAllInstructions updatedModel
+                (finalModel, someCmds) = runAllInstructions (updatedModel, Cmd.none)
             in
-            if finalModel.halted then
-                ( finalModel
-                , Task.perform (ComputeAndPrintDuration True) Time.now
+            if finalModel.executedInstructions >= model.totalMaxExecutedInstructions then
+                ( { finalModel | isRunning = False }
+                , Cmd.batch [ requestAddMessage(Warning, "Warning: Maximum number of instant-speed instructions exceeded (" ++ String.fromInt finalModel.executedInstructions ++ "). Your code may contain an infinite loop or be too complex. You can change this limit in settings, or continue with slower speed or step mode to debug."), someCmds ]
                 )
             else
-                ( finalModel
-                , Task.perform (ComputeAndPrintDuration False) Time.now
-                )
+                if finalModel.halted then
+                    ( finalModel
+                    , Cmd.batch [ Task.perform (ComputeAndPrintDuration True) Time.now, someCmds ]
+                    )
+                else
+                    ( finalModel
+                    , Cmd.batch [ Task.perform (ComputeAndPrintDuration False) Time.now, someCmds ]
+                    )
             
         SetStartTime now ->
             ( { model | simulationStartTime = Just now }, Cmd.none )
@@ -148,6 +158,7 @@ update msg model =
                             { model
                                 | simulationStartTime = Nothing
                                 , executedInstructions = 0
+                                , isRunning = False
                             }
                             , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ".")
                         )
@@ -157,6 +168,7 @@ update msg model =
                                 { model
                                     | simulationStartTime = Nothing
                                     , executedInstructions = 0
+                                    , isRunning = False
                                 }
                                 , requestAddMessage (InfoMessage, "Program halted. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.")
                             )
@@ -165,6 +177,7 @@ update msg model =
                                 { model
                                     | simulationStartTime = Nothing
                                     , executedInstructions = 0
+                                    , isRunning = False
                                 }
                                 , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.")
                             )
@@ -190,7 +203,7 @@ update msg model =
                 | isRunning = False
                 , simStarted = False
                 , instructionPointer = 0
-                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 model.totalNumberOfRegisters))
                 , halted = False
                 , inputTapePointer = 0
                 , outputTape = Array.empty
@@ -208,15 +221,21 @@ update msg model =
         ChangeSpeed newSpeed ->
             if newSpeed == 7 && model.isRunning then
                 let
-                    finalModel = runAllInstructions { model | speedIdx = newSpeed, isRunning = False }
+                    (finalModel, someCmds) = runAllInstructions ({ model | speedIdx = newSpeed, isRunning = True }, Cmd.none)
                 in
-                if finalModel.halted then
-                    ( finalModel
-                    , Task.perform (ComputeAndPrintDuration True) Time.now
+                if finalModel.executedInstructions >= model.totalMaxExecutedInstructions then
+                    ( { finalModel | isRunning = False }
+                    , Cmd.batch [ requestAddMessage(Warning, "Warning: Maximum number of instant-speed instructions exceeded (" ++ String.fromInt finalModel.executedInstructions ++ "). Your code may contain an infinite loop or be too complex. You can change this limit in settings, or continue with slower speed or step mode to debug."),  someCmds ]
                     )
                 else
-                    ( finalModel
-                    , Task.perform (ComputeAndPrintDuration False) Time.now )
+                    if finalModel.halted then
+                        ( finalModel
+                        , Cmd.batch [ Task.perform (ComputeAndPrintDuration True) Time.now, someCmds ]
+                        )
+                    else
+                        ( finalModel
+                        , Cmd.batch [ Task.perform (ComputeAndPrintDuration False) Time.now , someCmds ]
+                        )
             else
                 ( { model | speedIdx = newSpeed }, Cmd.none )
         
@@ -312,7 +331,7 @@ update msg model =
                 , inputText = ""
                 , simStarted = False
                 , instructionPointer = 0
-                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 model.totalNumberOfRegisters))
                 , instructions = []
               }
             , setItem ("ram_current", "")
@@ -440,4 +459,19 @@ update msg model =
         
         ToggleGuideModal ->
             ( { model | showGuideModal = not model.showGuideModal }, Cmd.none )
+        
+        ToggleSettingsModal ->
+            ( { model | showSettingsModal = not model.showSettingsModal }, Cmd.none )
+        
+        ChangeNumOfRegisters newNum ->
+            ( { model | totalNumberOfRegisters = newNum, registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 newNum)) }, Cmd.none )
+        
+        ChangeMaxExecutedInstructions newNum ->
+            ( { model | totalMaxExecutedInstructions = newNum }, Cmd.none )
+        
+        TypedRegsNum newText ->
+            ( { model | typedTotalNumberOfRegisters = newText }, Cmd.none )
+        
+        TypedMaxExecutedInstructions newText ->
+            ( { model | typedTotalMaxExecutedInstructions = newText }, Cmd.none )
             

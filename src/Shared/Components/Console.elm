@@ -12,7 +12,7 @@ viewConsole : List ConsoleMessage -> Html msg
 viewConsole consoleMessages =    
     div
         [ id "consoleContainer"
-        , class "bg-gray-800 text-white p-3 rounded shadow-lg font-mono text-sm h-96 overflow-y-auto"
+        , class "flex-none bg-gray-800 text-white p-3 rounded shadow-lg font-mono text-sm h-32 overflow-y-auto"
         ]
         (consoleMessages
             |> List.map (\msg ->
@@ -32,6 +32,10 @@ viewConsole consoleMessages =
 
                     SimStopped ->
                         div [ class "text-red-300" ]
+                            [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
+                    
+                    Warning ->
+                        div [ class "text-yellow-300" ]
                             [ text ("[" ++ formatTime msg.timestamp ++ "] " ++ msg.text) ]
             )
         )

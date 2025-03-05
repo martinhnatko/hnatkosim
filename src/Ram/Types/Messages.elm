@@ -23,6 +23,7 @@ type Msg
     | LoadSlot Int
     | ToggleSlotsModal
     | ToggleGuideModal
+    | ToggleSettingsModal
     | DeleteSlot Int
     | UpdateInputTape Int Int
     | AddCellToInputTape
@@ -33,3 +34,7 @@ type Msg
     | SetStartTime Posix
     | ComputeAndPrintDuration Bool Posix
     | StartInstantSimulation Posix
+    | ChangeNumOfRegisters Int
+    | ChangeMaxExecutedInstructions Int
+    | TypedRegsNum String
+    | TypedMaxExecutedInstructions String

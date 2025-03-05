@@ -8,6 +8,7 @@ import Ram.Components.Registers exposing (viewRegisters)
 import Ram.Components.GuideModal exposing (viewGuideModal)
 import Ram.Components.InputTape exposing (viewInputTape)
 import Ram.Components.OutputTape exposing (viewOutputTape)
+import Ram.Components.SettingsModal exposing (viewSettingsModal)
 
 import Shared.Components.SlotsModal exposing (viewSlotsModal)
 import Shared.Components.Console exposing (viewConsole)
@@ -31,14 +32,14 @@ view model =
     , body =
         [ div [ class "flex flex-col h-screen p-2 bg-gray-200" ]
             [ -- Header Section
-              div [ class "flex gap-4" ]
-                  [ controlButtons (model.instructionPointer >= List.length model.instructions) model.isRunning model.halted model.simStarted Start Pause Step Reset
+              div [ class "flex gap-3" ]
+                  [ controlButtons (model.instructionPointer >= List.length model.instructions) model.isRunning model.halted model.simStarted Start Pause Step Reset (model.speedIdx == 7 && (model.executedInstructions >= model.totalMaxExecutedInstructions))
                   , speedSlider model.speedIdx model.speeds ChangeSpeed
-                  , menuButtons ToggleSlotsModal GoBackToMenu ToggleGuideModal model.simStarted
+                  , menuButtons ToggleSlotsModal GoBackToMenu ToggleGuideModal ToggleSettingsModal model.simStarted
                   ]
 
               -- Main Content Section
-            , div [ class "flex flex-col my-3 gap-3 overflow-hidden" ]
+            , div [ class "flex flex-col h-full my-3 gap-3 overflow-hidden" ]
         
                   [ -- Input Tape
                   div []
@@ -71,13 +72,19 @@ view model =
 
               -- Slots Modal
             , if model.showSlotsModal then
-                  viewSlotsModal (model.inputText == "") (Array.map (\slot -> ( slot.name, slot.inputText == "" )) model.slots) ToggleSlotsModal SaveSlot LoadSlot DeleteSlot UpdateSlotName
+                  viewSlotsModal (model.inputText == "") (Array.map (\slot -> ( slot.name, slot.inputText == "" )) model.slots) ToggleSlotsModal SaveSlot LoadSlot DeleteSlot UpdateSlotName NoOp 
               else
                   text ""
             
                 -- Guide Modal
             , if model.showGuideModal then
-                viewGuideModal ToggleGuideModal LoadSlot
+                viewGuideModal ToggleGuideModal LoadSlot NoOp
+              else
+                text ""
+            
+                -- Settings modal
+            , if model.showSettingsModal then
+                viewSettingsModal model.totalNumberOfRegisters model.totalMaxExecutedInstructions ToggleSettingsModal ChangeNumOfRegisters ChangeMaxExecutedInstructions TypedRegsNum TypedMaxExecutedInstructions model.typedTotalNumberOfRegisters model.typedTotalMaxExecutedInstructions NoOp
               else
                 text ""
 

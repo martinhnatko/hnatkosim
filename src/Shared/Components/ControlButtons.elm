@@ -9,9 +9,9 @@ import Html exposing (Html, div, button, text)
 import Html.Attributes exposing (class, disabled)
 import Html.Events exposing (onClick)
 
-controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Html msg
-controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset =
-    div [ class "flex gap-4 w-1/3" ]
+controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Bool -> Html msg
+controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset startDisabled =
+    div [ class "flex gap-3 w-1/3" ]
         [ -- Start/Pause Button
             if isRunning then
                 button 
@@ -21,7 +21,7 @@ controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause o
                     [ heroiconPause, text "Pause" ]
             else
                 (
-                if halted || atEndOfInstructions then 
+                if halted || atEndOfInstructions || startDisabled then 
                     button 
                         [ class "w-1/3 px-4 py-2 bg-gray-400 text-white flex items-center justify-center rounded cursor-not-allowed"
                         , disabled True

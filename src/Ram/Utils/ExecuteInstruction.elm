@@ -14,16 +14,20 @@ import Dict
 import Task
 import Process
 import Time
+import Json.Decode exposing (Value)
 
-runAllInstructions : Model -> Model
-runAllInstructions model =
-    if (model.instructionPointer >= List.length model.instructions) || model.halted then
-        model
+runAllInstructions : (Model, Cmd Msg) -> (Model, Cmd Msg)
+runAllInstructions (model, someCmd) =
+    if model.executedInstructions >= model.totalMaxExecutedInstructions then
+        (model, someCmd)
     else
-        let
-            (nextModel, _) = executeInstruction model 0
-        in
-        runAllInstructions nextModel
+        if (model.instructionPointer >= List.length model.instructions) || model.halted then
+            (model, someCmd)
+        else
+            let
+                (nextModel, someNewCmd) = executeInstruction model 0
+            in
+            runAllInstructions (nextModel, Cmd.batch [ someCmd, someNewCmd ])
 
 getRegisterValue : Int -> Model -> Maybe Int
 getRegisterValue regIndex model =
@@ -47,7 +51,7 @@ executeInstruction model highlightDuration =
         Just instr ->
             let 
                 dontHighlight : Bool
-                dontHighlight = (model.speedIdx == 7 ) || (model.speedIdx == 6 && model.isRunning)
+                dontHighlight = ( model.speedIdx == 7 || model.speedIdx == 6 ) && model.isRunning
             in
             case instr of
                 
@@ -239,15 +243,16 @@ executeInstruction model highlightDuration =
                                             )
                                         Just pointer ->
                                             let
-                                                maybeAccVal = getRegisterValue 0 model
+                                                maybeValue = getRegisterValue pointer model
+                                                accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
                                             in
-                                            case maybeAccVal of
+                                            case maybeValue of
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
                                                     ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store a non-existent value.") 
+                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store into a non-existent register.") 
                                                     )
-                                                Just accVal ->
+                                                Just value ->
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
