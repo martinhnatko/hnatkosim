@@ -14,7 +14,6 @@ import Dict
 import Task
 import Process
 import Time
-import Json.Decode exposing (Value)
 
 runAllInstructions : (Model, Cmd Msg) -> (Model, Cmd Msg)
 runAllInstructions (model, someCmd) =
@@ -252,7 +251,7 @@ executeInstruction model highlightDuration =
                                                     ( { model | instructionPointer = nextInstructionPointer }
                                                     , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store into a non-existent register.") 
                                                     )
-                                                Just value ->
+                                                Just _ ->
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
