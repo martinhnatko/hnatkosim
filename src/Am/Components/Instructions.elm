@@ -16,7 +16,7 @@ viewInstructions instructions pointer simStarted =
             )
         ]
         [
-        div [ Html.Attributes.class "flex flex-wrap gap-2" ]
+        div [ Html.Attributes.class "flex flex-wrap gap-1.5" ]
             (instructions
                 |> List.indexedMap (\index instruction ->
                     let
@@ -58,7 +58,7 @@ viewInstructions instructions pointer simStarted =
 
                         -- Base classes: same border thickness & style for everyone
                         baseClasses =
-                            "p-1 border-4 border-solid rounded font-mono transition-colors"
+                            "p-0.5 border-4 border-solid rounded font-mono transition-colors"
 
                         -- If active, show a blue border & bold text; otherwise a transparent border
                         activeClasses =

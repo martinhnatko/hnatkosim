@@ -9,7 +9,7 @@ import String
 
 viewInstructions : List Instruction -> Int -> Bool -> Bool -> Html msg
 viewInstructions instructions pointer simStarted halted =
-    div [ class ( "flex flex-col gap-2 w-1/3 p-2 shadow-lg rounded overflow-auto border-2 border-transparent " 
+    div [ class ( "flex flex-col gap-1 w-1/3 p-2 shadow-lg rounded overflow-auto border-2 border-transparent " 
             ++ if ((pointer >= List.length instructions) && simStarted) || halted then
                     " bg-green-50 border-green-400"
                 else
@@ -115,7 +115,7 @@ viewInstructions instructions pointer simStarted halted =
                                 ("Unknown", " bg-red-200 text-red-800")
 
                     baseClasses =
-                        "p-1 border-4 border-solid rounded font-mono transition-colors"
+                        "p-0.5 border-4 border-solid rounded font-mono transition-colors"
 
                     activeClasses =
                         if isActive then
