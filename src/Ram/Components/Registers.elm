@@ -29,12 +29,12 @@ viewRegisters model =
                             )
                         ]
                         [ div 
-                            (
-                            if regNum == 0 then
-                                [ class "text-blue-500 w-8 text-right" ]
-                            else 
+                            -- (
+                            -- if regNum == 0 then
+                            --     [ class "text-blue-500 w-8 text-right" ]
+                            -- else 
                                 [ class "text-gray-500 w-8 text-right" ]
-                            )
+                            -- )
                             [ text (String.fromInt regNum) ]
                         , div [ class "h-5 w-px bg-gray-300" ] []
                         , div [ class "flex-1 text-left font-medium text-gray-900" ]

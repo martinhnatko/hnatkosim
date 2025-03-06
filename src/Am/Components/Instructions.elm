@@ -8,7 +8,7 @@ import Html.Attributes exposing (class)
 
 viewInstructions : List Instruction -> Int -> Bool -> Html msg
 viewInstructions instructions pointer simStarted =
-    div [ class ( "w-1/3 p-2 shadow-lg rounded overflow-auto border-2 border-transparent " 
+    div [ class ( "w-1/3 p-1 shadow-lg rounded overflow-auto border-2 border-transparent " 
             ++ if (pointer >= List.length instructions) && simStarted then
                     " bg-green-50 border-green-400"
                 else

@@ -14,7 +14,7 @@ inputTextArea simStarted inputText onUpdateCode onDeleteInput =
             [ 
             id "textbox"
             , class 
-                    ( "flex-grow w-full h-full p-2 border rounded resize-none overflow-auto text-lg font-mono "
+                    ( "flex-grow w-full h-full p-1.5 border rounded resize-none overflow-auto text-lg font-mono "
                         ++ if simStarted then
                             "bg-gray-100 text-gray-700 cursor-not-allowed"
                         else
