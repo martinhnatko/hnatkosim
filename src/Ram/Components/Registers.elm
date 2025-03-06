@@ -10,7 +10,7 @@ import Dict
 
 viewRegisters : Model -> Html msg
 viewRegisters model =
-    div [ class "flex flex-col w-1/3 bg-white p-2 shadow-lg rounded overflow-auto" ]
+    div [ class "flex flex-col w-1/3 bg-white p-1 shadow-lg rounded overflow-auto" ]
         (
         model.registers
             |> Dict.toList
@@ -24,7 +24,7 @@ viewRegisters model =
                     div
                         [ 
                         class
-                            ("flex items-center gap-4 p-2 border-b last:border-none font-mono " 
+                            ("flex items-center gap-4 p-1 border-b last:border-none font-mono " 
                                 ++ highlightClass
                             )
                         ]
