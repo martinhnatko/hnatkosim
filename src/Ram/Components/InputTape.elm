@@ -32,7 +32,7 @@ viewInputTape model =
                 [ class (if model.simStarted then
                             "w-20 h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0"
                         else
-                            "w-20 h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0"
+                            "w-20 h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0 hover:bg-green-300 hover:text-green-900 transition-colors duration-200"
                         )
                 , onClick AddCellToInputTape
                 ]
