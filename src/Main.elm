@@ -21,7 +21,7 @@ import Ram.Utils.HelperFunctions as RamHelper
 import Shared.Ports exposing (getItem, gotItem, subToTextArea, scrollToBottom)
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
 
-import Html exposing (div, text, button)
+import Html exposing (div, text, button, img)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
@@ -390,11 +390,34 @@ view : Model -> Browser.Document Msg
 view model =
     case model.page of
         Landing ->
-            { title = "Menu"
+            { title = "HnatkoSim | Menu"
             , body =
-                [ div [ class "flex items-center justify-center min-h-screen bg-gray-100" ]
-                    [ div [ class "flex flex-col gap-6" ]
-                        [ button
+                [ div [ class "flex flex-col items-center justify-center min-h-screen bg-gray-200" ]
+                    [ 
+                    
+                    div [class "flex flex-col items-center mb-10"]
+                    [
+                        img
+                            [ Html.Attributes.src "assets\\favicon\\android-chrome-512x512.png"
+                            , Html.Attributes.alt "icon"
+                            , class "w-11"
+                            ]
+                            []
+                        
+                        , img
+                            [ Html.Attributes.src "assets/HnatkoSim.gif"
+                            , Html.Attributes.alt "HnatkoSim"
+                            , class "w-96"  -- Example sizing classes
+                            ]
+                            []
+
+                    ]
+                        
+                    , div [ class "flex flex-col gap-5" ]
+                        [ 
+                            
+                        
+                        button
                             [ onClick (ChangePage AbacusPage)
                             , class "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
                             ]

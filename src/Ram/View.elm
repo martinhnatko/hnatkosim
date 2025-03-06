@@ -28,7 +28,7 @@ import Array
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "RAM Simulator"
+    { title = "HnatkoSim | RAM"
     , body =
         [ div [ class "flex flex-col h-screen p-2 bg-gray-200" ]
             [ -- Header Section
