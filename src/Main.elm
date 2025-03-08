@@ -392,32 +392,21 @@ view model =
         Landing ->
             { title = "HnatkoSim | Menu"
             , body =
-                [ div [ class "flex flex-col items-center justify-center min-h-screen bg-gray-200" ]
+                [ div 
+                    [ class "flex flex-col items-center justify-center min-h-screen bg-gray-200 font-mono relative" ]
                     [ 
                     
-                    div [class "flex flex-col items-center mb-10"]
-                    [
-                        img
-                            [ Html.Attributes.src "assets\\favicon\\android-chrome-512x512.png"
-                            , Html.Attributes.alt "icon"
-                            , class "w-11"
-                            ]
-                            []
-                        
-                        , img
-                            [ Html.Attributes.src "assets/HnatkoSim.gif"
+                    div [ class "flex flex-col items-center mb-5" ]
+                        [ img
+                            [ Html.Attributes.src "assets\\hnatkosim.webp"
                             , Html.Attributes.alt "HnatkoSim"
-                            , class "w-96"  -- Example sizing classes
+                            , class "w-[32rem] breathe"
                             ]
                             []
-
-                    ]
-                        
+                        ]
+                    
                     , div [ class "flex flex-col gap-5" ]
-                        [ 
-                            
-                        
-                        button
+                        [ button
                             [ onClick (ChangePage AbacusPage)
                             , class "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
                             ]
@@ -430,6 +419,7 @@ view model =
                         ]
                     ]
                 ]
+
             }
 
         AbacusPage ->

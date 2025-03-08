@@ -5,6 +5,7 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, stopPropagationOn)
 
 import Shared.Icons.X exposing (heroiconX)
+import Shared.Icons.Guide exposing (heroiconGuide)
 
 import Json.Decode as Decode
 
@@ -28,8 +29,8 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                 , onClick onToggleGuideModal
                 ]
                 [ heroiconX ]
-              , h2 [ class "text-xl font-bold mb-4" ]
-                  [ text "Random Access Machine Guide" ]
+              , h2 [ class "text-xl font-bold mb-4 flex items-center gap-1" ]
+                  [ heroiconGuide ,text "Random Access Machine Guide" ]
               , p [ class "mb-2" ]
                   [ text "Random Access Machine (RAM) is a computational model similar to conventional sequential computers. It consists of data memory (implemented as registers) and program memory containing instructions. An input/output unit interfaces with the environment, while an arithmetic-logic and control unit interprets and executes the program." ]
               , p [ class "mb-4" ]

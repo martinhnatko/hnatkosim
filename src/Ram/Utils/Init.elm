@@ -9,7 +9,7 @@ init =
     let
         initialModel =
             { inputText = ""
-            , registers = Dict.fromList (List.map (\n -> (n, 0)) (range 0 100))
+            , registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 100))
             , highlighted_registers = Dict.empty
             , highlighted_input_tape = Dict.empty
             , highlighted_output_tape = Dict.empty
@@ -60,6 +60,10 @@ init =
             , totalMaxExecutedInstructions = 100000
             , typedTotalNumberOfRegisters = ""
             , typedTotalMaxExecutedInstructions = ""
+            , typedBase = ""
+            , logSpace = 0
+            , logTime = 0
+            , logBase = 2
             }
     in
     initialModel

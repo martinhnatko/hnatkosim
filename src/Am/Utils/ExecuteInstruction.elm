@@ -47,24 +47,25 @@ executeInstruction model highlightDuration =
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
+                            let
+                                newRegisters = Dict.update reg (Maybe.map (\(val, _) -> (val + 1, True))) model.registers
+                            in
                             if dontHighlight then
                                 ( { model 
-                                    | registers = (Dict.update reg (Maybe.map (\val -> val + 1)) model.registers)
+                                    | registers = newRegisters
                                     , instructionPointer = nextInstructionPointer
                                     , executedInstructions = model.executedInstructions + 1    
                                  }
                                 , Cmd.none )
                             else
                                 let
-                                    updatedRegisters =
-                                        Dict.update reg (Maybe.map (\val -> val + 1)) model.registers
-
                                     updatedModel =
                                         { model
-                                            | registers = updatedRegisters
+                                            | registers = newRegisters
                                             , instructionPointer = nextInstructionPointer
-                                            , highlighted = Dict.insert reg "bg-green-200" Dict.empty
                                             , executedInstructions = model.executedInstructions + 1   
+                                            
+                                            , highlighted = Dict.insert reg "bg-green-200" Dict.empty
                                         }
                                 in
                                 ( updatedModel
@@ -76,25 +77,26 @@ executeInstruction model highlightDuration =
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
+                            let
+                                newRegisters = Dict.update reg (Maybe.map (\(val, _) -> (val - 1, True))) model.registers
+                            in
                             if dontHighlight then
                                 (
                                 { model 
-                                    | registers = (Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers)
+                                    | registers = newRegisters
                                     , instructionPointer = nextInstructionPointer
                                     , executedInstructions = model.executedInstructions + 1
                                 }
                                 , Cmd.none )
                             else
                                 let
-                                    updatedRegisters =
-                                        Dict.update reg (Maybe.map (\val -> Basics.max 0 (val - 1))) model.registers
-
                                     updatedModel =
                                         { model
-                                            | registers = updatedRegisters
+                                            | registers = newRegisters
                                             , instructionPointer = nextInstructionPointer
-                                            , highlighted = Dict.insert reg "bg-yellow-200" Dict.empty
                                             , executedInstructions = model.executedInstructions + 1   
+                                            
+                                            , highlighted = Dict.insert reg "bg-yellow-200" Dict.empty
                                         }
                                 in
                                 ( updatedModel
@@ -107,9 +109,7 @@ executeInstruction model highlightDuration =
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
                             let
-                                conditionValue =
-                                    Dict.get conditionIndex model.registers
-                                        |> Maybe.withDefault 0
+                                conditionValue = Dict.get conditionIndex model.registers |> Maybe.map Tuple.first |> Maybe.withDefault 0
                             in
                             if conditionValue == 0 then
                                 -- Skip to EndLoop
@@ -132,9 +132,7 @@ executeInstruction model highlightDuration =
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
                             let
-                                conditionValue =
-                                    Dict.get conditionIndex model.registers
-                                        |> Maybe.withDefault 0
+                                conditionValue = Dict.get conditionIndex model.registers |> Maybe.map Tuple.first |> Maybe.withDefault 0
                             in
                             if conditionValue == 0 then
                                 -- Go to EndLoop

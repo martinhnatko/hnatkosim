@@ -84,7 +84,7 @@ view model =
             
                 -- Settings modal
             , if model.showSettingsModal then
-                viewSettingsModal model.totalNumberOfRegisters model.totalMaxExecutedInstructions ToggleSettingsModal ChangeNumOfRegisters ChangeMaxExecutedInstructions TypedRegsNum TypedMaxExecutedInstructions model.typedTotalNumberOfRegisters model.typedTotalMaxExecutedInstructions NoOp
+                viewSettingsModal model
               else
                 text ""
 

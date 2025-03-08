@@ -61,56 +61,56 @@ checkForNonExistingRegisters instructions =
                 |> List.indexedMap
                     (\i instr ->
                         case instr of
-                            Load _ isError ->
+                            Load _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Store _ isError ->
+                            Store _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Add _ isError ->
+                            Add _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Sub _ isError ->
+                            Sub _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Mul _ isError ->
+                            Mul _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Div _ isError ->
+                            Div _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Read _ isError ->
+                            Read _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Write _ isError ->
+                            Write _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingReg ->
                                         Just (i + 1)
@@ -126,9 +126,9 @@ checkForNonExistingRegisters instructions =
 
     in
     if nERECount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instruction that is referencing non-existing register at position " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instruction that is attempting to access a non-existing register at position " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
     else if nERECount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instructions that are referencing non-existing registers at positions: " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instructions that are attempting to access a non-existing registers at positions: " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
     else
         Nothing
 
@@ -142,7 +142,7 @@ checkForDividingByZero instructions =
                 |> List.indexedMap
                     (\i instr ->
                         case instr of
-                            Div _ isError ->
+                            Div _ isError _ ->
                                 case isError of
                                     Just DivByZero ->
                                         Just (i + 1)
@@ -205,21 +205,21 @@ checkForReferencingNonExistingLabel instructions =
                 |> List.indexedMap
                     (\i instr ->
                         case instr of
-                            Jump _ _ isError ->
+                            Jump _ _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingLabel ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Jzero _ _ isError ->
+                            Jzero _ _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingLabel ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Jgtz _ _ isError ->
+                            Jgtz _ _ isError _ ->
                                 case isError of
                                     Just ReferencingNonExistingLabel ->
                                         Just (i + 1)
@@ -250,21 +250,21 @@ checkForInvalidInstructions instructions =
                 |> List.indexedMap
                     (\i instr ->
                         case instr of
-                            Store _ isError ->
+                            Store _ isError _ ->
                                 case isError of
                                     Just InvalidInstruction ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Read _ isError ->
+                            Read _ isError _ ->
                                 case isError of
                                     Just InvalidInstruction ->
                                         Just (i + 1)
                                     _ ->
                                         Nothing
 
-                            Write _ isError ->
+                            Write _ isError _ ->
                                 case isError of
                                     Just InvalidInstruction ->
                                         Just (i + 1)

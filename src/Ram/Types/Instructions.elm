@@ -3,18 +3,18 @@ module Ram.Types.Instructions exposing (..)
 import Ram.Types.ErrorType exposing (ErrorType)
 
 type Instruction
-    = Load Operand (Maybe ErrorType)
-    | Store Operand (Maybe ErrorType)
-    | Add Operand (Maybe ErrorType)
-    | Sub Operand (Maybe ErrorType)
-    | Mul Operand (Maybe ErrorType)
-    | Div Operand (Maybe ErrorType)
-    | Read Operand (Maybe ErrorType)
-    | Write Operand (Maybe ErrorType)
-    | Jump Int String (Maybe ErrorType)
-    | Jzero Int String (Maybe ErrorType)
-    | Jgtz Int String (Maybe ErrorType)
-    | Halt
+    = Load Operand (Maybe ErrorType) Int
+    | Store Operand (Maybe ErrorType) Int
+    | Add Operand (Maybe ErrorType) Int
+    | Sub Operand (Maybe ErrorType) Int
+    | Mul Operand (Maybe ErrorType) Int
+    | Div Operand (Maybe ErrorType) Int
+    | Read Operand (Maybe ErrorType) Int
+    | Write Operand (Maybe ErrorType) Int
+    | Jump Int String (Maybe ErrorType) Int
+    | Jzero Int String (Maybe ErrorType) Int
+    | Jgtz Int String (Maybe ErrorType) Int
+    | Halt Int
     | Label String (Maybe ErrorType)
     | UnknownInstruction
 

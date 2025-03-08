@@ -175,7 +175,7 @@ update msg model =
                 | isRunning = False
                 , simStarted = False
                 , instructionPointer = 0
-                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 model.totalNumberOfRegisters))
+                , registers = Dict.fromList (List.map (\n -> (n,(0, False))) (range 0 model.totalNumberOfRegisters))
                 , highlighted = Dict.empty
                 , simulationStartTime = Nothing
                 , executedInstructions = 0
@@ -225,7 +225,7 @@ update msg model =
                 , inputText = ""
                 , simStarted = False
                 , instructionPointer = 0
-                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 model.totalNumberOfRegisters))
+                , registers = Dict.fromList (List.map (\n -> (n,(0, False))) (range 0 model.totalNumberOfRegisters))
                 , instructions = []
               }
             , setItem ("am_current", { name = "", inputText = "" } |> encodeSlot)
@@ -268,7 +268,7 @@ update msg model =
                         , isRunning = False
                         , simStarted = False
                         , instructionPointer = 0
-                        , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                        , registers = Dict.fromList (List.map (\n -> (n,(0, False))) (range 0 100))
                         , highlighted = Dict.empty
                         , simulationStartTime = Nothing
                         , executedInstructions = 0
@@ -314,7 +314,7 @@ update msg model =
             ( model, Cmd.none )
         
         ChangeNumOfRegisters newNum ->
-            ( { model | totalNumberOfRegisters = newNum, registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 newNum)) }, Cmd.none )
+            ( { model | totalNumberOfRegisters = newNum, registers = Dict.fromList (List.map (\n -> (n, (0, False))) (range 0 newNum)) }, Cmd.none )
         
         ChangeMaxExecutedInstructions newNum ->
             ( { model | totalMaxExecutedInstructions = newNum }, Cmd.none )

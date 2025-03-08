@@ -12,7 +12,7 @@ import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
 -- MODEL
 type alias Model =
     { inputText : String
-    , registers : Dict Int Int
+    , registers : Dict Int (Int, Maybe Int)
     , highlighted_registers : Dict Int String
     , highlighted_input_tape : Dict Int String
     , highlighted_output_tape : Dict Int String
@@ -37,4 +37,8 @@ type alias Model =
     , totalMaxExecutedInstructions : Int
     , typedTotalNumberOfRegisters : String
     , typedTotalMaxExecutedInstructions : String
+    , typedBase : String
+    , logSpace : Int
+    , logTime : Int
+    , logBase : Int
     }

@@ -157,7 +157,6 @@ update msg model =
                         (
                             { model
                                 | simulationStartTime = Nothing
-                                , executedInstructions = 0
                                 , isRunning = False
                             }
                             , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ".")
@@ -167,7 +166,6 @@ update msg model =
                             (
                                 { model
                                     | simulationStartTime = Nothing
-                                    , executedInstructions = 0
                                     , isRunning = False
                                 }
                                 , requestAddMessage (InfoMessage, "Program halted. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.")
@@ -176,7 +174,6 @@ update msg model =
                             (
                                 { model
                                     | simulationStartTime = Nothing
-                                    , executedInstructions = 0
                                     , isRunning = False
                                 }
                                 , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.")
@@ -203,7 +200,7 @@ update msg model =
                 | isRunning = False
                 , simStarted = False
                 , instructionPointer = 0
-                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 model.totalNumberOfRegisters))
+                , registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 model.totalNumberOfRegisters))
                 , halted = False
                 , inputTapePointer = 0
                 , outputTape = Array.empty
@@ -212,6 +209,9 @@ update msg model =
                 , highlighted_output_tape = Dict.empty
                 , simulationStartTime = Nothing
                 , executedInstructions = 0
+                , instructions = parseRAM model.inputText model
+                , logSpace = 0
+                , logTime = 0
               }
             , requestAddMessage (SimStopped, "Simulation stopped")
             )
@@ -331,8 +331,10 @@ update msg model =
                 , inputText = ""
                 , simStarted = False
                 , instructionPointer = 0
-                , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 model.totalNumberOfRegisters))
+                , registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 model.totalNumberOfRegisters))
                 , instructions = []
+                , logSpace = 0
+                , logTime = 0
               }
             , setItem ("ram_current", "")
             )
@@ -377,7 +379,7 @@ update msg model =
                         , inputTape = slot.inputTape
                         , inputTapePointer = 0
                         , instructionPointer = 0
-                        , registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 100))
+                        , registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 100))
                         , halted = False
                         , highlighted_input_tape = Dict.empty
                         , highlighted_registers = Dict.empty
@@ -387,6 +389,8 @@ update msg model =
                         , outputTape = Array.empty
                         , simulationStartTime = Nothing
                         , executedInstructions = 0
+                        , logSpace = 0
+                        , logTime = 0
                         }
                     , (
                         if i == 21 then
@@ -464,7 +468,7 @@ update msg model =
             ( { model | showSettingsModal = not model.showSettingsModal }, Cmd.none )
         
         ChangeNumOfRegisters newNum ->
-            ( { model | totalNumberOfRegisters = newNum, registers = Dict.fromList (List.map (\n -> (n,0)) (range 0 newNum)) }, Cmd.none )
+            ( { model | totalNumberOfRegisters = newNum, registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 newNum)) }, Cmd.none )
         
         ChangeMaxExecutedInstructions newNum ->
             ( { model | totalMaxExecutedInstructions = newNum }, Cmd.none )
@@ -474,4 +478,9 @@ update msg model =
         
         TypedMaxExecutedInstructions newText ->
             ( { model | typedTotalMaxExecutedInstructions = newText }, Cmd.none )
-            
+        
+        ChangeLogBase newBase ->
+            ( { model | logBase = newBase }, Cmd.none )
+        
+        TypedBase newText ->
+            ( { model | typedBase = newText }, Cmd.none )

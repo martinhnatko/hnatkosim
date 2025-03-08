@@ -53,7 +53,7 @@ renderInputCell index cell model =
             , if highlightClass /= "" then
                 highlightClass ++ " cursor-not-allowed text-gray-700"
               else if model.simStarted then
-                "bg-gray-100 cursor-not-allowed text-gray-700"
+                "cursor-not-allowed text-gray-700"
               else
                 "bg-white"
             )

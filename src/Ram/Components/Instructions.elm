@@ -9,7 +9,7 @@ import String
 
 viewInstructions : List Instruction -> Int -> Bool -> Bool -> Html msg
 viewInstructions instructions pointer simStarted halted =
-    div [ class ( "flex flex-col gap-1 w-1/3 p-2 shadow-lg rounded overflow-auto border-2 border-transparent " 
+    div [ class ( "flex flex-col gap-1 w-1/3 p-1 shadow-lg rounded overflow-auto border-2 border-transparent " 
             ++ if ((pointer >= List.length instructions) && simStarted) || halted then
                     " bg-green-50 border-green-400"
                 else
@@ -22,97 +22,97 @@ viewInstructions instructions pointer simStarted halted =
                     isActive =
                         index == pointer
 
-                    (instructionText, typeColorClasses) =
+                    (instructionText, typeColorClasses, maybeExeCount) =
                         case instruction of
-                            Load operand isError ->
+                            Load operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Load " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Load " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Load " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Load " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Store operand isError ->
+                            Store operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Store " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Store " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Store " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Store " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Add operand isError ->
+                            Add operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Add " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Add " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Add " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Add " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Sub operand isError ->
+                            Sub operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Sub " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Sub " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Sub " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Sub " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Mul operand isError ->
+                            Mul operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Mul " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Mul " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Mul " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Mul " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Div operand isError ->
+                            Div operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Div " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Div " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Div " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Div " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Read operand isError ->
+                            Read operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Read " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Read " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Read " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Read " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Write operand isError ->
+                            Write operand isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Write " ++ operandToString operand, " bg-red-200 text-red-800")
+                                        ("Write " ++ operandToString operand, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Write " ++ operandToString operand, " bg-blue-200 text-blue-800")
+                                        ("Write " ++ operandToString operand, " bg-blue-200 text-blue-800", Just exeCount)
 
-                            Jump _ label isError ->
+                            Jump _ label isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Jump " ++ label, " bg-red-200 text-red-800")
+                                        ("Jump " ++ label, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Jump " ++ label, " bg-gray-200 text-gray-800")
+                                        ("Jump " ++ label, " bg-gray-200 text-gray-800", Just exeCount)
 
-                            Jzero _ label isError ->
+                            Jzero _ label isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Jzero " ++ label, " bg-red-200 text-red-800")
+                                        ("Jzero " ++ label, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Jzero " ++ label, " bg-gray-200 text-gray-800")
+                                        ("Jzero " ++ label, " bg-gray-200 text-gray-800", Just exeCount)
 
-                            Jgtz _ label isError ->
+                            Jgtz _ label isError exeCount ->
                                 case isError of
                                     Just _ ->
-                                        ("Jgtz " ++ label, " bg-red-200 text-red-800")
+                                        ("Jgtz " ++ label, " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        ("Jgtz " ++ label, " bg-gray-200 text-gray-800")
+                                        ("Jgtz " ++ label, " bg-gray-200 text-gray-800", Just exeCount)
 
-                            Halt ->
-                                ("Halt", " bg-yellow-200 text-yellow-800")
+                            Halt exeCount ->
+                                ("Halt", " bg-yellow-200 text-yellow-800", Just exeCount)
 
                             Label lbl isError ->
                                 case isError of
                                     Just _ ->
-                                        (lbl ++ ":", " bg-red-200 text-red-800")
+                                        (lbl ++ ":", " bg-red-200 text-red-800", Nothing)
                                     _ ->
-                                        (lbl ++ ":", " bg-gray-200 text-gray-800")
+                                        (lbl ++ ":", " bg-gray-200 text-gray-800", Nothing)
 
                             UnknownInstruction ->
-                                ("Unknown", " bg-red-200 text-red-800")
+                                ("Unknown", " bg-red-200 text-red-800", Nothing)
 
                     baseClasses =
                         "p-0.5 border-4 border-solid rounded font-mono transition-colors"
@@ -134,6 +134,12 @@ viewInstructions instructions pointer simStarted halted =
                     , div [ class "h-6 w-px bg-gray-400" ] []
 
                     , div [] [ text instructionText ]
+                    , case maybeExeCount of
+                        Just exeCount ->
+                            div [ class "text-gray-400 ml-auto mr-2" ]
+                                [ text (String.fromInt exeCount ++ "x") ]
+                        Nothing ->
+                            div [] []
                     ]
             )
         )

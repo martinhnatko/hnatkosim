@@ -8,7 +8,7 @@ init =
     let
         initialModel =
             { inputText = ""
-            , registers = Dict.fromList (List.map (\n -> (n, 0)) (range 0 100))
+            , registers = Dict.fromList (List.map (\n -> (n, (0,  False))) (range 0 100))
             , highlighted = Dict.empty
             , instructions = []
             , isRunning = False

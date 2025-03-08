@@ -65,7 +65,7 @@ parseInstruction labels line idx model =
         [ something ] ->
             case String.toUpper something of
                 "HALT" ->
-                    Halt
+                    Halt 0
 
                 _ ->            
                     if String.endsWith ":" something then
@@ -117,141 +117,141 @@ parseInstruction labels line idx model =
                             "LOAD" ->
                                 case operand of
                                     Constant _ -> 
-                                        Load operand Nothing
+                                        Load operand Nothing 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Load operand Nothing
+                                            Load operand Nothing 0
                                         else
-                                            Load operand (Just ReferencingNonExistingReg)
+                                            Load operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Load operand Nothing
+                                            Load operand Nothing 0
                                         else
-                                            Load operand (Just ReferencingNonExistingReg)
+                                            Load operand (Just ReferencingNonExistingReg) 0
 
                             "STORE" ->
                                 case operand of
                                     Constant _ -> 
-                                        Store operand (Just InvalidInstruction)
+                                        Store operand (Just InvalidInstruction) 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Store operand Nothing
+                                            Store operand Nothing 0
                                         else
-                                            Store operand (Just ReferencingNonExistingReg)
+                                            Store operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Store operand Nothing
+                                            Store operand Nothing 0
                                         else
-                                            Store operand (Just ReferencingNonExistingReg)
+                                            Store operand (Just ReferencingNonExistingReg) 0
 
                             "ADD" ->
                                 case operand of
                                     Constant _ -> 
-                                        Add operand Nothing
+                                        Add operand Nothing 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Add operand Nothing
+                                            Add operand Nothing 0
                                         else
-                                            Add operand (Just ReferencingNonExistingReg)
+                                            Add operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Add operand Nothing
+                                            Add operand Nothing 0
                                         else
-                                            Add operand (Just ReferencingNonExistingReg)
+                                            Add operand (Just ReferencingNonExistingReg) 0
  
                             "SUB" ->
                                 case operand of
                                     Constant _ -> 
-                                        Sub operand Nothing
+                                        Sub operand Nothing 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Sub operand Nothing
+                                            Sub operand Nothing 0
                                         else
-                                            Sub operand (Just ReferencingNonExistingReg)
+                                            Sub operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Sub operand Nothing
+                                            Sub operand Nothing 0
                                         else
-                                            Sub operand (Just ReferencingNonExistingReg)
+                                            Sub operand (Just ReferencingNonExistingReg) 0
 
                             "MUL" ->
                                 case operand of
                                     Constant _ -> 
-                                        Mul operand Nothing
+                                        Mul operand Nothing 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Mul operand Nothing
+                                            Mul operand Nothing 0
                                         else
-                                            Mul operand (Just ReferencingNonExistingReg)
+                                            Mul operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Mul operand Nothing
+                                            Mul operand Nothing 0
                                         else
-                                            Mul operand (Just ReferencingNonExistingReg)
+                                            Mul operand (Just ReferencingNonExistingReg) 0
 
                             "DIV" ->
                                 case operand of
                                     Constant value ->
                                         if value == 0 then
-                                            Div operand (Just DivByZero)
+                                            Div operand (Just DivByZero) 0
                                         else
-                                            Div operand Nothing 
+                                            Div operand Nothing  0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Div operand Nothing
+                                            Div operand Nothing 0
                                         else
-                                            Div operand (Just ReferencingNonExistingReg)
+                                            Div operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Div operand Nothing
+                                            Div operand Nothing 0
                                         else
-                                            Div operand (Just ReferencingNonExistingReg)
+                                            Div operand (Just ReferencingNonExistingReg) 0
 
                             "READ" ->
                                 case operand of
                                     Constant _ -> 
-                                        Read operand (Just InvalidInstruction)
+                                        Read operand (Just InvalidInstruction) 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Read operand Nothing
+                                            Read operand Nothing 0
                                         else
-                                            Read operand (Just ReferencingNonExistingReg)
+                                            Read operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Read operand Nothing
+                                            Read operand Nothing 0
                                         else
-                                            Read operand (Just ReferencingNonExistingReg)
+                                            Read operand (Just ReferencingNonExistingReg) 0
 
                             "WRITE" ->
                                 case operand of
                                     Constant _ -> 
-                                        Write operand (Just InvalidInstruction)
+                                        Write operand (Just InvalidInstruction) 0
                                     
                                     Direct n ->
                                         if Dict.member n model.registers then
-                                            Write operand Nothing
+                                            Write operand Nothing 0
                                         else
-                                            Write operand (Just ReferencingNonExistingReg)
+                                            Write operand (Just ReferencingNonExistingReg) 0
 
                                     Indirect n ->
                                         if Dict.member n model.registers then
-                                            Write operand Nothing
+                                            Write operand Nothing 0
                                         else
-                                            Write operand (Just ReferencingNonExistingReg)
+                                            Write operand (Just ReferencingNonExistingReg) 0
 
                             _ ->
                                 UnknownInstruction
@@ -284,14 +284,14 @@ resolveJump labels labelName instruction =
     case Dict.get (String.toUpper labelName) labels of
         Just address ->
             case instruction of
-                "Jump" -> Jump address labelName Nothing
-                "Jzero" -> Jzero address labelName Nothing
-                "Jgtz" -> Jgtz address labelName Nothing
+                "Jump" -> Jump address labelName Nothing 0
+                "Jzero" -> Jzero address labelName Nothing 0
+                "Jgtz" -> Jgtz address labelName Nothing 0
                 _ -> UnknownInstruction
 
         Nothing ->
             case instruction of
-                "Jump" -> Jump 0 labelName (Just ReferencingNonExistingLabel)
-                "Jzero" -> Jzero 0 labelName (Just ReferencingNonExistingLabel)
-                "Jgtz" -> Jgtz 0 labelName (Just ReferencingNonExistingLabel)
+                "Jump" -> Jump 0 labelName (Just ReferencingNonExistingLabel) 0
+                "Jzero" -> Jzero 0 labelName (Just ReferencingNonExistingLabel) 0
+                "Jgtz" -> Jgtz 0 labelName (Just ReferencingNonExistingLabel) 0
                 _ -> UnknownInstruction

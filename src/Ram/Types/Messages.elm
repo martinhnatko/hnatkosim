@@ -38,3 +38,5 @@ type Msg
     | ChangeMaxExecutedInstructions Int
     | TypedRegsNum String
     | TypedMaxExecutedInstructions String
+    | TypedBase String
+    | ChangeLogBase Int

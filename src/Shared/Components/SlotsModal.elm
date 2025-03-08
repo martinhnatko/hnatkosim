@@ -9,6 +9,7 @@ import Html.Events exposing (onClick, onInput, stopPropagationOn)
 
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.TrashSmall exposing (heroiconTrashSmall)
+import Shared.Icons.Save exposing (heroiconSave)
 
 import Array exposing (Array)
 import Json.Decode as Decode
@@ -35,7 +36,7 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
                 , onClick onToggleSlotsModal
                 ]
                 [ heroiconX ]
-            , h2 [ class "text-xl font-bold mb-4" ] [ text "Save/Load" ]
+            , h2 [ class "text-xl font-bold mb-4 flex items-center gap-1" ] [ heroiconSave, text "Save/Load" ]
             , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
             ]
         ]

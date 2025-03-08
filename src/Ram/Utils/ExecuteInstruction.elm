@@ -14,6 +14,7 @@ import Dict
 import Task
 import Process
 import Time
+import Dict exposing (Dict)
 
 runAllInstructions : (Model, Cmd Msg) -> (Model, Cmd Msg)
 runAllInstructions (model, someCmd) =
@@ -28,9 +29,50 @@ runAllInstructions (model, someCmd) =
             in
             runAllInstructions (nextModel, Cmd.batch [ someCmd, someNewCmd ])
 
+calculateLogTime : Int -> Int -> Int
+calculateLogTime base value =
+    let
+        valueAbsolute = abs value
+    in
+    if valueAbsolute <= 0 then
+        1
+    else
+        floor ( logBase (toFloat base) (toFloat valueAbsolute) ) + 1
+
+updateRegisterAndComputeLogSpace : Int -> Int -> Int -> Dict Int (Int, Maybe Int) -> (Dict Int (Int, Maybe Int), Int)
+updateRegisterAndComputeLogSpace regIdx newVal logBase registers =
+    let
+        ( oldVal, maybeOldMax ) =
+            Dict.get regIdx registers
+                |> Maybe.withDefault (0, Nothing)
+
+        oldMaxVal =
+            Maybe.withDefault (abs oldVal) maybeOldMax
+
+        newMaxVal =
+            max oldMaxVal (abs newVal)
+
+        updatedRegisters =
+            Dict.insert regIdx (newVal, Just newMaxVal) registers
+
+        newLogSpace =
+            Dict.foldl
+                (\_ (_, maybeM) acc ->
+                    case maybeM of
+                        Just maxVal ->
+                            acc + calculateLogTime logBase maxVal
+
+                        Nothing ->
+                            acc
+                )
+                0
+                updatedRegisters
+    in
+    ( updatedRegisters, newLogSpace )
+
 getRegisterValue : Int -> Model -> Maybe Int
 getRegisterValue regIndex model =
-    Dict.get regIndex model.registers
+    Dict.get regIndex model.registers |> Maybe.map Tuple.first
 
 executeInstruction : Model -> Int -> (Model, Cmd Msg)
 executeInstruction model highlightDuration =
@@ -40,6 +82,9 @@ executeInstruction model highlightDuration =
 
         nextInstructionPointer =
             model.instructionPointer + 1
+        
+        updateInstructionAt index newInstruction instructions =
+            List.indexedMap (\i instr -> if i == index then newInstruction else instr) instructions
 
     in
     case currentInstruction of
@@ -55,7 +100,7 @@ executeInstruction model highlightDuration =
             case instr of
                 
                 -- LOAD: Update register 0 (accumulator) with the operand value.
-                Load operand isError ->
+                Load operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -64,20 +109,34 @@ executeInstruction model highlightDuration =
                         _ ->
                             case operand of
                                 Constant n ->
+                                    let
+                                        newLogTime = model.logTime + calculateLogTime model.logBase n
+                                        
+                                        (newRegisters, newLogSpace) = updateRegisterAndComputeLogSpace 0 n model.logBase model.registers
+                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 n model.registers
+                                            , registers = newRegisters
                                             , executedInstructions = model.executedInstructions + 1
+                                            , instructions = updateInstructionAt model.instructionPointer (Load (Constant n) Nothing (exeCount + 1)) model.instructions
+                                            
+                                            , logTime = newLogTime
+                                            , logSpace = newLogSpace
                                         }
                                         , Cmd.none
                                         )
                                     else
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 n model.registers
-                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                            , registers = newRegisters
                                             , executedInstructions = model.executedInstructions + 1
+                                            , instructions = updateInstructionAt model.instructionPointer (Load (Constant n) Nothing (exeCount + 1)) model.instructions
+                                            
+                                            , logTime = newLogTime
+                                            , logSpace = newLogSpace
+                                            
+                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                         }
                                         , Task.perform (\_ -> RemoveHighlightFromRegisters 0) (Process.sleep (toFloat highlightDuration))
                                         )
@@ -94,11 +153,19 @@ executeInstruction model highlightDuration =
                                             )
                                         
                                         Just value ->
+                                            let
+                                                newLogTime = model.logTime + calculateLogTime model.logBase value + calculateLogTime model.logBase regIndex
+                                                ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 value model.logBase model.registers
+                                            in
                                             if dontHighlight then
                                                 ( { model
                                                         | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert 0 value model.registers
+                                                        , registers = newRegisters
                                                         , executedInstructions = model.executedInstructions + 1
+                                                        , instructions = updateInstructionAt model.instructionPointer (Load (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                        
+                                                        , logTime = newLogTime
+                                                        , logSpace = newLogSpace
                                                     }
                                                 , Cmd.none )
                                             else
@@ -106,9 +173,14 @@ executeInstruction model highlightDuration =
                                                     updatedModel =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 value model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Load (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
+                                                            
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                         }
                                                     
                                                     -- After `highlightDuration`, switch the highlight from the source register to the accumulator.
@@ -140,16 +212,31 @@ executeInstruction model highlightDuration =
                                             in
                                             case maybeValue of
                                                 Nothing ->
-                                                    -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to load from a non-existent register.")
+                                                    -- runtime error - accessing non-existent register
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Load (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = model.logTime + calculateLogTime model.logBase (maybeValue |> Maybe.withDefault 0 ) + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                     )
                                                 Just value ->
+                                                    let
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase value + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 value model.logBase model.registers
+                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 value model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Load (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
                                                         }
                                                         , Cmd.none )
                                                     else
@@ -157,9 +244,14 @@ executeInstruction model highlightDuration =
                                                             updatedModel =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
-                                                                    , registers = Dict.insert 0 value model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
+                                                                    , registers = newRegisters
                                                                     , executedInstructions = model.executedInstructions + 1
+                                                                    , instructions = updateInstructionAt model.instructionPointer (Load (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                    
+                                                                    , logTime = newLogTime
+                                                                    , logSpace = newLogSpace
+
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                 }
 
                                                             switchHighlightCmd =
@@ -175,7 +267,7 @@ executeInstruction model highlightDuration =
                                                         )
 
                 -- STORE: Store the accumulator (register 0) into the given register.
-                Store operand isError ->
+                Store operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -201,11 +293,19 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just accVal ->
+                                            let
+                                                newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase regIndex
+                                                ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace regIndex accVal model.logBase model.registers
+                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert regIndex accVal model.registers
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Store (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    , logSpace = newLogSpace
                                                 }
                                                 , Cmd.none )
                                             else
@@ -213,9 +313,14 @@ executeInstruction model highlightDuration =
                                                     updatedModel =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert regIndex accVal model.registers
-                                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Store (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
+
+                                                            , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                         }
                                                     
                                                     switchHighlightCmd =
@@ -248,15 +353,31 @@ executeInstruction model highlightDuration =
                                             case maybeValue of
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to store into a non-existent register.") 
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Store (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.") 
                                                     )
                                                 Just _ ->
+                                                    let
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace pointer accVal model.logBase model.registers
+                                                    in
                                                     if dontHighlight then
-                                                        ( { model
+                                                        ( 
+                                                        { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert pointer accVal model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Store (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
                                                         }
                                                         , Cmd.none )
                                                     else
@@ -264,9 +385,14 @@ executeInstruction model highlightDuration =
                                                             updatedModel =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
-                                                                    , registers = Dict.insert pointer accVal model.registers
-                                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                                                    , registers = newRegisters
                                                                     , executedInstructions = model.executedInstructions + 1
+                                                                    , instructions = updateInstructionAt model.instructionPointer (Store (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                    
+                                                                    , logTime = newLogTime
+                                                                    , logSpace = newLogSpace
+
+                                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                                 }
                                                             
                                                             switchHighlightCmd =
@@ -282,7 +408,7 @@ executeInstruction model highlightDuration =
                                                         )
 
                 -- ADD: Add the operand value to the accumulator.
-                Add operand isError ->
+                Add operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -290,26 +416,39 @@ executeInstruction model highlightDuration =
                             )
                         _ ->    
                             case operand of
-                                Constant n ->
+                                Constant value ->
+                                    let
+                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value
+                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal + value) model.logBase model.registers
+
+                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) + n) model.registers
+                                            , registers = newRegisters
                                             , executedInstructions = model.executedInstructions + 1
+                                            , instructions = updateInstructionAt model.instructionPointer (Add (Constant value) Nothing (exeCount + 1)) model.instructions
+                                            
+                                            , logTime = newLogTime
+                                            , logSpace = newLogSpace
                                         }
                                         , Cmd.none
                                         )
                                     else
                                         let
-                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                            value = n
 
                                             updatedModel =
                                                 { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal + value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Add (Constant value) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    , logSpace = newLogSpace
+                                                    
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                 }
                                             
                                             removeHighlightCmd =
@@ -327,16 +466,24 @@ executeInstruction model highlightDuration =
                                     in
                                     case maybeValue of
                                         Nothing ->
-                                            -- ERRORRRRRRRRRRRRRRRRRRR
+                                            -- Parsing error
                                             ( { model | instructionPointer = nextInstructionPointer }
                                             , Cmd.none 
                                             )
                                         Just value ->
+                                            let
+                                                newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase regIndex
+                                                ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal + value) model.logBase model.registers
+                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal + value) model.registers
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Add (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    , logSpace = newLogSpace
                                                 }
                                                 , Cmd.none
                                                 )
@@ -345,9 +492,14 @@ executeInstruction model highlightDuration =
                                                     updatedModel =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal + value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Add (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
+
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                         }
                                                     
                                                     switchHighlightCmd =
@@ -380,15 +532,30 @@ executeInstruction model highlightDuration =
                                             case maybeValue of
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to add a non-existent value.")
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Add (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase ( maybeValue |> Maybe.withDefault 0 ) + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                     )
                                                 Just value ->
+                                                    let
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal + value) model.logBase model.registers
+                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal + value) model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Add (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
                                                         }
                                                         , Cmd.none
                                                         )
@@ -397,9 +564,14 @@ executeInstruction model highlightDuration =
                                                             updatedModel =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
-                                                                    , registers = Dict.insert 0 (accVal + value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
+                                                                    , registers = newRegisters
                                                                     , executedInstructions = model.executedInstructions + 1
+                                                                    , instructions = updateInstructionAt model.instructionPointer (Add (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                    
+                                                                    , logTime = newLogTime
+                                                                    , logSpace = newLogSpace
+                                                                    
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                 }
 
                                                             switchHighlightCmd =
@@ -416,7 +588,7 @@ executeInstruction model highlightDuration =
                                                         )
 
                 -- SUB: Subtract the operand value from the accumulator.
-                Sub operand isError ->
+                Sub operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -424,26 +596,37 @@ executeInstruction model highlightDuration =
                             )
                         _ ->
                             case operand of
-                                Constant n ->
+                                Constant value ->
+                                    let
+                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value
+                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal - value) model.logBase model.registers
+                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) - n) model.registers
+                                            , registers = newRegisters
                                             , executedInstructions = model.executedInstructions + 1
+                                            , instructions = updateInstructionAt model.instructionPointer (Sub (Constant value) Nothing (exeCount + 1)) model.instructions
+                                            
+                                            , logTime = newLogTime
+                                            , logSpace = newLogSpace
                                         }
                                         , Cmd.none
                                         )
                                     else
                                         let
-                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                            value = n
-
                                             updatedModel =
                                                 { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal - value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Sub (Constant value) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    , logSpace = newLogSpace
+                                                    
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                 }
                                             
                                             removeHighlightCmd =
@@ -466,11 +649,19 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
+                                            let
+                                                newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase regIndex
+                                                ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal - value) model.logBase model.registers
+                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal - value) model.registers
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Sub (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logSpace = newLogSpace
+                                                    , logTime = newLogTime
                                                 }
                                                 , Cmd.none
                                                 )
@@ -479,9 +670,14 @@ executeInstruction model highlightDuration =
                                                     updatedModel =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal - value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Sub (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
+                                                            
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                         }
                                                     
                                                     switchHighlightCmd =
@@ -514,15 +710,30 @@ executeInstruction model highlightDuration =
                                             case maybeValue of
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to subtract a non-existent value.")
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , instructions = updateInstructionAt model.instructionPointer (Sub (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            , executedInstructions = model.executedInstructions + 1
+                                                            
+                                                            , logTime =  model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase (maybeValue |> Maybe.withDefault 0)+ calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                     )
                                                 Just value ->
+                                                    let
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal - value) model.logBase model.registers
+                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal - value) model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Sub (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logSpace = newLogSpace
+                                                            , logTime = newLogTime
                                                         }
                                                         , Cmd.none
                                                         )
@@ -531,9 +742,14 @@ executeInstruction model highlightDuration =
                                                             updatedModel =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
-                                                                    , registers = Dict.insert 0 (accVal - value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
+                                                                    , registers = newRegisters
                                                                     , executedInstructions = model.executedInstructions + 1
+                                                                    , instructions = updateInstructionAt model.instructionPointer (Sub (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                    
+                                                                    , logTime = newLogTime
+                                                                    , logSpace = newLogSpace
+                                                                    
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
                                                                 }
 
                                                             switchHighlightCmd =
@@ -550,7 +766,7 @@ executeInstruction model highlightDuration =
                                                         )
 
                 -- MUL: Multiply the accumulator by the operand.
-                Mul operand isError ->
+                Mul operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -558,26 +774,37 @@ executeInstruction model highlightDuration =
                             )
                         _ ->
                             case operand of
-                                Constant n ->
+                                Constant value ->
+                                    let
+                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value
+                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal * value) model.logBase model.registers
+                                    in
                                     if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) * n) model.registers
+                                            , registers = newRegisters
                                             , executedInstructions = model.executedInstructions + 1
+                                            , instructions = updateInstructionAt model.instructionPointer (Mul (Constant value) Nothing (exeCount + 1)) model.instructions
+                                            
+                                            , logSpace = newLogSpace
+                                            , logTime = newLogTime
                                         }
                                         , Cmd.none
                                         )
                                     else
                                         let
-                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                            value = n
-
                                             updatedModel =
                                                 { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal * value) model.registers
-                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Mul (Constant value) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    , logSpace = newLogSpace
+                                                    
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
                                                 }
                                             
                                             removeHighlightCmd =
@@ -600,11 +827,19 @@ executeInstruction model highlightDuration =
                                             , Cmd.none 
                                             )
                                         Just value ->
+                                            let
+                                                newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase regIndex
+                                                ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal * value) model.logBase model.registers
+                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal * value) model.registers
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Mul (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logSpace = newLogSpace
+                                                    , logTime = newLogTime
                                                 }
                                                 , Cmd.none
                                                 )
@@ -613,9 +848,14 @@ executeInstruction model highlightDuration =
                                                     updatedModel =
                                                         { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal * value) model.registers
-                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Mul (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
+                                                            
+                                                            , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                         }
                                                     
                                                     switchHighlightCmd =
@@ -648,15 +888,30 @@ executeInstruction model highlightDuration =
                                             case maybeValue of
                                                 Nothing ->
                                                     -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to multiply by a non-existent value.")
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , instructions = updateInstructionAt model.instructionPointer (Mul (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            , executedInstructions = model.executedInstructions + 1
+                                                            
+                                                            , logTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase ( maybeValue |> Maybe.withDefault 0 ) + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                     )
                                                 Just value ->
+                                                    let
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal * value) model.logBase model.registers
+                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal * value) model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Mul (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logSpace = newLogSpace
+                                                            , logTime = newLogTime
                                                         }
                                                         , Cmd.none
                                                         )
@@ -665,9 +920,14 @@ executeInstruction model highlightDuration =
                                                             updatedModel =
                                                                 { model
                                                                     | instructionPointer = nextInstructionPointer
-                                                                    , registers = Dict.insert 0 (accVal * value) model.registers
-                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty 
+                                                                    , registers = newRegisters
                                                                     , executedInstructions = model.executedInstructions + 1
+                                                                    , instructions = updateInstructionAt model.instructionPointer (Mul (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                    
+                                                                    , logTime = newLogTime
+                                                                    , logSpace = newLogSpace
+
+                                                                    , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty 
                                                                 }
 
                                                             switchHighlightCmd =
@@ -684,7 +944,7 @@ executeInstruction model highlightDuration =
                                                         )
 
                 -- DIV: Divide the accumulator by the operand, if nonzero.
-                Div operand isError ->
+                Div operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -692,39 +952,38 @@ executeInstruction model highlightDuration =
                             )
                         _ ->
                             case operand of
-                                Constant n ->
-                                    if dontHighlight && n /= 0 then
+                                Constant value ->
+                                    let
+                                        accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value
+                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal // value) model.logBase model.registers
+                                    in
+                                    if dontHighlight then
                                         ( { model
                                             | instructionPointer = nextInstructionPointer
-                                            , registers = Dict.insert 0 ((Maybe.withDefault 0 (getRegisterValue 0 model)) // n) model.registers
+                                            , registers = newRegisters
                                             , executedInstructions = model.executedInstructions + 1
-                                        }
-                                        , Cmd.none
-                                        )
-                                    else if dontHighlight && n == 0 then
-                                        ( { model
-                                            | instructionPointer = nextInstructionPointer
+                                            , instructions = updateInstructionAt model.instructionPointer (Div (Constant value) Nothing (exeCount + 1)) model.instructions
+                                            
+                                            , logSpace = newLogSpace
+                                            , logTime = newLogTime
                                         }
                                         , Cmd.none
                                         )
                                     else
                                         let
-                                            accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
-                                            value = n
-
                                             updatedModel =
-                                                if value /= 0 then
-                                                    { model
-                                                        | instructionPointer = nextInstructionPointer
-                                                        , registers = Dict.insert 0 (accVal // value) model.registers
-                                                        , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
-                                                        , executedInstructions = model.executedInstructions + 1
-                                                    }
-                                                else
-                                                    {
-                                                        model | instructionPointer = nextInstructionPointer
-                                                        , highlighted_registers = Dict.insert 0 "bg-red-200" Dict.empty
-                                                    }
+                                                { model
+                                                    | instructionPointer = nextInstructionPointer
+                                                    , registers = newRegisters
+                                                    , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Div (Constant value) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    , logSpace = newLogSpace
+                                                    
+                                                    , highlighted_registers = Dict.insert 0 "bg-blue-200" Dict.empty
+                                                }
                                             
                                             removeHighlightCmd =
                                                 Task.perform (\_ -> RemoveHighlightFromRegisters 0)
@@ -743,16 +1002,24 @@ executeInstruction model highlightDuration =
                                     in
                                     case maybeValue of
                                         Nothing ->
-                                            -- ERRORRRRRRRRRRRRRRRRRRR
+                                            -- error detected by parsing
                                             ( { model | instructionPointer = nextInstructionPointer }
                                             , Cmd.none 
                                             )
                                         Just value ->
+                                            let
+                                                newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase regIndex
+                                                ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal // value) model.logBase model.registers
+                                            in
                                             if dontHighlight && value /= 0 then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , registers = Dict.insert 0 (accVal // value) model.registers
+                                                    , registers = newRegisters
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Div (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logSpace = newLogSpace
+                                                    , logTime = newLogTime
                                                 }
                                                 , Cmd.none
                                                 )
@@ -760,6 +1027,9 @@ executeInstruction model highlightDuration =
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Div (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
                                                 }
                                                 , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
                                                 )
@@ -769,15 +1039,24 @@ executeInstruction model highlightDuration =
                                                         if value /= 0 then
                                                             { model
                                                                 | instructionPointer = nextInstructionPointer
-                                                                , registers = Dict.insert 0 (accVal // value) model.registers
-                                                                , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
+                                                                , registers = newRegisters
                                                                 , executedInstructions = model.executedInstructions + 1
+                                                                , instructions = updateInstructionAt model.instructionPointer (Div (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                
+                                                                , logTime = newLogTime
+                                                                , logSpace = newLogSpace
+
+                                                                , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
                                                             }
                                                         else
-                                                            {
-                                                                model | instructionPointer = nextInstructionPointer
-                                                                , highlighted_registers = Dict.insert regIndex "bg-red-200" Dict.empty
+                                                            { model 
+                                                                | instructionPointer = nextInstructionPointer
                                                                 , executedInstructions = model.executedInstructions + 1
+                                                                , instructions = updateInstructionAt model.instructionPointer (Div (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                
+                                                                , logTime = newLogTime
+                                                                
+                                                                , highlighted_registers = Dict.insert regIndex "bg-red-200" Dict.empty
                                                             }
                                                     
                                                     switchHighlightCmd =
@@ -811,7 +1090,7 @@ executeInstruction model highlightDuration =
                                     in
                                     case maybePointer of
                                         Nothing ->
-                                            -- ERRORRRRRRRRRRRRRRRRRRR
+                                            -- parsing erorr
                                             ( { model | instructionPointer = nextInstructionPointer }
                                             , Cmd.none 
                                             )
@@ -821,16 +1100,31 @@ executeInstruction model highlightDuration =
                                             in
                                             case maybeValue of
                                                 Nothing ->
-                                                    -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer, executedInstructions = model.executedInstructions + 1 }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by a non-existent value.")
+                                                    -- runtime error
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , executedInstructions = model.executedInstructions + 1 
+                                                            , instructions = updateInstructionAt model.instructionPointer (Div (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase 0
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                     )
                                                 Just value ->
+                                                    let
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase accVal + calculateLogTime model.logBase value + calculateLogTime model.logBase pointer + calculateLogTime model.logBase regIndex
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace 0 (accVal // value) model.logBase model.registers
+                                                    in
                                                     if dontHighlight && value /= 0 then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , registers = Dict.insert 0 (accVal // value) model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Div (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            , logSpace = newLogSpace
                                                         }
                                                         , Cmd.none
                                                         )
@@ -838,6 +1132,9 @@ executeInstruction model highlightDuration =
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Div (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
                                                         }
                                                         , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to divide by zero.")
                                                         )
@@ -847,15 +1144,24 @@ executeInstruction model highlightDuration =
                                                                 if value /= 0 then
                                                                     { model
                                                                         | instructionPointer = nextInstructionPointer
-                                                                        , registers = Dict.insert 0 (accVal // value) model.registers
-                                                                        , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty 
+                                                                        , registers = newRegisters
                                                                         , executedInstructions = model.executedInstructions + 1
+                                                                        , instructions = updateInstructionAt model.instructionPointer (Div (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                        
+                                                                        , logTime = newLogTime
+                                                                        , logSpace = newLogSpace
+
+                                                                        , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty 
                                                                     }
                                                                 else
-                                                                    {
-                                                                        model | instructionPointer = nextInstructionPointer
-                                                                        , highlighted_registers = Dict.insert pointer "bg-red-200" Dict.empty
+                                                                    { model 
+                                                                        | instructionPointer = nextInstructionPointer
                                                                         , executedInstructions = model.executedInstructions + 1
+                                                                        , instructions = updateInstructionAt model.instructionPointer (Div (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                        
+                                                                        , logTime = newLogTime
+                                                                        
+                                                                        , highlighted_registers = Dict.insert pointer "bg-red-200" Dict.empty
                                                                     }
                                                             
                                                             switchHighlightCmd =
@@ -882,55 +1188,109 @@ executeInstruction model highlightDuration =
                                                             )
 
                 -- JUMP: Set the instruction pointer to the target label.
-                Jump idx _ isError ->
+                Jump idx jumpThere isError exeCount ->
                     case isError of
                         Just _ ->
-                            ( { model | instructionPointer = nextInstructionPointer }
-                            , Cmd.none 
+                            ( 
+                                { model 
+                                    | instructionPointer = nextInstructionPointer 
+                                }
+                                , Cmd.none 
                             )
                         _ ->
-                            ( { model | instructionPointer = idx, executedInstructions = model.executedInstructions + 1 }
-                            , Cmd.none 
+                            ( 
+                                { model 
+                                    | instructionPointer = idx
+                                    , executedInstructions = model.executedInstructions + 1
+                                    , instructions = updateInstructionAt model.instructionPointer (Jump idx jumpThere Nothing (exeCount + 1)) model.instructions
+                                    , logTime = model.logTime + 1
+                                }
+                                , Cmd.none 
                             )
 
                 -- JZERO: Jump if the accumulator is zero.
-                Jzero idx _ isError ->
+                Jzero idx jumpThere isError exeCount ->
                     case isError of
                         Just _ ->
-                            ( { model | instructionPointer = nextInstructionPointer }
-                            , Cmd.none 
+                            ( 
+                                { model 
+                                    | instructionPointer = nextInstructionPointer 
+                                }
+                                , Cmd.none 
                             )
                         _ ->
-                            if Maybe.withDefault 0 (getRegisterValue 0 model) == 0 then
-                                ( { model | instructionPointer = idx, executedInstructions = model.executedInstructions + 1 }
-                                , Cmd.none 
+                            let
+                                accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                newLogTime = model.logTime + calculateLogTime model.logBase accVal
+                            in
+                            if accVal == 0 then
+                                ( 
+                                    { model 
+                                        | instructionPointer = idx
+                                        , executedInstructions = model.executedInstructions + 1 
+                                        , instructions = updateInstructionAt model.instructionPointer (Jzero idx jumpThere Nothing (exeCount + 1)) model.instructions
+                                        , logTime = newLogTime
+                                    }
+                                    , Cmd.none 
                                 )
                             else
-                                ( { model | instructionPointer = nextInstructionPointer, executedInstructions = model.executedInstructions + 1 }
-                                , Cmd.none 
+                                ( 
+                                    { model 
+                                        | instructionPointer = nextInstructionPointer
+                                        , executedInstructions = model.executedInstructions + 1 
+                                        , instructions = updateInstructionAt model.instructionPointer (Jzero idx jumpThere Nothing (exeCount + 1)) model.instructions
+                                        , logTime = newLogTime
+                                    }
+                                    , Cmd.none 
                                 )
 
                 -- JGTZ: Jump if the accumulator is greater than zero.
-                Jgtz idx _ isError ->
+                Jgtz idx jumpThere isError exeCount ->
                     case isError of
                         Just _ ->
-                            ( { model | instructionPointer = nextInstructionPointer }
-                            , Cmd.none 
+                            ( 
+                                { model 
+                                    | instructionPointer = nextInstructionPointer 
+                                }
+                                , Cmd.none 
                             )
                         _ ->
-                            if Maybe.withDefault 0 (getRegisterValue 0 model) > 0 then
-                                ( { model | instructionPointer = idx, executedInstructions = model.executedInstructions + 1 }
-                                , Cmd.none 
+                            let
+                                accVal = Maybe.withDefault 0 (getRegisterValue 0 model)
+                                newLogTime = model.logTime + calculateLogTime model.logBase accVal
+                            in
+                            if accVal > 0 then
+                                ( 
+                                    { model 
+                                        | instructionPointer = idx
+                                        , executedInstructions = model.executedInstructions + 1 
+                                        , instructions = updateInstructionAt model.instructionPointer (Jgtz idx jumpThere Nothing (exeCount + 1)) model.instructions
+                                        , logTime = newLogTime
+                                    }
+                                    , Cmd.none 
                                 )
                             else
-                                ( { model | instructionPointer = nextInstructionPointer, executedInstructions = model.executedInstructions + 1 }
-                                , Cmd.none 
+                                ( 
+                                    { model 
+                                        | instructionPointer = nextInstructionPointer
+                                        , executedInstructions = model.executedInstructions + 1 
+                                        , instructions = updateInstructionAt model.instructionPointer (Jgtz idx jumpThere Nothing (exeCount + 1)) model.instructions
+                                        , logTime = newLogTime
+                                    }
+                                    , Cmd.none 
                                 )
 
                 -- HALT: End the program.
-                Halt ->
-                    ( { model | halted = True, isRunning = False, executedInstructions = model.executedInstructions + 1 }
-                    , Task.perform (ComputeAndPrintDuration True) Time.now
+                Halt exeCount ->
+                    ( 
+                        { model 
+                            | halted = True
+                            , isRunning = False
+                            , executedInstructions = model.executedInstructions + 1
+                            , instructions = updateInstructionAt model.instructionPointer (Halt (exeCount + 1)) model.instructions 
+                            , logTime = model.logTime + 1
+                        }
+                        , Task.perform (ComputeAndPrintDuration True) Time.now
                     )
 
                 -- LABEL: Do nothing (labels are stored in model.labels).
@@ -944,7 +1304,7 @@ executeInstruction model highlightDuration =
                     , Cmd.none 
                     )
 
-                Read operand isError ->
+                Read operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -963,12 +1323,14 @@ executeInstruction model highlightDuration =
                                 Direct regIndex ->
                                     case Array.get model.inputTapePointer model.inputTape of
                                         Nothing ->
-                                            -- ERRORRRRRRRRRRRRRRRRRRR
+                                            -- runtime error - empty tape
                                             ( { model
                                                 | instructionPointer = nextInstructionPointer
                                                 , executedInstructions = model.executedInstructions + 1
+                                                , instructions = updateInstructionAt model.instructionPointer (Read (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                , logTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase 0
                                             }
-                                            , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from a non-existent value.")
+                                            , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from the input tape, while no more values are available.")
                                             )
 
                                         Just val ->
@@ -977,30 +1339,43 @@ executeInstruction model highlightDuration =
                                             in
                                             case maybePointer of
                                                 Nothing ->
-                                                    -- ERRORRRRRRRRRRRRRRRRRRR
+                                                    -- parsing error - register not found
                                                     ( { model | instructionPointer = nextInstructionPointer }
                                                     , Cmd.none
                                                     )
                                                 Just _ -> 
+                                                    let
+                                                        newTapePointer = model.inputTapePointer + 1
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase val
+                                                        ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace regIndex val model.logBase model.registers
+                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , inputTapePointer = model.inputTapePointer + 1
-                                                            , registers = Dict.insert regIndex val model.registers
+                                                            , registers = newRegisters
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Read (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logSpace = newLogSpace
+                                                            , logTime = newLogTime
+                                                            
+                                                            , inputTapePointer = newTapePointer
                                                         }
                                                         , Cmd.none
                                                         )
                                                     else
-                                                        let
-                                                            newTapePointer = model.inputTapePointer + 1
-                                                            
+                                                        let 
                                                             updatedModel = { model
                                                                             | instructionPointer = nextInstructionPointer
-                                                                            , inputTapePointer = newTapePointer
-                                                                            , registers = Dict.insert regIndex val model.registers
-                                                                            , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" Dict.empty
+                                                                            , registers = newRegisters
                                                                             , executedInstructions = model.executedInstructions + 1
+                                                                            , instructions = updateInstructionAt model.instructionPointer (Read (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                            
+                                                                            , logSpace = newLogSpace
+                                                                            , logTime = newLogTime
+                                                                            
+                                                                            , inputTapePointer = newTapePointer
+                                                                            , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" Dict.empty
                                                                         }
                                                             
                                                             switchHighlightCmd =
@@ -1022,19 +1397,24 @@ executeInstruction model highlightDuration =
                                     case Array.get model.inputTapePointer model.inputTape of
                                         Nothing ->
                                             -- ERRORRRRRRRRRRRRRRRRRRR
-                                            ( {
-                                                model | instructionPointer = nextInstructionPointer, executedInstructions = model.executedInstructions + 1
-                                            }
-                                            , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from a non-existent value.")
+                                            ( 
+                                                { model 
+                                                    | instructionPointer = nextInstructionPointer
+                                                    , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Read (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase 0 + calculateLogTime model.logBase ( getRegisterValue regIndex model |> Maybe.withDefault 0 )
+                                                }
+                                            , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read from the input tape, while no more values are available.")
                                             )
 
-                                        Just val ->
+                                        Just valueToRead ->
                                             let
                                                 maybePointer = getRegisterValue regIndex model
                                             in
                                             case maybePointer of
                                                 Nothing ->
-                                                    -- ERRORRRRRRRRRRRRRRRRRRR
+                                                    -- parsing error - register not found
                                                     ( { model | instructionPointer = nextInstructionPointer }
                                                     , Cmd.none
                                                     )
@@ -1044,30 +1424,50 @@ executeInstruction model highlightDuration =
                                                         in
                                                         case maybeValue of
                                                             Nothing ->
-                                                                -- ERRORRRRRRRRRRRRRRRRRRR
-                                                                ( { model | instructionPointer = nextInstructionPointer, executedInstructions = model.executedInstructions + 1 }
-                                                                , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to read a non-existent value.")
+                                                                -- runtime error - reading into non existing register
+                                                                ( 
+                                                                    { model 
+                                                                        | instructionPointer = nextInstructionPointer
+                                                                        , executedInstructions = model.executedInstructions + 1
+                                                                        , instructions = updateInstructionAt model.instructionPointer (Read (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                        
+                                                                        , logTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase valueToRead + calculateLogTime model.logBase pointer 
+                                                                    }
+                                                                , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                                 )
                                                             Just _ ->
+                                                                let
+                                                                    newTapePointer = model.inputTapePointer + 1
+                                                                    newLogTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase valueToRead + calculateLogTime model.logBase pointer
+                                                                    ( newRegisters, newLogSpace ) = updateRegisterAndComputeLogSpace pointer valueToRead model.logBase model.registers
+                                                                in
                                                                 if dontHighlight then
                                                                     ( { model
                                                                         | instructionPointer = nextInstructionPointer
-                                                                        , inputTapePointer = model.inputTapePointer + 1
-                                                                        , registers = Dict.insert pointer val model.registers
+                                                                        , registers = newRegisters
                                                                         , executedInstructions = model.executedInstructions + 1
+                                                                        , instructions = updateInstructionAt model.instructionPointer (Read (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                        
+                                                                        , logTime = newLogTime
+                                                                        , logSpace = newLogSpace
+
+                                                                        , inputTapePointer = newTapePointer
                                                                     }
                                                                     , Cmd.none
                                                                     )
                                                                 else
-                                                                    let
-                                                                        newTapePointer = model.inputTapePointer + 1
-                                                                        
+                                                                    let 
                                                                         updatedModel = { model
-                                                                                        | instructionPointer = nextInstructionPointer
-                                                                                        , inputTapePointer = newTapePointer
-                                                                                        , registers = Dict.insert pointer val model.registers
-                                                                                        , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" Dict.empty
-                                                                                        , executedInstructions = model.executedInstructions + 1
+                                                                                            | instructionPointer = nextInstructionPointer
+                                                                                            , registers = newRegisters
+                                                                                            , executedInstructions = model.executedInstructions + 1
+                                                                                            , instructions = updateInstructionAt model.instructionPointer (Read (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                                            
+                                                                                            , logSpace = newLogSpace
+                                                                                            , logTime = newLogTime
+                                                                                            
+                                                                                            , inputTapePointer = newTapePointer
+                                                                                            , highlighted_input_tape = Dict.insert model.inputTapePointer "bg-blue-200" Dict.empty
                                                                                         }
                                                                         switchHighlightCmd =
                                                                             Task.perform (\_ -> SwitchHighlight (0, model.inputTapePointer) (1, pointer, "bg-blue-200"))
@@ -1083,7 +1483,7 @@ executeInstruction model highlightDuration =
                                                                     )
 
                 
-                Write operand isError ->
+                Write operand isError exeCount ->
                     case isError of
                         Just _ ->
                             ( { model | instructionPointer = nextInstructionPointer }
@@ -1092,7 +1492,7 @@ executeInstruction model highlightDuration =
                         _ ->
                             case operand of
                                 Constant _ ->
-                                    -- skip for constant
+                                    -- parsing error : skip for constant
                                     ( { model | instructionPointer = nextInstructionPointer }, Cmd.none)
 
                                 Direct regIndex ->
@@ -1101,31 +1501,42 @@ executeInstruction model highlightDuration =
                                     in
                                     case maybeValue of
                                         Nothing ->
-                                            -- ERRORRRRRRRRRRRRRRRRRRR
+                                            -- parsing error
                                             ( { model | instructionPointer = nextInstructionPointer }
                                             , Cmd.none 
                                             )
                                         Just value ->
+                                            let
+                                                updatedOutputTape = Array.push value model.outputTape
+                                                newLogTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase value
+                                            in
                                             if dontHighlight then
                                                 ( { model
                                                     | instructionPointer = nextInstructionPointer
-                                                    , outputTape = (Array.push value model.outputTape)
                                                     , executedInstructions = model.executedInstructions + 1
+                                                    , instructions = updateInstructionAt model.instructionPointer (Write (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                    
+                                                    , logTime = newLogTime
+                                                    
+                                                    , outputTape = updatedOutputTape
                                                 }
                                                 , Cmd.none
                                                 )
                                             else
                                                 let
-                                                    updatedOutputTape = Array.push value model.outputTape
-                                                    lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
-
                                                     updatedModel = { model
-                                                                    | instructionPointer = nextInstructionPointer
-                                                                    , outputTape = updatedOutputTape
-                                                                    , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
-                                                                    , executedInstructions = model.executedInstructions + 1
-                                                                }
-
+                                                                        | instructionPointer = nextInstructionPointer
+                                                                        , executedInstructions = model.executedInstructions + 1
+                                                                        , instructions = updateInstructionAt model.instructionPointer (Write (Direct regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                        
+                                                                        , logTime = newLogTime
+                                                                        
+                                                                        , outputTape = updatedOutputTape
+                                                                        , highlighted_registers = Dict.insert regIndex "bg-blue-200" Dict.empty
+                                                                    }
+                                                    
+                                                    lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
+                                                    
                                                     switchHighlightCmd =
                                                         Task.perform (\_ -> SwitchHighlight (1, regIndex) (2, lastIdx, "bg-blue-200"))
                                                             (Process.sleep (toFloat (highlightDuration // 2)))
@@ -1155,30 +1566,47 @@ executeInstruction model highlightDuration =
                                             in
                                             case maybeValue of
                                                 Nothing ->
-                                                    -- ERRORRRRRRRRRRRRRRRRRRR
-                                                    ( { model | instructionPointer = nextInstructionPointer }
-                                                    , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to write a non-existent value.")
+                                                    -- runtime error
+                                                    ( 
+                                                        { model 
+                                                            | instructionPointer = nextInstructionPointer
+                                                            , instructions = updateInstructionAt model.instructionPointer (Write (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            , executedInstructions = model.executedInstructions + 1
+                                                            
+                                                            , logTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase pointer + calculateLogTime model.logBase 0
+                                                        }
+                                                        , requestAddMessage (ErrorMessage, "Runtime Error: Instruction " ++ String.fromInt (model.instructionPointer + 1) ++ " attempted to access a non-existent register.")
                                                     )
                                                 Just value ->
+                                                    let
+                                                        updatedOutputTape = Array.push value model.outputTape
+                                                        newLogTime = model.logTime + calculateLogTime model.logBase regIndex + calculateLogTime model.logBase pointer + calculateLogTime model.logBase value
+                                                    in
                                                     if dontHighlight then
                                                         ( { model
                                                             | instructionPointer = nextInstructionPointer
-                                                            , outputTape = (Array.push value model.outputTape)
                                                             , executedInstructions = model.executedInstructions + 1
+                                                            , instructions = updateInstructionAt model.instructionPointer (Write (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                            
+                                                            , logTime = newLogTime
+                                                            
+                                                            , outputTape = updatedOutputTape
                                                         }
                                                         , Cmd.none
                                                         )
                                                     else
                                                         let
-                                                            updatedOutputTape = Array.push value model.outputTape
-                                                            lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
-
                                                             updatedModel = { model
-                                                                            | instructionPointer = nextInstructionPointer
-                                                                            , outputTape = updatedOutputTape
-                                                                            , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
-                                                                            , executedInstructions = model.executedInstructions + 1
-                                                                        }
+                                                                                | instructionPointer = nextInstructionPointer
+                                                                                , executedInstructions = model.executedInstructions + 1
+                                                                                , instructions = updateInstructionAt model.instructionPointer (Write (Indirect regIndex) Nothing (exeCount + 1)) model.instructions
+                                                                                
+                                                                                , logTime = newLogTime
+                                                                                
+                                                                                , outputTape = updatedOutputTape
+                                                                                , highlighted_registers = Dict.insert pointer "bg-blue-200" Dict.empty
+                                                                            }
+                                                            lastIdx = List.length (Array.toList (updatedOutputTape)) - 1
                                                             
                                                             switchHighlightCmd =
                                                                 Task.perform (\_ -> SwitchHighlight (1, pointer) (2, lastIdx, "bg-blue-200"))

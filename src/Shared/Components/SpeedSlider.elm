@@ -10,7 +10,7 @@ import Array exposing (Array)
 
 speedSlider : Int -> Array Int -> (Int -> msg) -> Html msg
 speedSlider currentValue speeds onChangeSpeed =
-    div [ class "flex flex-col w-1/3 h-20 px-2" ]
+    div [ class "flex flex-col w-1/3 h-20 px-3 font-mono" ]
         [ -- Title with Rocket Icon
           div [ class "flex items-center mt-1 gap-2 text-gray-700" ]
             [ heroiconRocket

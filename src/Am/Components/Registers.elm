@@ -5,14 +5,14 @@ import Html.Attributes exposing (class)
 
 import Dict exposing (Dict)
 
-viewRegisters : Dict Int Int -> Dict Int String -> Html msg
+viewRegisters : Dict Int (Int, Bool) -> Dict Int String -> Html msg
 viewRegisters registers highlighted =
     div [ class "flex flex-col w-1/3 bg-white p-1 shadow-lg rounded overflow-auto" ]
         (
         registers
             |> Dict.toList
             |> List.map
-                (\(regNum, value) ->
+                (\(regNum, (value, wasUsed)) ->
                     let
                         highlightClass =
                             Dict.get regNum highlighted
@@ -20,8 +20,13 @@ viewRegisters registers highlighted =
                     in
                     div
                         [ class
-                            ("flex items-center gap-4 p-1 border-b last:border-none font-mono " 
-                                ++ highlightClass
+                            (
+                                if wasUsed then
+                                    "flex items-center gap-4 p-1 border-b last:border-none font-mono " 
+                                    ++ highlightClass
+                                else
+                                    "flex items-center gap-4 p-1 border-b last:border-none font-mono bg-gray-100 rounded" 
+                                    ++ highlightClass
                             )
                         ]
                         [ div [ class "text-gray-500 w-8 text-right" ]

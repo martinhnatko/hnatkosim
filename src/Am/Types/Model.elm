@@ -12,7 +12,7 @@ import Time exposing (Posix)
 -- MODEL
 type alias Model =
     { inputText : String
-    , registers : Dict Int Int
+    , registers : Dict Int (Int, Bool)
     , highlighted : Dict Int String
     , instructions : List Instruction
     , isRunning : Bool

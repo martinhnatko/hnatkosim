@@ -1,6 +1,7 @@
 module Am.Components.SettingsModal exposing (viewSettingsModal)
 
 import Shared.Icons.X exposing (heroiconX)
+import Shared.Icons.Settings exposing (heroiconSettings)
 
 import Html exposing (Html, div, button, text, input, h2, p, span, h3)
 import Html.Attributes exposing (class, type_, value, disabled, placeholder)
@@ -29,7 +30,7 @@ viewSettingsModal currentNumRegs currentMaxInstr onClose onChangeNumOfRegs onCha
                 ]
                 [ heroiconX ]
 
-            , h2 [ class "text-xl font-bold mb-2" ] [ text "Settings" ]
+            , h2 [ class "text-xl font-bold mb-2 flex items-center gap-1" ] [ heroiconSettings ,text "Settings" ]
 
             -- Warning
             , p [ class "my-3 text-red-600 font-semibold" ]

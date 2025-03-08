@@ -7,6 +7,7 @@ import Html.Events exposing (onClick, stopPropagationOn)
 import Json.Decode as Decode
 
 import Shared.Icons.X exposing (heroiconX)
+import Shared.Icons.Guide exposing (heroiconGuide)
 
 
 stopPropagationClick : msg -> Html.Attribute msg
@@ -31,8 +32,8 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                 , onClick onToggleGuideModal
                 ]
                 [ heroiconX ]
-              , h2 [ class "text-xl font-bold mb-4" ]
-                    [ text "Abacus Machine Guide" ]
+              , h2 [ class "text-xl font-bold mb-4 flex items-center gap-1" ]
+                    [ heroiconGuide ,text "Abacus Machine Guide" ]
               , p []
                     [ text "Abacus Machine is an abstract model of a simple computing device that operates with an unlimited number of registers, where each register can hold arbitrarily large natural numbers." ]
               , p [ class "mb-4" ]
