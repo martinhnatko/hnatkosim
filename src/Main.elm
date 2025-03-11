@@ -20,9 +20,14 @@ import Ram.Utils.HelperFunctions as RamHelper
 
 import Shared.Ports exposing (getItem, gotItem, subToTextArea, scrollToBottom)
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+import Shared.Icons.Bug exposing (heroiconBug)
+import Shared.Icons.Github exposing (heroiconGithub)
+import Shared.Icons.Info exposing (heroiconInfo)
+import Shared.Icons.Survey exposing (survey)
+import Shared.Icons.ElmLogo exposing (elmLogo)
 
-import Html exposing (div, text, button, img)
-import Html.Attributes exposing (class)
+import Html exposing (div, text, button, img, a)
+import Html.Attributes exposing (class, href, target, rel, src, alt)
 import Html.Events exposing (onClick)
 
 import String
@@ -37,6 +42,22 @@ import Browser.Navigation as Nav
 import Url exposing (Url)
 
 import Json.Decode as Decode
+import Html.Events exposing (stopPropagationOn)
+import Html exposing (Html)
+import Shared.Icons.X exposing (heroiconX)
+import Html exposing (h2)
+import Shared.Icons.Settings exposing (heroiconSettings)
+import Html exposing (h3)
+import Html exposing (p)
+import Html exposing (span)
+import Html exposing (input)
+import Html.Attributes exposing (type_)
+import Html.Attributes exposing (value)
+import Html.Events exposing (onInput)
+import Html.Attributes exposing (placeholder)
+import Html.Attributes exposing (disabled)
+import Html exposing (ul)
+import Html exposing (li)
 
 
 -- SUBSCRIPTIONS
@@ -109,6 +130,7 @@ type alias Model =
     , abacusModel : AmModel.Model
     , ramModel : RamModel.Model
     , key : Nav.Key
+    , aboutModalOpen : Bool
     }
 
 
@@ -119,6 +141,7 @@ type Msg
     | UrlChanged Url
     | GotItem (String, Maybe String)
     | DelayedSubToTextArea
+    | ToggleAboutModal
     | NoOp
 
 
@@ -165,6 +188,7 @@ init _ url key =
     , abacusModel = AmInit.init
     , ramModel = RamInit.init
     , key = key
+    , aboutModalOpen = False
     }
     , cmdToLoad
     )
@@ -385,6 +409,11 @@ update msg model =
     
         DelayedSubToTextArea ->
             ( model, subToTextArea () )
+        
+        ToggleAboutModal ->
+            ( { model | aboutModalOpen = not model.aboutModalOpen }
+            , Cmd.none
+            )
 
 view : Model -> Browser.Document Msg
 view model =
@@ -393,31 +422,126 @@ view model =
             { title = "HnatkoSim | Menu"
             , body =
                 [ div 
-                    [ class "flex flex-col items-center justify-center min-h-screen bg-gray-200 font-mono relative" ]
+                    [ class "grid grid-rows-3 h-screen bg-gray-200 font-mono" ]
                     [ 
-                    
-                    div [ class "flex flex-col items-center mb-5" ]
-                        [ img
-                            [ Html.Attributes.src "assets\\hnatkosim.webp"
-                            , Html.Attributes.alt "HnatkoSim"
-                            , class "w-[32rem] breathe"
-                            ]
-                            []
+                    div 
+                        [ class "grid grid-rows-2 h-full" ]
+                        [ div [ class "flex items-start justify-left" ][
+                            a 
+                                [ href "https://www.fiit.stuba.sk"
+                                , target "_blank"
+                                , rel "noopener noreferrer"
+                                , class "sm:m-6"
+                                ]
+                                [ img
+                                    [ src "assets\\fiit.png"
+                                    , alt "fiit"
+                                    , class "w-[20rem] lg:w-[27rem] hidden sm:block"
+                                    ]
+                                    []
+                                ]
+
+                            , -- Smaller image shown on screens < "sm"
+                            a 
+                                [ href "https://www.fiit.stuba.sk"
+                                , target "_blank"
+                                , rel "noopener noreferrer"
+                                , class "m-5 sm:m-0"
+                                ]
+                                [ img
+                                    [ src "assets\\fiitsmall.webp"
+                                    , alt "fiit"
+                                    , class "w-[10rem] block sm:hidden"
+                                    ]
+                                    []
+                                ]
                         ]
+
+                        , div [class "flex items-start justify-center" ][   
+                            img
+                                [ Html.Attributes.src "assets\\hnatkosim.webp"
+                                , Html.Attributes.alt "HnatkoSim"
+                                , class "w-[20rem] sm:w-[26rem] md:w-[32rem] lg:w-[37rem] breathe"
+                                ]
+                                []
+                            ]
+                        ]
+                        
                     
-                    , div [ class "flex flex-col gap-5" ]
-                        [ button
-                            [ onClick (ChangePage AbacusPage)
-                            , class "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
+                    , div [ class "flex flex-col items-center justify-center" ]
+                        [ -- We use inline-grid and a single column.
+                        div [ class "inline-grid w-fit grid-cols-1 gap-4" ]
+                            [ button
+                                [ onClick (ChangePage AbacusPage)
+                                , class "px-2 sm:px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
+                                ]
+                                [ text "Abacus Machine Simulator" ]
+                            , button
+                                [ onClick (ChangePage RamPage)
+                                , class "px-2 sm:px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
+                                ]
+                                [ text "Random Access Machine Simulator" ]
+                            , button
+                                [ onClick NoOp
+                                , class 
+                                    """
+                                    px-2
+                                    sm:px-8 py-4
+                                    text-white 
+                                    font-bold 
+                                    
+                                    rounded
+                                    shadow-xl
+                                    bg-gradient-to-r from-red-500 via-blue-500 to-orange-500 
+                                    
+
+                                    hover:animate-none
+                                    helicopter-rotate
+                                    flex items-center justify-center gap-2
+
+                                    hover:bg-gradient-to-r hover:from-red-600 hover:via-blue-600 hover:to-orange-600
+                                    """
+                                ]
+                                [ survey, text "FEEDBACK SURVEY" ]
                             ]
-                            [ text "Abacus Machine Simulator" ]
-                        , button
-                            [ onClick (ChangePage RamPage)
-                            , class "px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
+                        ]
+
+
+
+                    , div [ class "content-end m-5" ]
+                        [
+                        div [class "flex flex-col sm:flex-row gap-4"]
+                            [
+                            button
+                                [ onClick ToggleAboutModal
+                                , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
+                                ]
+                                [ heroiconInfo, text "About" ]
+                            , a
+                                [ onClick (NoOp)
+                                , href "https://docs.google.com/forms/d/e/1FAIpQLSe4agj2hvxDIDLTRTOW5YYO4QNrZwihH4uf5q9CBlslGeUrAg/viewform?usp=dialog"
+                                , target "_blank"
+                                , rel "noopener noreferrer"
+                                , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
+                                ]
+                                [ heroiconBug, text "Report a bug" ]
+                            , a
+                                [ onClick (NoOp)
+                                , href "https://github.com/martinhnatko/am-ram-simulators"
+                                , target "_blank"
+                                , rel "noopener noreferrer"
+                                , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
+                                ]
+                                [ heroiconGithub, text "Source code" ]
                             ]
-                            [ text "Random Access Machine Simulator" ]
                         ]
                     ]
+                
+                , ( if model.aboutModalOpen then
+                        viewAboutModal model
+                    else
+                        text ""
+                    )
                 ]
 
             }
@@ -429,6 +553,50 @@ view model =
         RamPage ->
             RamView.view model.ramModel
                 |> documentMap RamMsg
+
+
+stopPropagationClick : msg -> Html.Attribute msg
+stopPropagationClick noOpMsg =
+    stopPropagationOn "click" <|
+        Decode.succeed ( noOpMsg, True )
+
+viewAboutModal : Model -> Html Msg
+viewAboutModal model =
+    div [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        , onClick ToggleAboutModal
+        ]
+        [ div [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] md:max-w-[65vw] lg:max-w-[50vw] xl:max-w-[40vw] overflow-y-auto"
+                , stopPropagationClick NoOp
+                ]
+            [ -- Close Button (top-right)
+              button
+                [ class "absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                , onClick ToggleAboutModal
+                ]
+                [ heroiconX ]
+
+            , h2 [ class "text-xl font-bold mb-2 flex items-center gap-1" ] [ heroiconInfo, text "About" ]
+ 
+            , p [ class "mb-0.5" ] [ text "Author: Martin Hnatko" ]
+            , p [ class "flex flex-row gap-1" ] 
+                    [ 
+                        text "Built in"
+                        , a [ onClick (NoOp)
+                            , href "https://elm-lang.org/"
+                            , target "_blank"
+                            , rel "noopener noreferrer"
+                            , class "flex items-center gap-1 text-blue-500 font-semibold underline hover:text-blue-600"  
+                            ] 
+                            [ text "Elm", elmLogo ]
+                        , text "as part of a bachelor’s thesis project." 
+                    ]
+                
+            , p [ class "mt-3 text-center text-xs text-gray-500" ]
+                [ text "© HnatkoSim, 2025" ]
+        
+            ]
+        ]
+
 
 documentMap : (msg -> msg2) -> Browser.Document msg -> Browser.Document msg2
 documentMap f doc =
