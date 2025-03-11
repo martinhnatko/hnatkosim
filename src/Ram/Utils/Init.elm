@@ -5,6 +5,7 @@ import Array
 
 -- INIT
 
+init : { inputText : String, registers : Dict.Dict Int ( number, Maybe a ), highlighted_registers : Dict.Dict k v, highlighted_input_tape : Dict.Dict b c, highlighted_output_tape : Dict.Dict d e, instructions : List f, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List g, slots : Array.Array { name : String, inputText : String, inputTape : Array.Array number }, halted : Bool, inputTape : Array.Array h, inputTapePointer : number, outputTape : Array.Array i, showSlotsModal : Bool, showGuideModal : Bool, showSettingsModal : Bool, simulationStartTime : Maybe j, executedInstructions : number, totalNumberOfRegisters : number, totalMaxExecutedInstructions : number, typedTotalNumberOfRegisters : String, typedTotalMaxExecutedInstructions : String, typedBase : String, logSpace : number, logTime : number, logBase : number, tooManyRuntimeMsgs : Bool }
 init =
     let
         initialModel =
@@ -64,6 +65,7 @@ init =
             , logSpace = 0
             , logTime = 0
             , logBase = 2
+            , tooManyRuntimeMsgs = False
             }
     in
     initialModel

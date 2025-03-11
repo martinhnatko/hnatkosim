@@ -16,18 +16,24 @@ import Process
 import Time
 import Dict exposing (Dict)
 
-runAllInstructions : (Model, Cmd Msg) -> (Model, Cmd Msg)
-runAllInstructions (model, someCmd) =
+runAllInstructions : (Model, Cmd Msg, Int) -> (Model, Cmd Msg, Int)
+runAllInstructions (model, someCmd, numOfMsgs) =
     if model.executedInstructions >= model.totalMaxExecutedInstructions then
-        (model, someCmd)
+        (model, someCmd, numOfMsgs)
     else
         if (model.instructionPointer >= List.length model.instructions) || model.halted then
-            (model, someCmd)
+            (model, someCmd, numOfMsgs)
         else
-            let
-                (nextModel, someNewCmd) = executeInstruction model 0
-            in
-            runAllInstructions (nextModel, Cmd.batch [ someCmd, someNewCmd ])
+            if numOfMsgs >= 100 then
+                ( { model | tooManyRuntimeMsgs = True }, someCmd, numOfMsgs )
+            else
+                let
+                    (nextModel, someNewCmd) = executeInstruction model 0
+                in
+                if someNewCmd == Cmd.none then
+                    runAllInstructions (nextModel, someCmd, numOfMsgs)
+                else
+                    runAllInstructions (nextModel, Cmd.batch [ someCmd, someNewCmd ], numOfMsgs + 1)
 
 calculateLogTime : Int -> Int -> Int
 calculateLogTime base value =

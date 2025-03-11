@@ -20,7 +20,7 @@ viewSettingsModal currentNumRegs currentMaxInstr onClose onChangeNumOfRegs onCha
     div [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         , onClick onClose
         ]
-        [ div [ class "bg-white p-4 rounded shadow-lg relative max-w-xl w-full"
+        [ div [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[60vw] overflow-y-auto"
                 , stopPropagationClick onNoOp
                 ]
             [ -- Close Button (top-right)
@@ -32,22 +32,26 @@ viewSettingsModal currentNumRegs currentMaxInstr onClose onChangeNumOfRegs onCha
 
             , h2 [ class "text-xl font-bold mb-2 flex items-center gap-1" ] [ heroiconSettings ,text "Settings" ]
 
-            -- Warning
-            , p [ class "my-3 text-red-600 font-semibold" ]
-                [ text "Warning: Changing these settings is not recommended, as they may degrade performance." ]
-
-            -- Number of Registers
-            , div [ class "mb-4" ] [ h3 [ class "text-md font-bold" ] [ text "Number of registers:" ]
+             -- Number of Registers
+            , div [ class "mb-4" ] [
                 
-                , div [ class "flex gap-2 items-center text-sm text-gray-600" ]
-                    [ p [] [ text "min: 10" ]
-                    , div [ class "h-4 w-px bg-gray-400" ] []
-                    , p [] [ span [ class "text-green-600 font-semibold" ] [ text "default: 100" ] ]
-                    , div [ class "h-4 w-px bg-gray-400" ] []
-                    , p [] [ text "max: 10,000" ]
+                h3  [ class "text-lg font-semibold" ] 
+                    [ text "Number of registers:" ]
+                
+                , p [ class "text-red-500 text-sm " ]
+                    [ text "Warning: Changing this setting is not recommended as it may degrade performance because more elements must be rendered." ]
+                
+                , div [ class "flex flex-col text-xs mb-2 mt-1 text-gray-600" ]
+                    [
+                    div [class "flex gap-2 items-center"]
+                        [ p [] [ text "min: 10" ]
+                        , div [ class "h-4 w-px bg-gray-400" ] []
+                        , p [] [ span [ class "text-green-600 font-semibold" ] [ text "default: 100" ] ]
+                        , div [ class "h-4 w-px bg-gray-400" ] []
+                        , p [] [ text "max: 10,000" ]
+                        ]
+                    , p [] [ span [ class "text-blue-600 font-semibold" ] [ text ("current: " ++ String.fromInt currentNumRegs) ] ]
                     ]
-                , div [ class "flex gap-2 items-center text-sm mb-2" ]
-                    [ p [] [ span [ class "text-blue-600 font-semibold" ] [ text ("current: " ++ String.fromInt currentNumRegs) ] ] ]  
 
                 , div [ class "flex gap-2 items-center" ]
                     [ input
@@ -79,17 +83,26 @@ viewSettingsModal currentNumRegs currentMaxInstr onClose onChangeNumOfRegs onCha
                     ]
                 ]
 
-            -- Max Executed Instructions
-            , div [] [ h3 [ class "text-md font-bold" ] [ text "Maximum number of executed instructions with instant speed:" ]
-                 , div [ class "flex gap-2 items-center text-sm text-gray-600" ]
-                    [ p [] [ text "min: 500,000" ]
-                    , div [ class "h-4 w-px bg-gray-400" ] []
-                    , p [] [ span [ class "text-green-600 font-semibold" ] [ text "default: 1,000,000" ] ]
-                    , div [ class "h-4 w-px bg-gray-400" ] []
-                    , p [] [ text "max: 100,000,000" ]
+            , div [] [ 
+                
+                h3  [ class "text-lg font-semibold" ] 
+                    [ text "Maximum number of executed instructions with instant speed:" ]
+                
+                , p [ class "text-sm" ]
+                    [ text "This setting is designed to prevent the program from getting stuck in an infinite loop. If your program is complex and requires more instructions, you can adjust this limit accordingly." ]
+                
+                , div [ class "flex flex-col text-xs mb-2 mt-1 text-gray-600" ]
+                    [
+                    div [class "flex gap-2 items-center"]
+                        [ p [] [ text "min: 500,000" ]
+                        , div [ class "h-4 w-px bg-gray-400" ] []
+                        , p [] [ span [ class "text-green-600 font-semibold" ] [ text "default: 1,000,000" ] ]
+                        , div [ class "h-4 w-px bg-gray-400" ] []
+                        , p [] [ text "max: 100,000,000" ]
+                        ]
+                    , p [] [ span [ class "text-blue-600 font-semibold" ] [ text ("current: " ++ String.fromInt currentMaxInstr) ] ]
                     ]
-                , div [ class "flex gap-2 items-center text-sm mb-2" ]
-                    [ p [] [ span [ class "text-blue-600 font-semibold" ] [ text ("current: " ++ String.fromInt currentMaxInstr) ] ] ]  
+                
                 , div [ class "flex gap-2 items-center" ]
                     [ input
                         [ type_ "number"

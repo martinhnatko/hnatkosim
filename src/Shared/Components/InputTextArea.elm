@@ -8,7 +8,7 @@ import Shared.Icons.Trash exposing (heroiconTrash)
 
 inputTextArea : Bool -> String -> ( String -> msg ) -> msg -> Html msg
 inputTextArea simStarted inputText onUpdateCode onDeleteInput =
-    div [ class "flex flex-col w-1/3 bg-white p-2 shadow-lg rounded relative" ]
+    div [ class "flex flex-col md:w-1/3 bg-white p-2 shadow-lg rounded relative" ]
         [ textarea
             ( 
             [ 

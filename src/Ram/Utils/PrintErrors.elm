@@ -189,9 +189,9 @@ checkForDuplicatedLabels instructions =
 
     in
     if duplicatedLabelsCount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated label: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated label at position: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
     else if duplicatedLabelsCount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated labels: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt duplicatedLabelsCount ++ " duplicated labels at positions: " ++ (String.join ", " (List.map String.fromInt duplicatedLabelsPositions)) ++ "."))
     else
         Nothing
 

@@ -83,9 +83,9 @@ checkForNonExistingRegisters instructions =
 
     in
     if nERECount == 1 then
-        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instruction that is referencing non-existing register at position " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instruction that is attempting to access a non-existing register at position " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
     else if nERECount > 1 then
-        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instructions that are referencing non-existing registers at positions: " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
+        Just (requestAddMessage (ErrorMessage, "Parsing Error: Found " ++ String.fromInt nERECount ++ " instructions that are attempting to access a non-existing registers at positions: " ++ (String.join ", " (List.map String.fromInt nEREPositions) ) ++ "."))
     else
         Nothing
 

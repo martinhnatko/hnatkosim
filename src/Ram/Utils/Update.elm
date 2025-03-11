@@ -11,7 +11,7 @@ import Ram.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Ram.Utils.PrintErrors exposing (printErrors)
 
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
-import Shared.Ports exposing (setItem, scrollToBottom)
+import Shared.Ports exposing (setItem, scrollToBottom, requestMathJaxTypeset)
 
 import Dict
 import List exposing (range)
@@ -19,6 +19,7 @@ import Array
 import Platform.Cmd as Cmd
 import Time
 import Task
+import Process
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -85,11 +86,15 @@ update msg model =
             
             else if model.speedIdx == 7 && model.simStarted then
                 let
-                    (finalModel, someCmds) = runAllInstructions ({ model | isRunning = True }, Cmd.none) 
+                    (finalModel, someCmds, _) = runAllInstructions ({ model | isRunning = True }, Cmd.none, 0) 
                 in
                 if finalModel.executedInstructions >= model.totalMaxExecutedInstructions then
                     ( { finalModel | isRunning = False }
                     , Cmd.batch [ requestAddMessage(Warning, "Warning: Maximum number of instant-speed instructions exceeded (" ++ String.fromInt finalModel.executedInstructions ++ "). Your code may contain an infinite loop or be too complex. You can change this limit in settings, or continue with slower speed or step mode to debug."), someCmds ]
+                    )
+                else if finalModel.tooManyRuntimeMsgs then
+                    ( { finalModel | isRunning = False }
+                    , Cmd.batch [ requestAddMessage(Warning, "Warning: More than 100 runtime errors occurred while running at instant speed. Please debug your code (e.g., by stepping or lowering execution speed) to investigate the issue."), someCmds ]
                     )
                 else
                     if finalModel.halted then
@@ -118,11 +123,15 @@ update msg model =
         StartInstantSimulation now ->
             let
                 updatedModel = { model | simulationStartTime = Just now }
-                (finalModel, someCmds) = runAllInstructions (updatedModel, Cmd.none)
+                (finalModel, someCmds, _) = runAllInstructions (updatedModel, Cmd.none, 0)
             in
             if finalModel.executedInstructions >= model.totalMaxExecutedInstructions then
                 ( { finalModel | isRunning = False }
                 , Cmd.batch [ requestAddMessage(Warning, "Warning: Maximum number of instant-speed instructions exceeded (" ++ String.fromInt finalModel.executedInstructions ++ "). Your code may contain an infinite loop or be too complex. You can change this limit in settings, or continue with slower speed or step mode to debug."), someCmds ]
+                )
+            else if finalModel.tooManyRuntimeMsgs then
+                ( { finalModel | isRunning = False }
+                , Cmd.batch [ requestAddMessage(Warning, "Warning: More than 100 runtime errors occurred while running at instant speed. Please debug your code (e.g., by stepping or lowering execution speed) to investigate the issue."), someCmds ]
                 )
             else
                 if finalModel.halted then
@@ -212,6 +221,7 @@ update msg model =
                 , instructions = parseRAM model.inputText model
                 , logSpace = 0
                 , logTime = 0
+                , tooManyRuntimeMsgs = False
               }
             , requestAddMessage (SimStopped, "Simulation stopped")
             )
@@ -221,11 +231,15 @@ update msg model =
         ChangeSpeed newSpeed ->
             if newSpeed == 7 && model.isRunning then
                 let
-                    (finalModel, someCmds) = runAllInstructions ({ model | speedIdx = newSpeed, isRunning = True }, Cmd.none)
+                    (finalModel, someCmds, _) = runAllInstructions ({ model | speedIdx = newSpeed, isRunning = True }, Cmd.none, 0)
                 in
                 if finalModel.executedInstructions >= model.totalMaxExecutedInstructions then
                     ( { finalModel | isRunning = False }
                     , Cmd.batch [ requestAddMessage(Warning, "Warning: Maximum number of instant-speed instructions exceeded (" ++ String.fromInt finalModel.executedInstructions ++ "). Your code may contain an infinite loop or be too complex. You can change this limit in settings, or continue with slower speed or step mode to debug."),  someCmds ]
+                    )
+                else if finalModel.tooManyRuntimeMsgs then
+                    ( { finalModel | isRunning = False }
+                    , Cmd.batch [ requestAddMessage(Warning, "Warning: More than 100 runtime errors occurred while running at instant speed. Please debug your code (e.g., by stepping or lowering execution speed) to investigate the issue."), someCmds ]
                     )
                 else
                     if finalModel.halted then
@@ -391,6 +405,7 @@ update msg model =
                         , executedInstructions = 0
                         , logSpace = 0
                         , logTime = 0
+                        , tooManyRuntimeMsgs = False
                         }
                     , (
                         if i == 21 then
@@ -462,11 +477,20 @@ update msg model =
                     ( model, Cmd.none )
         
         ToggleGuideModal ->
-            ( { model | showGuideModal = not model.showGuideModal }, Cmd.none )
+            if model.showGuideModal then
+                ( { model | showGuideModal = not model.showGuideModal }, Cmd.none )
+            else
+                ( { model | showGuideModal = not model.showGuideModal }, Task.perform (\_ -> RequestMathJaxUpdate ) (Process.sleep (20)) )
         
         ToggleSettingsModal ->
-            ( { model | showSettingsModal = not model.showSettingsModal }, Cmd.none )
+            if model.showSettingsModal then
+                ( { model | showSettingsModal = not model.showSettingsModal }, Cmd.none )
+            else
+                ( { model | showSettingsModal = not model.showSettingsModal }, Task.perform (\_ -> RequestMathJaxUpdate ) (Process.sleep (20)) ) 
         
+        RequestMathJaxUpdate ->
+            ( model, requestMathJaxTypeset () )
+
         ChangeNumOfRegisters newNum ->
             ( { model | totalNumberOfRegisters = newNum, registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 newNum)) }, Cmd.none )
         

@@ -2,11 +2,14 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+  
   <title>AM Simulator</title>
   
   <script src="main.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  
+  <script src="https://cdn.tailwindcss.com"></script>  
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <link rel="stylesheet" href="styles.css">
   
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
@@ -24,6 +27,16 @@
     node: document.getElementById('myapp')
   });
 
+  // Listening for MathJax typeset request
+  if (app.ports && app.ports.requestMathJaxTypeset) 
+  {
+    app.ports.requestMathJaxTypeset.subscribe(function() {
+      // Re-render math in the DOM
+      MathJax.typeset();
+    });
+   }
+
+  // Subscribing to the subToTextArea port and adding a tab key listener to the textarea, which inserts a tab character at the cursor position when the tab key is pressed
   app.ports.subToTextArea.subscribe(function() {
     var textbox = document.getElementById('textbox');
     if (textbox) {
@@ -44,6 +57,7 @@
     }
   });
 
+  // Subscribing to the subToScrollToBottom port and scrolling to the bottom of the element with the given ID
   app.ports.scrollToBottom.subscribe(function (elementId) {
     requestAnimationFrame(() => {
         const el = document.getElementById(elementId);
@@ -53,12 +67,13 @@
     });
   });
 
-  // 1) setItem port => store key/value in localStorage
+
+  // Subscribing for the setItem port => write to localStorage
   app.ports.setItem.subscribe(function ([key, value]) {
     localStorage.setItem(key, value);
   });
 
-  // 2) getItem port => read localStorage and send back via gotItem
+  // Subscribing for the getItem port => read from localStorage
   app.ports.getItem.subscribe(function (key) {
     var value = localStorage.getItem(key);
     if (value === null) {

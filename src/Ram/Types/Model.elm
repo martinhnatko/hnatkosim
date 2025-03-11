@@ -41,4 +41,5 @@ type alias Model =
     , logSpace : Int
     , logTime : Int
     , logBase : Int
+    , tooManyRuntimeMsgs : Bool
     }

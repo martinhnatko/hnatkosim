@@ -30,7 +30,7 @@ view model =
     , body =
         [ div [ class "flex flex-col h-screen p-2 bg-gray-200" ]
             [ -- Header Section
-              div [ class "flex gap-3" ]
+              div [ class "flex flex-col lg:flex-row lg:gap-3" ]
                     [ controlButtons (model.instructionPointer >= List.length model.instructions) model.isRunning False model.simStarted Start Pause Step Reset (model.speedIdx == 7 && (model.executedInstructions >= model.totalMaxExecutedInstructions))
                     , speedSlider model.speedIdx model.speeds ChangeSpeed
                     , menuButtons ToggleSlotsModal GoBackToMenu ToggleGuideModal ToggleSettingsModal model.simStarted
@@ -38,7 +38,7 @@ view model =
 
 
               -- Main Content Section
-            , div [ class "flex my-3 h-full gap-3 overflow-hidden" ]
+            , div [ class "flex flex-col h-full overflow-y-auto md:flex-row gap-3 md:overflow-hidden my-3" ]
                   
                   -- Input text area
                   [ inputTextArea model.simStarted model.inputText UpdateCode DeleteInput

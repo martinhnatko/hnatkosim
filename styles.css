@@ -12,7 +12,7 @@ input[type="number"] {
 }
 
 /* Remove focus outline from textarea and input */
-textarea:focus, input:focus{
+input:focus{
   outline: none;
 }
 

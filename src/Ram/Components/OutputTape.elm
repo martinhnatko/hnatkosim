@@ -45,9 +45,9 @@ renderOutputCell index cell model =
         ( displayValue, bgClass ) =
             ( String.fromInt cell
             , if highlightClass /= "" then
-                "flex-none w-20 h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono " ++ highlightClass
+                "flex-none px-1 w-20 h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono " ++ highlightClass
               else
-                "flex-none w-20 h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono bg-white"
+                "flex-none px-1 w-20 h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono bg-white"
             )
 
         inputElement =

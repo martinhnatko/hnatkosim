@@ -7,3 +7,5 @@ port getItem : String -> Cmd msg
 port gotItem : ( (String, Maybe String) -> msg ) -> Sub msg
 
 port subToTextArea : () -> Cmd msg
+
+port requestMathJaxTypeset : () -> Cmd msg

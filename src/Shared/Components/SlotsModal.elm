@@ -2,7 +2,7 @@ module Shared.Components.SlotsModal exposing (..)
 
 import Ram.Types.Messages exposing (Msg(..))
 
-import Html exposing (Html, div, button, text, input, h2)
+import Html exposing (Html, div, button, text, input, h2, p)
 import Html.Attributes exposing (disabled, class, type_, value)
 import Html.Attributes exposing (placeholder)
 import Html.Events exposing (onClick, onInput, stopPropagationOn)
@@ -23,11 +23,11 @@ stopPropagationClick noOpMsg =
 viewSlotsModal : Bool -> Array (String, Bool) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> msg -> Html msg
 viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onNoOp =
     div
-        [ Html.Attributes.class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         , onClick onToggleSlotsModal
         ]
         [ div
-            [ Html.Attributes.class "bg-white p-4 rounded shadow-lg relative"
+            [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] overflow-y-auto"
             , stopPropagationClick onNoOp
             ]
             [ -- “X” button in the top-right
@@ -36,7 +36,9 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
                 , onClick onToggleSlotsModal
                 ]
                 [ heroiconX ]
-            , h2 [ class "text-xl font-bold mb-4 flex items-center gap-1" ] [ heroiconSave, text "Save/Load" ]
+            , h2 [ class "text-xl font-bold flex items-center gap-1" ] [ heroiconSave, text "Save/Load" ]
+            , p [ class "text-md my-2" ]
+                [ text "You can save or load your code here. Everything is stored in your browser’s local storage. After renaming, there’s no need to press Save, as changes are saved automatically." ]
             , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
             ]
         ]
@@ -44,7 +46,7 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
 
 viewSlots : Bool -> Array (String, Bool) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
 viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
-    div [ class "grid grid-cols-5 gap-4 mt-3" ]
+    div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3" ]
         (List.map
             (\i ->
                 let
@@ -59,14 +61,14 @@ viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdat
                     [ -- Editable slot name input:
                       input
                         [ type_ "text"
-                        , class "font-bold text-gray-700 border border-gray-300 rounded p-1 w-full mb-2 focus:outline-none focus:ring focus:ring-blue-200"
+                        , class "font-bold text-gray-800 border border-gray-300 rounded p-1 w-full mb-1 focus:outline-none focus:ring focus:ring-blue-200"
                         , value slotName
                         , onInput (\newName -> onUpdateSlotName i newName)
                         , placeholder ("Slot " ++ String.fromInt i)
                         ]
                         []
                       -- Row of 3 buttons
-                    , div [ class "flex gap-2 mt-2" ]
+                    , div [ class "flex gap-2 mt-1" ]
                         [ -- Save button
                           button
                             [ class 

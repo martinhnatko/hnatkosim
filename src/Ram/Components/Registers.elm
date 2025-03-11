@@ -10,9 +10,9 @@ import Dict
 
 viewRegisters : Model -> Html Msg
 viewRegisters model =
-    div [class "flex flex-col w-1/3 gap-3"] [
+    div [class "flex flex-col md:w-1/3 gap-3"] [
         
-        div [class "flex w-full h-full overflow-auto bg-white rounded p-1"] 
+        div [class "flex w-full h-full overflow-auto bg-white rounded p-1 order-2 md:order-1"] 
             [ div [ class "flex flex-col w-full p-1 rounded overflow-y-auto" ]
                 (
                 model.registers
@@ -55,30 +55,30 @@ viewRegisters model =
  
             ] 
         
-        , div [ class "flex bg-white rounded w-full p-1.5 rounded gap-1.5" ]
+        , div [ class "flex w-full max-h-[30%] bg-white rounded p-1.5 rounded gap-1.5 order-1 md:order-2" ]
             [ 
             -- Card #1: Time Complexity
-            div [ class "bg-white w-1/2 p-1 rounded border" ]
+            div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
                 [ h3 [ class "text-md font-semibold mb-1" ] [ text "Time Complexity" ]
                 , p [] 
                     [ text "Logarithmic cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text (model.logTime |> String.fromInt) ]
                     ]
                 , p [] 
-                    [ text "Uniform cost: "
+                    [ text "Unit cost: "
                     , span [ class "text-green-600 font-semibold" ] [ text (model.executedInstructions |> String.fromInt) ]   
                     ]
                 ]
             
             -- Card #2: Space Complexity
-            , div [ class "bg-white w-1/2 p-1 rounded border" ]
+            , div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
                 [ h3 [ class "text-md font-semibold mb-1" ] [ text "Space Complexity" ]
                 , p [] 
                     [ text "Logarithmic cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text (model.logSpace |> String.fromInt) ]
                     ]
                 , p [] 
-                    [ text "Uniform cost: " 
+                    [ text "Unit cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text ( 
                                                                             model.registers
                                                                                 |> Dict.values

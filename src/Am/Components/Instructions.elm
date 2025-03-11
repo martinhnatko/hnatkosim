@@ -8,7 +8,7 @@ import Html.Attributes exposing (class)
 
 viewInstructions : List Instruction -> Int -> Bool -> Html msg
 viewInstructions instructions pointer simStarted =
-    div [ class ( "w-1/3 p-1 shadow-lg rounded overflow-auto border-2 border-transparent " 
+    div [ class ( "md:w-1/3 p-1 shadow-lg rounded md:overflow-auto border-2 border-transparent" 
             ++ if (pointer >= List.length instructions) && simStarted then
                     " bg-green-50 border-green-400"
                 else
@@ -16,7 +16,7 @@ viewInstructions instructions pointer simStarted =
             )
         ]
         [
-        div [ Html.Attributes.class "flex flex-wrap gap-1.5" ]
+        div [ Html.Attributes.class "flex flex-wrap flex-shrink-0 gap-1.5" ]
             (instructions
                 |> List.indexedMap (\index instruction ->
                     let

@@ -40,3 +40,4 @@ type Msg
     | TypedMaxExecutedInstructions String
     | TypedBase String
     | ChangeLogBase Int
+    | RequestMathJaxUpdate
