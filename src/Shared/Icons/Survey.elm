@@ -1,21 +1,14 @@
 module Shared.Icons.Survey exposing (..)
 
 import Html exposing (Html)
-import Svg exposing (svg, g, path, rect)
+import Svg exposing (svg, g, path)
 import Svg.Attributes exposing
-    ( width
-    , height
-    , viewBox
+    ( viewBox
     , fill
     , d
-    , x
-    , y
     , class
     )
 import Svg.Attributes exposing (stroke)
-import Svg.Attributes exposing (strokeWidth)
-import Svg.Attributes exposing (strokeLinecap)
-import Svg.Attributes exposing (strokeLinejoin)
 
 
 survey : Html msg

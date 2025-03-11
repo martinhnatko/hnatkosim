@@ -4,8 +4,6 @@ import Html exposing (Html)
 import Svg exposing (svg, path)
 import Svg.Attributes exposing
     ( fill
-    , fillRule
-    , clipRule
     , d
     , viewBox
     , width
@@ -13,7 +11,6 @@ import Svg.Attributes exposing
     , class
     )
 import Svg.Attributes exposing (stroke)
-import Svg.Attributes exposing (strokeWidth)
 import Svg.Attributes exposing (strokeLinecap)
 import Svg.Attributes exposing (strokeLinejoin)
 
@@ -26,8 +23,6 @@ heroiconGithub =
         , viewBox "0 0 98 96"
         , fill "currentColor"
         , stroke "currentColor"
-        -- , strokeWidth "1.5"
-        -- , viewBox "0 0 24 24"
         , strokeLinecap "round"
         , strokeLinejoin "round"
         ]

@@ -25,10 +25,11 @@ import Shared.Icons.Github exposing (heroiconGithub)
 import Shared.Icons.Info exposing (heroiconInfo)
 import Shared.Icons.Survey exposing (survey)
 import Shared.Icons.ElmLogo exposing (elmLogo)
+import Shared.Icons.X exposing (heroiconX)
 
-import Html exposing (div, text, button, img, a)
+import Html exposing (Html, div, text, button, img, a, p, h2)
 import Html.Attributes exposing (class, href, target, rel, src, alt)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, stopPropagationOn)
 
 import String
 import Time
@@ -42,22 +43,6 @@ import Browser.Navigation as Nav
 import Url exposing (Url)
 
 import Json.Decode as Decode
-import Html.Events exposing (stopPropagationOn)
-import Html exposing (Html)
-import Shared.Icons.X exposing (heroiconX)
-import Html exposing (h2)
-import Shared.Icons.Settings exposing (heroiconSettings)
-import Html exposing (h3)
-import Html exposing (p)
-import Html exposing (span)
-import Html exposing (input)
-import Html.Attributes exposing (type_)
-import Html.Attributes exposing (value)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (placeholder)
-import Html.Attributes exposing (disabled)
-import Html exposing (ul)
-import Html exposing (li)
 
 
 -- SUBSCRIPTIONS
@@ -538,7 +523,7 @@ view model =
                     ]
                 
                 , ( if model.aboutModalOpen then
-                        viewAboutModal model
+                        viewAboutModal
                     else
                         text ""
                     )
@@ -560,8 +545,8 @@ stopPropagationClick noOpMsg =
     stopPropagationOn "click" <|
         Decode.succeed ( noOpMsg, True )
 
-viewAboutModal : Model -> Html Msg
-viewAboutModal model =
+viewAboutModal : Html Msg
+viewAboutModal =
     div [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         , onClick ToggleAboutModal
         ]
