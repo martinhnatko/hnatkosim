@@ -34,7 +34,7 @@ viewRegisters model =
                                                 ++ highlightClass
 
                                         Nothing ->
-                                            "flex items-center gap-4 p-1 border-b last:border-none font-mono bg-gray-100 rounded" 
+                                            "flex items-center gap-4 p-1 border-b last:border-none font-mono bg-gray-100 rounded " 
                                                 ++ highlightClass
                                     )
                                 ]
