@@ -406,7 +406,7 @@ view : Model -> Browser.Document Msg
 view model =
     case model.page of
         Landing ->
-            { title = "HnatkoSim | Menu"
+            { title = "HnatkoSim | Home"
             , body =
                 [ div 
                     [ class "grid grid-rows-3 h-screen bg-gray-200 font-mono" ]
