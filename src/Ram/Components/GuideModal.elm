@@ -367,7 +367,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                 ]
             , p [ class "my-2 text-sm" ]
                   [
-                        text "Time complexity refers to the computational cost of a program and indicates how much “time” is required for it to run. Meanwhile, space complexity determines the program's memory usage. For the RAM machine, there are two complexity measures: the "
+                        text "Time complexity refers to the computational cost of a program and indicates how much \"time\" is required for it to run. Meanwhile, space complexity determines the program's memory usage. For the RAM machine, there are two complexity measures: the "
                         , span [ class "font-bold" ] [ text "unit cost" ]
                         , span [] [ text " measure and the "]
                         , span [ class "font-bold" ] [ text "logarithmic cost"]
@@ -395,7 +395,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                   ]
             , p [ class "text-sm" ]
                   [
-                        text "The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer's memory. The larger the number an instruction processes, the “more expensive” it becomes—requiring extra time and memory to store and handle that value. The cost grows "
+                        text "The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer's memory. The larger the number an instruction processes, the \"more expensive\" it becomes—requiring extra time and memory to store and handle that value. The cost grows "
                         , span [ class "font-bold" ] [ text "logarithmically"]
                         , span [] [ text " with the size of the number. The complexity of manipulating a number "]
                         , i [ class "font-bold" ] [ text "i"]
@@ -485,7 +485,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                             [ i [ class "font-semibold" ] [ text "l(i) + l(c(i)) + l(c(c(i)))" ] ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                            [ text "You must “pay” for accessing register "
+                            [ text "You must \"pay\" for accessing register "
                             , i [ class "font-bold" ] [ text "i"]
                             , text ", then for accessing register "
                             , i [ class "font-bold" ] [ text "c(i)"]

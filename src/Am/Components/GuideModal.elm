@@ -164,7 +164,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                             [ text "s3" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                            [ text "Subtracts 1 from the specified register if it’s non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x−1. If R3 is already 0, it remains unchanged." ]
+                            [ text "Subtracts 1 from the specified register if it's non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x−1. If R3 is already 0, it remains unchanged." ]
                         ]
 
                     -- startloop
@@ -176,7 +176,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                             [ text "(" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                            [ text "Marks the beginning of a loop. Execution enters the loop body if the loop’s condition register is greater than zero. If it’s zero, the simulator jumps directly to the loop’s end." ]
+                            [ text "Marks the beginning of a loop. Execution enters the loop body if the loop's condition register is greater than zero. If it's zero, the simulator jumps directly to the loop's end." ]
                         ]
 
                     -- endloop
@@ -188,7 +188,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                             [ text ")8" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                            [ text "Marks the end of the loop. If the loop’s condition register is still greater than zero, execution jumps back to the loop’s start. Otherwise, the simulator continues with the next instruction after the loop." ]
+                            [ text "Marks the end of the loop. If the loop's condition register is still greater than zero, execution jumps back to the loop's start. Otherwise, the simulator continues with the next instruction after the loop." ]
                         ]
                     ]
                 ]
@@ -242,7 +242,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                             [ text "Found instruction that is attempting to access a non-existing register" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                            [ text "This error occurs when the parser encounters instruction that references a register index that doesn’t exist or is out of range. To prevent it, ensure all register references are within the valid range." ]
+                            [ text "This error occurs when the parser encounters instruction that references a register index that doesn't exist or is out of range. To prevent it, ensure all register references are within the valid range." ]
                         ]
                     
                     , tr [ class "bg-red-50" ]

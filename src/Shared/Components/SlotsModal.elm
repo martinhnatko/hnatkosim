@@ -30,7 +30,7 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
             [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] overflow-y-auto"
             , stopPropagationClick onNoOp
             ]
-            [ -- “X” button in the top-right
+            [ -- \"X\" button in the top-right
               button
                 [ class "absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
                 , onClick onToggleSlotsModal
