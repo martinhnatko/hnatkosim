@@ -20458,7 +20458,7 @@ var $author$project$Main$viewAboutModal = A2(
 						[
 							$elm$html$Html$text(
 							$elm$core$String$fromChar(
-								$elm$core$Char$fromCode(187)) + ' HnatkoSim, 2025')
+								$elm$core$Char$fromCode(169)) + ' HnatkoSim, 2025')
 						]))
 				]))
 		]));
