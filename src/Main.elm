@@ -487,6 +487,11 @@ view model =
                                     flex items-center justify-center gap-2
 
                                     hover:bg-gradient-to-r hover:from-red-600 hover:via-blue-600 hover:to-orange-600
+                                    
+                                    
+                                    opacity-50
+                                    cursor-not-allowed
+                                    disabled
                                     """
                                 ]
                                 [ survey, text "SHORT FEEDBACK SURVEY" ]
