@@ -14065,7 +14065,7 @@ var $author$project$Am$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('Subtracts 1 from the specified register if it’s non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x−1. If R3 is already 0, it remains unchanged.')
+															$elm$html$Html$text('Subtracts 1 from the specified register if it\'s non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x−1. If R3 is already 0, it remains unchanged.')
 														]))
 												])),
 											A2(
@@ -14113,7 +14113,7 @@ var $author$project$Am$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('Marks the beginning of a loop. Execution enters the loop body if the loop’s condition register is greater than zero. If it’s zero, the simulator jumps directly to the loop’s end.')
+															$elm$html$Html$text('Marks the beginning of a loop. Execution enters the loop body if the loop\'s condition register is greater than zero. If it\'s zero, the simulator jumps directly to the loop\'s end.')
 														]))
 												])),
 											A2(
@@ -14161,7 +14161,7 @@ var $author$project$Am$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('Marks the end of the loop. If the loop’s condition register is still greater than zero, execution jumps back to the loop’s start. Otherwise, the simulator continues with the next instruction after the loop.')
+															$elm$html$Html$text('Marks the end of the loop. If the loop\'s condition register is still greater than zero, execution jumps back to the loop\'s start. Otherwise, the simulator continues with the next instruction after the loop.')
 														]))
 												]))
 										]))
@@ -14337,7 +14337,7 @@ var $author$project$Am$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('This error occurs when the parser encounters instruction that references a register index that doesn’t exist or is out of range. To prevent it, ensure all register references are within the valid range.')
+															$elm$html$Html$text('This error occurs when the parser encounters instruction that references a register index that doesn\'t exist or is out of range. To prevent it, ensure all register references are within the valid range.')
 														]))
 												])),
 											A2(
@@ -16644,7 +16644,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Time complexity refers to the computational cost of a program and indicates how much “time” is required for it to run. Meanwhile, space complexity determines the program\'s memory usage. For the RAM machine, there are two complexity measures: the '),
+									$elm$html$Html$text('Time complexity refers to the computational cost of a program and indicates how much \"time\" is required for it to run. Meanwhile, space complexity determines the program\'s memory usage. For the RAM machine, there are two complexity measures: the '),
 									A2(
 									$elm$html$Html$span,
 									_List_fromArray(
@@ -16786,7 +16786,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer\'s memory. The larger the number an instruction processes, the “more expensive” it becomes—requiring extra time and memory to store and handle that value. The cost grows '),
+									$elm$html$Html$text('The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer\'s memory. The larger the number an instruction processes, the \"more expensive\" it becomes—requiring extra time and memory to store and handle that value. The cost grows '),
 									A2(
 									$elm$html$Html$span,
 									_List_fromArray(
@@ -17161,7 +17161,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('You must “pay” for accessing register '),
+															$elm$html$Html$text('You must \"pay\" for accessing register '),
 															A2(
 															$elm$html$Html$i,
 															_List_fromArray(
