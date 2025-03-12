@@ -2,7 +2,7 @@ module Shared.Components.SlotsModal exposing (..)
 
 import Ram.Types.Messages exposing (Msg(..))
 
-import Html exposing (Html, div, button, text, input, h2, p)
+import Html exposing (Html, div, button, text, input, h2, p, span)
 import Html.Attributes exposing (disabled, class, type_, value)
 import Html.Attributes exposing (placeholder)
 import Html.Events exposing (onClick, onInput, stopPropagationOn)
@@ -37,8 +37,9 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
                 ]
                 [ heroiconX ]
             , h2 [ class "text-xl font-bold flex items-center gap-1" ] [ heroiconSave, text "Save/Load" ]
-            , p [ class "text-md my-2" ]
-                [ text "You can save or load your code here. Everything is stored in your browser’s local storage. After renaming, there’s no need to press Save, as changes are saved automatically." ]
+            , p [ class "text-sm mt-2" ]
+                [ text "You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there’s no need to press save, as changes are saved automatically." ]
+            , span [ class "text-red-500 text-sm" ] [text "Warning: Everything is stored in your browser’s local storage, so it’s unique to this browser and won’t carry over if you switch browsers or devices." ]
             , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
             ]
         ]
@@ -46,7 +47,7 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
 
 viewSlots : Bool -> Array (String, Bool) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
 viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
-    div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3" ]
+    div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-2" ]
         (List.map
             (\i ->
                 let

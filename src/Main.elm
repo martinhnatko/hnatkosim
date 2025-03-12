@@ -26,6 +26,8 @@ import Shared.Icons.Info exposing (heroiconInfo)
 import Shared.Icons.Survey exposing (survey)
 import Shared.Icons.ElmLogo exposing (elmLogo)
 import Shared.Icons.X exposing (heroiconX)
+import Shared.Icons.Mail exposing (heroiconMail)
+import Shared.Icons.GithubSmall exposing (heroiconGithubSmall)
 
 import Html exposing (Html, div, text, button, img, a, p, h2)
 import Html.Attributes exposing (class, href, target, rel, src, alt)
@@ -487,7 +489,7 @@ view model =
                                     hover:bg-gradient-to-r hover:from-red-600 hover:via-blue-600 hover:to-orange-600
                                     """
                                 ]
-                                [ survey, text "FEEDBACK SURVEY" ]
+                                [ survey, text "SHORT FEEDBACK SURVEY" ]
                             ]
                         ]
 
@@ -503,16 +505,14 @@ view model =
                                 ]
                                 [ heroiconInfo, text "About" ]
                             , a
-                                [ onClick (NoOp)
-                                , href "https://docs.google.com/forms/d/e/1FAIpQLSe4agj2hvxDIDLTRTOW5YYO4QNrZwihH4uf5q9CBlslGeUrAg/viewform?usp=dialog"
+                                [ href "https://docs.google.com/forms/d/e/1FAIpQLSe4agj2hvxDIDLTRTOW5YYO4QNrZwihH4uf5q9CBlslGeUrAg/viewform?usp=dialog"
                                 , target "_blank"
                                 , rel "noopener noreferrer"
                                 , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
                                 ]
                                 [ heroiconBug, text "Report a bug" ]
                             , a
-                                [ onClick (NoOp)
-                                , href "https://github.com/martinhnatko/am-ram-simulators"
+                                [ href "https://github.com/martinhnatko/am-ram-simulators"
                                 , target "_blank"
                                 , rel "noopener noreferrer"
                                 , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
@@ -562,15 +562,31 @@ viewAboutModal =
 
             , h2 [ class "text-xl font-bold mb-2 flex items-center gap-1" ] [ heroiconInfo, text "About" ]
  
-            , p [ class "mb-0.5" ] [ text "Author: Martin Hnatko" ]
+            , p [ class "mb-0.5 flex items-center gap-1" ] 
+                [ text "Author: Martin Hnatko"
+                , a 
+                    [
+                        href "mailto:xhnatko@stuba.sk"
+                        , target "_blank"
+                        , rel "noopener noreferrer"
+                        , class "text-blue-500 hover:text-blue-600"
+                    ]
+                    [ heroiconMail ]
+                , a [
+                        href "https://github.com/martinhnatko"
+                        , target "_blank"
+                        , rel "noopener noreferrer"
+                        , class "flex items-center gap-1 text-blue-500 hover:text-blue-600"      
+                    ] 
+                    [heroiconGithubSmall] 
+                ]
             , p [ class "flex flex-row gap-1" ] 
                     [ 
                         text "Built in"
-                        , a [ onClick (NoOp)
-                            , href "https://elm-lang.org/"
+                        , a [ href "https://elm-lang.org/"
                             , target "_blank"
                             , rel "noopener noreferrer"
-                            , class "flex items-center gap-1 text-blue-500 font-semibold underline hover:text-blue-600"  
+                            , class "flex items-center gap-1 text-blue-500 font-semibold hover:text-blue-600"  
                             ] 
                             [ text "Elm", elmLogo ]
                         , text "as part of a bachelor’s thesis project." 

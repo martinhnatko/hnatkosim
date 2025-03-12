@@ -56,7 +56,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , span [ class "text-red-500 font-semibold" ] [ text "Stop"]
                         , text ". You can write comments in the code by using the " 
                         , span [ class "font-bold" ] [ text "'#'"]
-                        , text " character." 
+                        , text " character. Simulators have responsive design, so feel free to use them on smaller devices." 
                     ]
                 , p [ ]
                     [ 
