@@ -612,8 +612,7 @@ viewAboutModal =
                 
             , p [ class "mt-3 text-center text-xs text-gray-500" ]
                 [ 
-                    span [ property "innerHTML" (string "&nbsp;") ] []
-                    , text " HnatkoSim, 2025" 
+                    text ((String.fromChar (Char.fromCode 187)) ++ " HnatkoSim, 2025" )
                 ]
         
             ]
