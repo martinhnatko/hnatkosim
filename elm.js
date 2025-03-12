@@ -20345,6 +20345,14 @@ var $author$project$Shared$Icons$Mail$heroiconMail = A2(
 				]),
 			_List_Nil)
 		]));
+var $elm$virtual_dom$VirtualDom$property = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_property,
+			_VirtualDom_noInnerHtmlOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlJson(value));
+	});
+var $elm$html$Html$Attributes$property = $elm$virtual_dom$VirtualDom$property;
 var $author$project$Main$stopPropagationClick = function (noOpMsg) {
 	return A2(
 		$elm$html$Html$Events$stopPropagationOn,
@@ -20455,7 +20463,17 @@ var $author$project$Main$viewAboutModal = A2(
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('&copy; HnatkoSim, 2025')
+							A2(
+							$elm$html$Html$span,
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$Attributes$property,
+									'innerHTML',
+									$elm$json$Json$Encode$string('&copy;'))
+								]),
+							_List_Nil),
+							$elm$html$Html$text(' HnatkoSim, 2025')
 						]))
 				]))
 		]));

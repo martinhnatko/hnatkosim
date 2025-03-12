@@ -29,8 +29,8 @@ import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.Mail exposing (heroiconMail)
 import Shared.Icons.GithubSmall exposing (heroiconGithubSmall)
 
-import Html exposing (Html, div, text, button, img, a, p, h2)
-import Html.Attributes exposing (class, href, target, rel, src, alt)
+import Html exposing (Html, div, text, button, img, a, p, h2, span)
+import Html.Attributes exposing (class, href, target, rel, src, alt, property)
 import Html.Events exposing (onClick, stopPropagationOn)
 
 import String
@@ -45,7 +45,7 @@ import Browser.Navigation as Nav
 import Url exposing (Url)
 
 import Json.Decode as Decode
-
+import Json.Encode exposing (string)
 
 -- SUBSCRIPTIONS
 abacusSubscriptions : AmModel.Model -> Sub AmMsg.Msg
@@ -611,7 +611,10 @@ viewAboutModal =
                     ]
                 
             , p [ class "mt-3 text-center text-xs text-gray-500" ]
-                [ text "&copy; HnatkoSim, 2025" ]
+                [ 
+                    span [ property "innerHTML" (string "&copy;") ] []
+                    , text " HnatkoSim, 2025" 
+                ]
         
             ]
         ]
