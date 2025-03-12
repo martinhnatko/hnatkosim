@@ -20470,7 +20470,7 @@ var $author$project$Main$viewAboutModal = A2(
 									A2(
 									$elm$html$Html$Attributes$property,
 									'innerHTML',
-									$elm$json$Json$Encode$string('&copy;'))
+									$elm$json$Json$Encode$string('&nbsp;'))
 								]),
 							_List_Nil),
 							$elm$html$Html$text(' HnatkoSim, 2025')

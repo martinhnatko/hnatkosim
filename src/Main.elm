@@ -612,7 +612,7 @@ viewAboutModal =
                 
             , p [ class "mt-3 text-center text-xs text-gray-500" ]
                 [ 
-                    span [ property "innerHTML" (string "&copy;") ] []
+                    span [ property "innerHTML" (string "&nbsp;") ] []
                     , text " HnatkoSim, 2025" 
                 ]
         
