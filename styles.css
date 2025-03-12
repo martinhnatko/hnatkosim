@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Remove spinner arrows in Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-inner-spin-button,
