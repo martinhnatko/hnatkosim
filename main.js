@@ -18963,7 +18963,7 @@ var $author$project$Ram$Components$InputTape$renderInputCell = F3(
 			[
 				$elm$html$Html$Attributes$type_('number'),
 				$elm$html$Html$Attributes$class(
-				'w-20 h-20 border rounded text-center appearance-none font-mono ' + (bgClass + (_Utils_eq(model.inputTapePointer, index) ? ' border-blue-500 border-4 font-bold' : ''))),
+				'w-16 h-16 lg:w-20 lg:h-20 border rounded text-center appearance-none font-mono ' + (bgClass + (_Utils_eq(model.inputTapePointer, index) ? ' border-blue-500 border-4 font-bold' : ''))),
 				$elm$html$Html$Attributes$value(displayValue)
 			]);
 		var inputElement = A2(
@@ -19000,7 +19000,7 @@ var $author$project$Ram$Components$InputTape$viewInputTape = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('flex bg-white rounded space-x-2 p-2 overflow-x-auto')
+				$elm$html$Html$Attributes$class('flex bg-white rounded space-x-1.5 p-1 lg:space-x-2 lg:p-2 overflow-x-auto')
 			]),
 		_Utils_ap(
 			A2(
@@ -19017,7 +19017,7 @@ var $author$project$Ram$Components$InputTape$viewInputTape = function (model) {
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class(
-							model.simStarted ? 'w-20 h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0' : 'w-20 h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0 hover:bg-green-300 hover:text-green-900 transition-colors duration-200'),
+							model.simStarted ? 'w-16 h-16 lg:w-20 lg:h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0' : 'w-16 h-16 lg:w-20 lg:h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0 hover:bg-green-300 hover:text-green-900 transition-colors duration-200'),
 							$elm$html$Html$Events$onClick($author$project$Ram$Types$Messages$AddCellToInputTape)
 						]),
 					_List_fromArray(
@@ -19297,7 +19297,7 @@ var $author$project$Ram$Components$OutputTape$renderOutputCell = F3(
 			A2($elm$core$Dict$get, index, model.highlighted_output_tape));
 		var _v0 = _Utils_Tuple2(
 			$elm$core$String$fromInt(cell),
-			(highlightClass !== '') ? ('flex-none px-1 w-20 h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono ' + highlightClass) : 'flex-none px-1 w-20 h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono bg-white');
+			(highlightClass !== '') ? ('flex-none px-1 w-16 h-16 lg:w-20 lg:h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono ' + highlightClass) : 'flex-none px-1 w-16 h-16 lg:w-20 lg:h-20 border overflow-x-auto rounded text-center flex items-center justify-center font-mono bg-white');
 		var displayValue = _v0.a;
 		var bgClass = _v0.b;
 		var inputElement = A2(
@@ -19318,7 +19318,7 @@ var $author$project$Ram$Components$OutputTape$viewOutputTape = function (model) 
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('flex rounded bg-white space-x-2 p-2 overflow-x-auto')
+				$elm$html$Html$Attributes$class('flex rounded bg-white space-x-1.5 p-1 lg:space-x-2 lg:p-2 overflow-x-auto')
 			]),
 		$elm$core$List$isEmpty(cells) ? _List_fromArray(
 			[
@@ -19326,7 +19326,7 @@ var $author$project$Ram$Components$OutputTape$viewOutputTape = function (model) 
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-20 h-20 border rounded invisible')
+						$elm$html$Html$Attributes$class('w-16 h-16 lg:w-20 lg:h-20 border rounded invisible')
 					]),
 				_List_Nil)
 			]) : A2(
@@ -19456,7 +19456,7 @@ var $author$project$Ram$Components$Registers$viewRegisters = function (model) {
 								$elm$html$Html$h3,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('text-md font-semibold mb-1')
+										$elm$html$Html$Attributes$class('text-md font-semibold')
 									]),
 								_List_fromArray(
 									[
@@ -19464,7 +19464,10 @@ var $author$project$Ram$Components$Registers$viewRegisters = function (model) {
 									])),
 								A2(
 								$elm$html$Html$p,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('text-sm')
+									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Logarithmic cost: '),
@@ -19482,7 +19485,10 @@ var $author$project$Ram$Components$Registers$viewRegisters = function (model) {
 									])),
 								A2(
 								$elm$html$Html$p,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('text-sm')
+									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Unit cost: '),
@@ -19511,7 +19517,7 @@ var $author$project$Ram$Components$Registers$viewRegisters = function (model) {
 								$elm$html$Html$h3,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('text-md font-semibold mb-1')
+										$elm$html$Html$Attributes$class('text-md font-semibold')
 									]),
 								_List_fromArray(
 									[
@@ -19519,7 +19525,10 @@ var $author$project$Ram$Components$Registers$viewRegisters = function (model) {
 									])),
 								A2(
 								$elm$html$Html$p,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('text-sm')
+									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Logarithmic cost: '),
@@ -19537,7 +19546,10 @@ var $author$project$Ram$Components$Registers$viewRegisters = function (model) {
 									])),
 								A2(
 								$elm$html$Html$p,
-								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('text-sm')
+									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text('Unit cost: '),

@@ -21,7 +21,7 @@ viewInputTape model =
         cellsList =
             Array.toList model.inputTape
     in
-    div [ class "flex bg-white rounded space-x-2 p-2 overflow-x-auto" ]
+    div [ class "flex bg-white rounded space-x-1.5 p-1 lg:space-x-2 lg:p-2 overflow-x-auto" ]
         ( (List.indexedMap
                 (\index cell ->
                     renderInputCell index cell model
@@ -30,9 +30,9 @@ viewInputTape model =
           )
           ++ [ button
                 [ class (if model.simStarted then
-                            "w-20 h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0"
+                            "w-16 h-16 lg:w-20 lg:h-20 text-transparent pointer-events-none flex items-center justify-center flex-shrink-0"
                         else
-                            "w-20 h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0 hover:bg-green-300 hover:text-green-900 transition-colors duration-200"
+                            "w-16 h-16 lg:w-20 lg:h-20 border rounded bg-green-200 text-green-800 flex items-center justify-center flex-shrink-0 hover:bg-green-300 hover:text-green-900 transition-colors duration-200"
                         )
                 , onClick AddCellToInputTape
                 ]
@@ -60,7 +60,7 @@ renderInputCell index cell model =
         
         commonAttrs =
             [ type_ "number"
-            , class ("w-20 h-20 border rounded text-center appearance-none font-mono " ++ bgClass
+            , class ("w-16 h-16 lg:w-20 lg:h-20 border rounded text-center appearance-none font-mono " ++ bgClass
                       ++ (if model.inputTapePointer == index then " border-blue-500 border-4 font-bold" else "")
               )
             , value displayValue

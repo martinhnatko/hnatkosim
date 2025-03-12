@@ -59,12 +59,12 @@ viewRegisters model =
             [ 
             -- Card #1: Time Complexity
             div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
-                [ h3 [ class "text-md font-semibold mb-1" ] [ text "Time Complexity" ]
-                , p [] 
+                [ h3 [ class "text-md font-semibold" ] [ text "Time Complexity" ]
+                , p [ class "text-sm" ] 
                     [ text "Logarithmic cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text (model.logTime |> String.fromInt) ]
                     ]
-                , p [] 
+                , p [ class "text-sm" ] 
                     [ text "Unit cost: "
                     , span [ class "text-green-600 font-semibold" ] [ text (model.executedInstructions |> String.fromInt) ]   
                     ]
@@ -72,12 +72,12 @@ viewRegisters model =
             
             -- Card #2: Space Complexity
             , div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
-                [ h3 [ class "text-md font-semibold mb-1" ] [ text "Space Complexity" ]
-                , p [] 
+                [ h3 [ class "text-md font-semibold" ] [ text "Space Complexity" ]
+                , p [ class "text-sm" ] 
                     [ text "Logarithmic cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text (model.logSpace |> String.fromInt) ]
                     ]
-                , p [] 
+                , p [ class "text-sm" ] 
                     [ text "Unit cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text ( 
                                                                             model.registers
