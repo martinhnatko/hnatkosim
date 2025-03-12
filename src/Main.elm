@@ -507,7 +507,7 @@ view model =
                                         sm:max-w-[50ch]
                                         max-w-[40ch]
                                     """ ]
-                                    [ text "*Survey is being prepared and will be available soon. You’ll be notified once it’s ready!" ]
+                                    [ text "*Survey is being prepared and will be available soon. You'll be notified once it's ready!" ]
                             ]
                         ]
 
@@ -607,11 +607,11 @@ viewAboutModal =
                             , class "flex items-center gap-1 text-blue-500 font-semibold hover:text-blue-600"  
                             ] 
                             [ text "Elm", elmLogo ]
-                        , text "as part of a bachelor’s thesis project." 
+                        , text "as part of a bachelor's thesis project." 
                     ]
                 
             , p [ class "mt-3 text-center text-xs text-gray-500" ]
-                [ text "© HnatkoSim, 2025" ]
+                [ text "&copy; HnatkoSim, 2025" ]
         
             ]
         ]

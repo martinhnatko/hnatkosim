@@ -38,8 +38,8 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
                 [ heroiconX ]
             , h2 [ class "text-xl font-bold flex items-center gap-1" ] [ heroiconSave, text "Save/Load" ]
             , p [ class "text-sm mt-2" ]
-                [ text "You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there’s no need to press save, as changes are saved automatically." ]
-            , span [ class "text-red-500 text-sm" ] [text "Warning: Everything is stored in your browser’s local storage, so it’s unique to this browser and won’t carry over if you switch browsers or devices." ]
+                [ text "You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there's no need to press save, as changes are saved automatically." ]
+            , span [ class "text-red-500 text-sm" ] [text "Warning: Everything is stored in your browser's local storage, so it's unique to this browser and won't carry over if you switch browsers or devices." ]
             , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
             ]
         ]

@@ -367,7 +367,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                 ]
             , p [ class "my-2 text-sm" ]
                   [
-                        text "Time complexity refers to the computational cost of a program and indicates how much “time” is required for it to run. Meanwhile, space complexity determines the program’s memory usage. For the RAM machine, there are two complexity measures: the "
+                        text "Time complexity refers to the computational cost of a program and indicates how much “time” is required for it to run. Meanwhile, space complexity determines the program's memory usage. For the RAM machine, there are two complexity measures: the "
                         , span [ class "font-bold" ] [ text "unit cost" ]
                         , span [] [ text " measure and the "]
                         , span [ class "font-bold" ] [ text "logarithmic cost"]
@@ -395,7 +395,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                   ]
             , p [ class "text-sm" ]
                   [
-                        text "The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer’s memory. The larger the number an instruction processes, the “more expensive” it becomes—requiring extra time and memory to store and handle that value. The cost grows "
+                        text "The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer's memory. The larger the number an instruction processes, the “more expensive” it becomes—requiring extra time and memory to store and handle that value. The cost grows "
                         , span [ class "font-bold" ] [ text "logarithmically"]
                         , span [] [ text " with the size of the number. The complexity of manipulating a number "]
                         , i [ class "font-bold" ] [ text "i"]
@@ -412,7 +412,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , i [ class "font-bold"] [ text "l(i)"]
                         , text " corresponds to the number of bits needed to store the integer "
                         , i [ class "font-bold"] [ text "i"]
-                        , text ". However, you can select any logarithm base in the simulator’s settings if you prefer a different measure."
+                        , text ". However, you can select any logarithm base in the simulator's settings if you prefer a different measure."
                   ]
             
             , p [ class "mb-2 text-sm" ]
@@ -785,7 +785,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                               [ text "Found instruction that is attempting to access a non-existing register." ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                              [ text "This error occurs when the parser detects a direct operand pointing to a register index that doesn’t exist or is out of range. To prevent it, ensure all register references are within the valid range." ]
+                              [ text "This error occurs when the parser detects a direct operand pointing to a register index that doesn't exist or is out of range. To prevent it, ensure all register references are within the valid range." ]
                         ]
                     
                   -- PARSING ERROR - DUPLICATED LABELS
@@ -809,7 +809,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                               [ text "Found instruction that is referencing non-existing label" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                              [ text "This error occurs when the parser encounters an instruction that references a label that doesn’t exist. To prevent it, ensure that all labels are defined before they are referenced." ]
+                              [ text "This error occurs when the parser encounters an instruction that references a label that doesn't exist. To prevent it, ensure that all labels are defined before they are referenced." ]
                   ]
                   
                   
@@ -834,7 +834,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                               [ text "Found invalid instruction" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                              [ text "This error occurs when the parser encounters an instruction that uses a constant operand in a context that doesn’t make sense, such as STORE =5, READ =7, or WRITE =9. To prevent it, ensure that storing, reading, or writing references a valid register, with direct or indirect operands." ]
+                              [ text "This error occurs when the parser encounters an instruction that uses a constant operand in a context that doesn't make sense, such as STORE =5, READ =7, or WRITE =9. To prevent it, ensure that storing, reading, or writing references a valid register, with direct or indirect operands." ]
                         ]
                   
                   --RUNTIME ERROR - read from the input tape, while no more values are available.
@@ -870,7 +870,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                               [ text "Instruction attempted to access a non-existent register." ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                              [ text "This runtime error occurs when an indirect operand ultimately resolves to a register index that doesn’t exist. To avoid it, ensure all indirect operands resolve to valid registers at runtime, or implement checks to prevent referencing out-of-range indices." ]
+                              [ text "This runtime error occurs when an indirect operand ultimately resolves to a register index that doesn't exist. To avoid it, ensure all indirect operands resolve to valid registers at runtime, or implement checks to prevent referencing out-of-range indices." ]
                         ]
 
 

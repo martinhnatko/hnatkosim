@@ -15204,7 +15204,7 @@ var $author$project$Shared$Components$SlotsModal$viewSlotsModal = F8(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there’s no need to press save, as changes are saved automatically.')
+									$elm$html$Html$text('You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there\'s no need to press save, as changes are saved automatically.')
 								])),
 							A2(
 							$elm$html$Html$span,
@@ -15214,7 +15214,7 @@ var $author$project$Shared$Components$SlotsModal$viewSlotsModal = F8(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Warning: Everything is stored in your browser’s local storage, so it’s unique to this browser and won’t carry over if you switch browsers or devices.')
+									$elm$html$Html$text('Warning: Everything is stored in your browser\'s local storage, so it\'s unique to this browser and won\'t carry over if you switch browsers or devices.')
 								])),
 							A6($author$project$Shared$Components$SlotsModal$viewSlots, inputTextEmpty, arrayOfSlots, onSaveSlot, onLoadSlot, onDeleteSlot, onUpdateSlotName)
 						]))
@@ -16644,7 +16644,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Time complexity refers to the computational cost of a program and indicates how much “time” is required for it to run. Meanwhile, space complexity determines the program’s memory usage. For the RAM machine, there are two complexity measures: the '),
+									$elm$html$Html$text('Time complexity refers to the computational cost of a program and indicates how much “time” is required for it to run. Meanwhile, space complexity determines the program\'s memory usage. For the RAM machine, there are two complexity measures: the '),
 									A2(
 									$elm$html$Html$span,
 									_List_fromArray(
@@ -16786,7 +16786,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer’s memory. The larger the number an instruction processes, the “more expensive” it becomes—requiring extra time and memory to store and handle that value. The cost grows '),
+									$elm$html$Html$text('The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer\'s memory. The larger the number an instruction processes, the “more expensive” it becomes—requiring extra time and memory to store and handle that value. The cost grows '),
 									A2(
 									$elm$html$Html$span,
 									_List_fromArray(
@@ -16859,7 +16859,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 										[
 											$elm$html$Html$text('i')
 										])),
-									$elm$html$Html$text('. However, you can select any logarithm base in the simulator’s settings if you prefer a different measure.')
+									$elm$html$Html$text('. However, you can select any logarithm base in the simulator\'s settings if you prefer a different measure.')
 								])),
 							A2(
 							$elm$html$Html$p,
@@ -18425,7 +18425,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('This error occurs when the parser detects a direct operand pointing to a register index that doesn’t exist or is out of range. To prevent it, ensure all register references are within the valid range.')
+															$elm$html$Html$text('This error occurs when the parser detects a direct operand pointing to a register index that doesn\'t exist or is out of range. To prevent it, ensure all register references are within the valid range.')
 														]))
 												])),
 											A2(
@@ -18521,7 +18521,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('This error occurs when the parser encounters an instruction that references a label that doesn’t exist. To prevent it, ensure that all labels are defined before they are referenced.')
+															$elm$html$Html$text('This error occurs when the parser encounters an instruction that references a label that doesn\'t exist. To prevent it, ensure that all labels are defined before they are referenced.')
 														]))
 												])),
 											A2(
@@ -18617,7 +18617,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('This error occurs when the parser encounters an instruction that uses a constant operand in a context that doesn’t make sense, such as STORE =5, READ =7, or WRITE =9. To prevent it, ensure that storing, reading, or writing references a valid register, with direct or indirect operands.')
+															$elm$html$Html$text('This error occurs when the parser encounters an instruction that uses a constant operand in a context that doesn\'t make sense, such as STORE =5, READ =7, or WRITE =9. To prevent it, ensure that storing, reading, or writing references a valid register, with direct or indirect operands.')
 														]))
 												])),
 											A2(
@@ -18761,7 +18761,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('This runtime error occurs when an indirect operand ultimately resolves to a register index that doesn’t exist. To avoid it, ensure all indirect operands resolve to valid registers at runtime, or implement checks to prevent referencing out-of-range indices.')
+															$elm$html$Html$text('This runtime error occurs when an indirect operand ultimately resolves to a register index that doesn\'t exist. To avoid it, ensure all indirect operands resolve to valid registers at runtime, or implement checks to prevent referencing out-of-range indices.')
 														]))
 												])),
 											A2(
@@ -20445,7 +20445,7 @@ var $author$project$Main$viewAboutModal = A2(
 									$elm$html$Html$text('Elm'),
 									$author$project$Shared$Icons$ElmLogo$elmLogo
 								])),
-							$elm$html$Html$text('as part of a bachelor’s thesis project.')
+							$elm$html$Html$text('as part of a bachelor\'s thesis project.')
 						])),
 					A2(
 					$elm$html$Html$p,
@@ -20455,7 +20455,7 @@ var $author$project$Main$viewAboutModal = A2(
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('© HnatkoSim, 2025')
+							$elm$html$Html$text('&copy; HnatkoSim, 2025')
 						]))
 				]))
 		]));
@@ -20612,7 +20612,7 @@ var $author$project$Main$view = function (model) {
 													]),
 												_List_fromArray(
 													[
-														$elm$html$Html$text('*Survey is being prepared and will be available soon. You’ll be notified once it’s ready!')
+														$elm$html$Html$text('*Survey is being prepared and will be available soon. You\'ll be notified once it\'s ready!')
 													]))
 											]))
 									])),
