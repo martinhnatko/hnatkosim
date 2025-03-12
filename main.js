@@ -12656,6 +12656,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
@@ -13557,7 +13558,6 @@ var $author$project$Shared$Icons$X$heroiconX = A2(
 			_List_Nil)
 		]));
 var $elm$html$Html$i = _VirtualDom_node('i');
-var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$Am$Components$GuideModal$stopPropagationClick = function (noOpMsg) {
 	return A2(
 		$elm$html$Html$Events$stopPropagationOn,
@@ -20430,7 +20430,7 @@ var $author$project$Main$viewAboutModal = A2(
 					$elm$html$Html$p,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex flex-row gap-1')
+							$elm$html$Html$Attributes$class('flex flex-row flex-wrap gap-1 items-center justify-start')
 						]),
 					_List_fromArray(
 						[
@@ -20474,7 +20474,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('grid grid-rows-3 h-screen bg-gray-200 font-mono')
+								$elm$html$Html$Attributes$class('grid grid-rows-[auto-auto-auto] min-h-screen bg-gray-200 font-mono')
 							]),
 						_List_fromArray(
 							[
@@ -20607,6 +20607,16 @@ var $author$project$Main$view = function (model) {
 													[
 														$author$project$Shared$Icons$Survey$survey,
 														$elm$html$Html$text('SHORT FEEDBACK SURVEY')
+													])),
+												A2(
+												$elm$html$Html$p,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('\r\n                                        text-xs \r\n                                        text-gray-500 \r\n                                        text-center \r\n                                        whitespace-normal \r\n                                        break-words \r\n                                        sm:max-w-[50ch]\r\n                                        max-w-[40ch]\r\n                                    ')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('*Survey is being prepared and will be available soon. You’ll be notified once it’s ready!')
 													]))
 											]))
 									])),

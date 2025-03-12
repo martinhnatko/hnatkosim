@@ -409,7 +409,7 @@ view model =
             { title = "HnatkoSim | Home"
             , body =
                 [ div 
-                    [ class "grid grid-rows-3 h-screen bg-gray-200 font-mono" ]
+                    [ class "grid grid-rows-[auto-auto-auto] min-h-screen bg-gray-200 font-mono" ]
                     [ 
                     div 
                         [ class "grid grid-rows-2 h-full" ]
@@ -495,6 +495,19 @@ view model =
                                     """
                                 ]
                                 [ survey, text "SHORT FEEDBACK SURVEY" ]
+                            
+
+                                , p 
+                                    [ class """
+                                        text-xs 
+                                        text-gray-500 
+                                        text-center 
+                                        whitespace-normal 
+                                        break-words 
+                                        sm:max-w-[50ch]
+                                        max-w-[40ch]
+                                    """ ]
+                                    [ text "*Survey is being prepared and will be available soon. You’ll be notified once it’s ready!" ]
                             ]
                         ]
 
@@ -585,7 +598,7 @@ viewAboutModal =
                     ] 
                     [heroiconGithubSmall] 
                 ]
-            , p [ class "flex flex-row gap-1" ] 
+            , p [ class "flex flex-row flex-wrap gap-1 items-center justify-start" ] 
                     [ 
                         text "Built in"
                         , a [ href "https://elm-lang.org/"
