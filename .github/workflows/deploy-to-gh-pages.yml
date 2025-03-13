@@ -37,6 +37,9 @@ jobs:
         - name: Create dist folder
           run: mkdir -p dist
         
+        - name: Copy assets
+          run: cp -r assets dist/assets
+
         - name: Copy output.css
           run: cp output.css dist/output.css
         
