@@ -164,7 +164,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                         , td [ class "px-3 py-1 whitespace-normal" ]
                             [ text "s3" ]
                         , td [ class "px-3 py-1 whitespace-normal" ]
-                            [ text "Subtracts 1 from the specified register if it's non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x−1. If R3 is already 0, it remains unchanged." ]
+                            [ text "Subtracts 1 from the specified register if it's non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x-1. If R3 is already 0, it remains unchanged." ]
                         ]
 
                     -- startloop

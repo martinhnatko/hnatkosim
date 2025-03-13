@@ -14065,7 +14065,7 @@ var $author$project$Am$Components$GuideModal$viewGuideModal = F3(
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('Subtracts 1 from the specified register if it\'s non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x−1. If R3 is already 0, it remains unchanged.')
+															$elm$html$Html$text('Subtracts 1 from the specified register if it\'s non-zero. For instance, s3 decrements R3 by 1, changing its value from x to x-1. If R3 is already 0, it remains unchanged.')
 														]))
 												])),
 											A2(
@@ -16786,7 +16786,7 @@ var $author$project$Ram$Components$GuideModal$viewGuideModal = F3(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer\'s memory. The larger the number an instruction processes, the \"more expensive\" it becomes—requiring extra time and memory to store and handle that value. The cost grows '),
+									$elm$html$Html$text('The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer\'s memory. The larger the number an instruction processes, the \"more expensive\" it becomes-requiring extra time and memory to store and handle that value. The cost grows '),
 									A2(
 									$elm$html$Html$span,
 									_List_fromArray(

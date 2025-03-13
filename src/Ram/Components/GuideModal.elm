@@ -395,7 +395,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                   ]
             , p [ class "text-sm" ]
                   [
-                        text "The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer's memory. The larger the number an instruction processes, the \"more expensive\" it becomes—requiring extra time and memory to store and handle that value. The cost grows "
+                        text "The logarithmic cost measure can be more realistic in certain scenarios because it considers the limited capacity for storing numbers in a real computer's memory. The larger the number an instruction processes, the \"more expensive\" it becomes-requiring extra time and memory to store and handle that value. The cost grows "
                         , span [ class "font-bold" ] [ text "logarithmically"]
                         , span [] [ text " with the size of the number. The complexity of manipulating a number "]
                         , i [ class "font-bold" ] [ text "i"]
