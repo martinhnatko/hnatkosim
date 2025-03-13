@@ -6,3 +6,8 @@ repl-temp-*
 todo.txt
 
 node_modules
+
+elm.js
+elm.min.js
+main.js
+output.css
