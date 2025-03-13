@@ -1,0 +1,46 @@
+name: Deploy to GH Pages
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+      
+    steps:
+        - uses: actions/checkout@v4
+        
+        - name: Install Node dependencies
+          run: npm install
+        
+        - name: Install Elm
+          run: npm install --global elm
+
+        - name: Install UglifyJS
+          run: npm install uglify-js --global
+        
+        - name: Build Elm
+          run: |
+            elm make src/Main.elm --optimize --output=elm.js
+            uglifyjs elm.js --compress "pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe" | uglifyjs --mangle --output elm.min.js
+        
+        - name: Copy elm.min.js
+          run: cp elm.min.js dist/elm.min.js
+        
+        - name: Install Tailwind 
+          run: npm install -D tailwindcss@3
+        
+        - name: Build Tailwind
+          run: npx tailwindcss -i ./styles.css -o ./src/output.css --watch
+        
+        - name: Copy index.html
+          run: cp index.html dist/index.html
+        
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            publish_dir: ./dist
+            personal_token: ${{ secrets.GITHUB_TOKEN }}
