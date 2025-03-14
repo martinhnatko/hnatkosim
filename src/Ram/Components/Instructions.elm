@@ -1,7 +1,7 @@
 module Ram.Components.Instructions exposing (viewInstructions)
 
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, id)
 
 import Ram.Types.Instructions exposing (Instruction(..), Operand(..))
 
@@ -127,6 +127,7 @@ viewInstructions instructions pointer simStarted halted =
                 div
                     [ class
                         ("flex items-center gap-3 font-mono " ++ baseClasses ++ typeColorClasses ++ activeClasses)
+                    , id (String.fromInt index)
                     ]
                     [ div [ class "text-gray-400 w-8 text-right" ]
                         [ text (String.fromInt (index + 1)) ]

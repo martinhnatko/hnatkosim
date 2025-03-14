@@ -56,6 +56,52 @@
     }
   });
 
+  // Function to smoothly scroll to a target Y position within a parent element
+  function smoothScrollTo(parentEl, targetY, duration = 500) {
+      const startY = parentEl.scrollTop;
+      const diff = targetY - startY;
+      let startTime = null;
+
+      function animateScroll(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          parentEl.scrollTop = startY + diff * progress;
+
+          if (progress < 1) {
+              requestAnimationFrame(animateScroll);
+          }
+      }
+
+      requestAnimationFrame(animateScroll);
+  }
+
+  // Subscribing to the scrollInstructionIntoView port and scrolling the element with the given ID into view
+  app.ports.scrollInstructionIntoView.subscribe(function ([elementId, duration]) {
+      requestAnimationFrame(() => {
+          const el = document.getElementById(elementId);
+          if (el) {
+              const container = el.parentElement; // The direct parent is the scrollable container
+              
+              const elRect = el.getBoundingClientRect();
+              const containerRect = container.getBoundingClientRect();
+
+              const elementCenter = elRect.top + (elRect.height / 2);
+              const containerCenter = containerRect.top + (containerRect.height / 2);
+
+              const offset = elementCenter - containerCenter;
+              const targetScroll = container.scrollTop + offset;
+
+              // Optional clamp to prevent overscrolling
+              const maxScroll = container.scrollHeight - container.clientHeight;
+              const finalScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+              smoothScrollTo(container, finalScroll, duration);
+          }
+      });
+  });
+
   // Subscribing to the subToScrollToBottom port and scrolling to the bottom of the element with the given ID
   app.ports.scrollToBottom.subscribe(function (elementId) {
     requestAnimationFrame(() => {

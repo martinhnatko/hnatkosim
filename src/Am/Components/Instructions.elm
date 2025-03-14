@@ -3,20 +3,18 @@ module Am.Components.Instructions exposing (..)
 import Am.Types.Instructions exposing (Instruction(..))
 
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, id)
 
 
 viewInstructions : List Instruction -> Int -> Bool -> Html msg
 viewInstructions instructions pointer simStarted =
-    div [ class ( "md:w-1/3 p-1 shadow-lg rounded md:overflow-auto border-2 border-transparent" 
+    div [ class ( "md:w-1/3 p-1 shadow-lg rounded md:overflow-auto border-2 border-transparent flex flex-wrap gap-1 content-start" 
             ++ if (pointer >= List.length instructions) && simStarted then
                     " bg-green-50 border-green-400"
                 else
                     " bg-white"
             )
         ]
-        [
-        div [ Html.Attributes.class "flex flex-wrap flex-shrink-0 gap-1.5" ]
             (instructions
                 |> List.indexedMap (\index instruction ->
                     let
@@ -69,7 +67,8 @@ viewInstructions instructions pointer simStarted =
                     in
                     div
                         [ class
-                            ("flex items-center gap-2 font-mono " ++ baseClasses ++ typeColorClasses ++ activeClasses)
+                            ("flex items-center gap-1.5 font-mono " ++ baseClasses ++ typeColorClasses ++ activeClasses)
+                        , id (String.fromInt index)
                         ]
                         [ div [ class "text-gray-400" ]
                             [ text (String.fromInt (index + 1)) ]
@@ -80,4 +79,3 @@ viewInstructions instructions pointer simStarted =
                         ]
                 )
             )
-        ]

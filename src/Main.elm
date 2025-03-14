@@ -611,7 +611,7 @@ viewAboutModal =
                 
             , p [ class "mt-3 text-center text-xs text-gray-500" ]
                 [ 
-                    text ((String.fromChar (Char.fromCode 169)) ++ " HnatkoSim, 2025" )
+                    text ("HnatkoSim " ++ (String.fromChar (Char.fromCode 169)) ++ " 2025" )
                 ]
         
             ]

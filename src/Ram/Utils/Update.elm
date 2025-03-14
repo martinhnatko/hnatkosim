@@ -11,7 +11,7 @@ import Ram.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Ram.Utils.PrintErrors exposing (printErrors)
 
 import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
-import Shared.Ports exposing (setItem, scrollToBottom, requestMathJaxTypeset)
+import Shared.Ports exposing (setItem, scrollToBottom, requestMathJaxTypeset, scrollInstructionIntoView)
 
 import Dict
 import List exposing (range)
@@ -46,9 +46,9 @@ update msg model =
                     ( updatedModel, removalCmd ) = executeInstruction model highlightDuration
                 in
                 if updatedModel.instructionPointer >= List.length updatedModel.instructions then
-                    ( { updatedModel | isRunning = False }, Cmd.batch [removalCmd, Task.perform (ComputeAndPrintDuration False) Time.now] )
+                    ( { updatedModel | isRunning = False }, Cmd.batch [removalCmd, Task.perform (ComputeAndPrintDuration False) Time.now, scrollInstructionIntoView ((String.fromInt  updatedModel.instructionPointer), speed)] )
                 else
-                    ( updatedModel, removalCmd )
+                    ( updatedModel, Cmd.batch [removalCmd, scrollInstructionIntoView ((String.fromInt  updatedModel.instructionPointer), speed)] )
 
         
         Step ->
@@ -58,17 +58,17 @@ update msg model =
             in
             if not model.simStarted && newModel.instructionPointer >= List.length newModel.instructions then
                 ( { newModel | simStarted = True }
-                , Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now, Task.perform SetStartTime Time.now, printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started")]
+                , Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now, Task.perform SetStartTime Time.now, printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started"), scrollInstructionIntoView ((String.fromInt  newModel.instructionPointer), 300)]
                 )
             else if not model.simStarted then
                 ( { newModel | simStarted = True }
-                , Cmd.batch [removeHighlightCmd, Task.perform SetStartTime Time.now, printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started")]
+                , Cmd.batch [removeHighlightCmd, Task.perform SetStartTime Time.now, printErrors model.instructions, requestAddMessage (SimStarted, "Simulation started"), scrollInstructionIntoView ((String.fromInt  newModel.instructionPointer), 300) ]
                 )
             else if newModel.instructionPointer >= List.length newModel.instructions then
-                ( { newModel | isRunning = False }, Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now] )
+                ( { newModel | isRunning = False }, Cmd.batch [removeHighlightCmd, Task.perform (ComputeAndPrintDuration False) Time.now, scrollInstructionIntoView ((String.fromInt  newModel.instructionPointer), 300)] )
             
             else if model.simStarted then
-                ( newModel, removeHighlightCmd )
+                ( newModel, Cmd.batch [removeHighlightCmd, scrollInstructionIntoView ((String.fromInt  newModel.instructionPointer), 300)] )
             else
                 ( model, Cmd.none )
 
