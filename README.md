@@ -24,6 +24,6 @@ Both of these models are **computationally equivalent to a Turing machine**. The
 
 ## Contributing
 
-Contributions are welcome! Whether you want to add new features, fix bugs, or improve documentation, feel free to open an issue or submit a pull request.
+Contributions are welcome. Whether you want to add new features or fix bugs, feel free to open an issue or submit a pull request.
 
 This project is licensed under the **GNU General Public License v3 (GPLv3)**. See the [LICENSE](./LICENSE) file for details.
