@@ -10,9 +10,9 @@ import Array exposing (Array)
 
 speedSlider : Int -> Array Int -> (Int -> msg) -> Html msg
 speedSlider currentValue speeds onChangeSpeed =
-    div [ class "flex flex-col lg:w-1/3 lg:mb-0 mb-6 lg:h-20 px-4 font-mono order-2 lg:order-2" ]
+    div [ class "flex flex-col lg:w-1/3 lg:mb-0 mb-5 lg:h-14 px-5 font-mono order-2 lg:order-2" ]
         [ -- Title with Rocket Icon
-          div [ class "flex items-center mt-1 gap-2 text-gray-700 text-xs sm:text-sm" ]
+          div [ class "flex items-center mt-1 lg:mt-0 gap-1 text-gray-700 text-xs" ]
             [ heroiconRocket
             , text "Time between instructions (seconds)"
             ]
@@ -30,7 +30,7 @@ speedSlider currentValue speeds onChangeSpeed =
             []
 
         , -- Labels for the Slider
-          ul [ class "flex justify-between w-full px-[10px]" ]
+          ul [ class "flex justify-between w-full px-[11px] text-sm" ]
             (List.indexedMap sliderLabel (Array.toList speeds))
         ]
         

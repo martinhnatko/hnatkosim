@@ -27,7 +27,7 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
         , onClick onToggleSlotsModal
         ]
         [ div
-            [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] overflow-y-auto"
+            [ class "bg-white p-3 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] overflow-y-auto"
             , stopPropagationClick onNoOp
             ]
             [ -- \"X\" button in the top-right

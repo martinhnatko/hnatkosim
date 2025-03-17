@@ -11,7 +11,7 @@ import Shared.Icons.Settings exposing (heroiconSettings)
 
 menuButtons : msg -> msg -> msg -> msg -> Bool -> Html msg
 menuButtons onToggleSlotsModal onGoBackToMenu onToggleGuideModal onToggleSettingsModal simStarted =
-    div [ class "flex gap-3 lg:w-1/3 font-mono text-lg order-1 lg:order-3 min-h-[3rem]" ]
+    div [ class "flex gap-2 lg:w-1/3 font-mono order-1 lg:order-3 min-h-[2.5rem]" ]
         [ -- Save/Load Slots Button
           if not simStarted then
               button
@@ -40,7 +40,7 @@ menuButtons onToggleSlotsModal onGoBackToMenu onToggleGuideModal onToggleSetting
                   ]
                   [ heroiconGuide, text "Guide" ]
         
-        , div [ class "w-1/3 flex gap-3" ] 
+        , div [ class "w-1/3 flex gap-2" ] 
             [
                 -- Settings Button
                 if not simStarted then

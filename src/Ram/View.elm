@@ -30,16 +30,16 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "HnatkoSim | RAM"
     , body =
-        [ div [ class "flex flex-col h-screen p-2 bg-gray-200" ]
+        [ div [ class "flex flex-col h-screen p-1.5 bg-gray-200 gap-2" ]
             [ -- Header Section
-              div [ class "flex flex-col lg:flex-row lg:gap-3" ]
+              div [ class "flex flex-col lg:flex-row lg:gap-2" ]
                   [ controlButtons (model.instructionPointer >= List.length model.instructions) model.isRunning model.halted model.simStarted Start Pause Step Reset (model.speedIdx == 7 && ((model.executedInstructions >= model.totalMaxExecutedInstructions) || model.tooManyRuntimeMsgs ))
                   , speedSlider model.speedIdx model.speeds ChangeSpeed
                   , menuButtons ToggleSlotsModal GoBackToMenu ToggleGuideModal ToggleSettingsModal model.simStarted
                   ]
 
               -- Main Content Section
-            , div [ class "flex flex-col h-full my-3 gap-3 overflow-hidden" ]
+            , div [ class "flex flex-col h-full gap-2 overflow-hidden" ]
         
                   [ -- Input Tape
                   div []
@@ -48,7 +48,7 @@ view model =
                       ]
 
                     -- Main Section
-                  , div [ class "flex flex-col overflow-y-auto md:flex-row gap-3 md:overflow-hidden" ]
+                  , div [ class "flex flex-col overflow-y-auto md:flex-row gap-2 md:overflow-hidden" ]
                       [ 
                       -- Input text area
                       inputTextArea model.simStarted model.inputText UpdateCode DeleteInput

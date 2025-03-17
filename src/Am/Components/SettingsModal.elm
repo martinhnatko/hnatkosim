@@ -20,7 +20,7 @@ viewSettingsModal currentNumRegs currentMaxInstr onClose onChangeNumOfRegs onCha
     div [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         , onClick onClose
         ]
-        [ div [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[60vw] overflow-y-auto"
+        [ div [ class "bg-white p-3 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[60vw] overflow-y-auto"
                 , stopPropagationClick onNoOp
                 ]
             [ -- Close Button (top-right)

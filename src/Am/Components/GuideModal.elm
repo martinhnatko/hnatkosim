@@ -23,7 +23,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
         , onClick onToggleGuideModal
         ]
         [ div
-            [ class "bg-white p-4 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[60vw] overflow-y-auto"
+            [ class "bg-white p-3 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[60vw] overflow-y-auto"
             , stopPropagationClick onNoOp
             ]
             [ -- Close Button (top-right)
@@ -71,7 +71,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
             , h3 [ class "text-lg font-semibold mt-5" ]
                 [ text "Example codes:" ]
 
-            , div [ class "flex flex-row gap-3 my-2" ]
+            , div [ class "flex flex-row gap-3 mt-1" ]
                 [ 
                 -- Example 1
                 div [ class "border p-2 rounded bg-white shadow-sm w-full" ]

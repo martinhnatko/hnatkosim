@@ -11,7 +11,7 @@ import Html.Events exposing (onClick)
 
 controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Bool -> Html msg
 controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset startDisabled =
-    div [ class "flex gap-3 lg:w-1/3 font-mono text-lg order-3 lg:order-1 min-h-[3rem]" ]
+    div [ class "flex gap-2 lg:w-1/3 font-mono order-3 lg:order-1 min-h-[2.5rem]" ]
         [ -- Start/Pause Button
             if isRunning then
                 button 

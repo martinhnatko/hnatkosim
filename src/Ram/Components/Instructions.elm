@@ -115,7 +115,7 @@ viewInstructions instructions pointer simStarted halted =
                                 ("Unknown", " bg-red-200 text-red-800", Nothing)
 
                     baseClasses =
-                        "p-0.5 border-4 border-solid rounded font-mono transition-colors"
+                        "p-0.5 border-2 border-solid rounded font-mono transition-colors"
 
                     activeClasses =
                         if isActive then

@@ -10,7 +10,7 @@ import Dict
 
 viewRegisters : Model -> Html Msg
 viewRegisters model =
-    div [class "flex flex-col md:w-1/3 gap-3"] [
+    div [class "flex flex-col md:w-1/3 gap-2"] [
         
         div [class "flex w-full h-full overflow-auto bg-white rounded p-1 order-2 md:order-1"] 
             [ div [ class "flex flex-col w-full p-1 rounded overflow-y-auto" ]
@@ -59,12 +59,12 @@ viewRegisters model =
             [ 
             -- Card #1: Time Complexity
             div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
-                [ h3 [ class "text-md font-semibold" ] [ text "Time Complexity" ]
-                , p [ class "text-sm" ] 
+                [ h3 [ class "text-sm font-semibold" ] [ text "Time Complexity" ]
+                , p [ class "text-xs" ] 
                     [ text "Logarithmic cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text (model.logTime |> String.fromInt) ]
                     ]
-                , p [ class "text-sm" ] 
+                , p [ class "text-xs" ] 
                     [ text "Unit cost: "
                     , span [ class "text-green-600 font-semibold" ] [ text (model.executedInstructions |> String.fromInt) ]   
                     ]
@@ -72,12 +72,12 @@ viewRegisters model =
             
             -- Card #2: Space Complexity
             , div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
-                [ h3 [ class "text-md font-semibold" ] [ text "Space Complexity" ]
-                , p [ class "text-sm" ] 
+                [ h3 [ class "text-sm font-semibold" ] [ text "Space Complexity" ]
+                , p [ class "text-xs" ] 
                     [ text "Logarithmic cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text (model.logSpace |> String.fromInt) ]
                     ]
-                , p [ class "text-sm" ] 
+                , p [ class "text-xs" ] 
                     [ text "Unit cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text ( 
                                                                             model.registers

@@ -8,13 +8,13 @@ import Shared.Icons.Trash exposing (heroiconTrash)
 
 inputTextArea : Bool -> String -> ( String -> msg ) -> msg -> Html msg
 inputTextArea simStarted inputText onUpdateCode onDeleteInput =
-    div [ class "flex flex-col md:w-1/3 bg-white p-2 shadow-lg rounded relative" ]
+    div [ class "flex flex-col md:w-1/3 bg-white p-1.5 shadow-lg rounded relative" ]
         [ textarea
             ( 
             [ 
             id "textbox"
             , class 
-                    ( "flex-grow w-full h-full p-1.5 border rounded resize-none overflow-auto text-lg font-mono "
+                    ( "flex-grow w-full h-full p-1.5 border rounded resize-none overflow-auto font-mono "
                         ++ if simStarted then
                             "bg-gray-100 text-gray-700 cursor-not-allowed"
                         else
