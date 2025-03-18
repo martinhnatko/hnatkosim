@@ -39,7 +39,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
             , div [ class "my-1 text-sm" ]
                 [ p [ class "mb-2" ]
                     [ 
-                        text "Abacus Machine is an abstract model of a simple computing device that operates with an unlimited number of registers, where each register can hold arbitrarily large natural numbers." 
+                        text "The abacus machine (from the word \"abacus\", meaning \"counting device\") is one of the simplest computational models, relying solely on increment and decrement operations. It operates with an unlimited number of registers, each capable of holding arbitrarily large natural numbers." 
                     ]
                 , p [ class "mb-2" ]
                     [ 
