@@ -14,7 +14,7 @@ import Svg.Attributes exposing (stroke)
 survey : Html msg
 survey =
     svg
-        [ class "h-6 w-6"
+        [ class "h-5 w-5"
         , viewBox "0 0 36 36"
         , fill "currentColor"
         , stroke "currentColor"
