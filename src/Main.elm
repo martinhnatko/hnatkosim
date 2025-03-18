@@ -135,7 +135,7 @@ init _ url key =
     let
         pageFromUrl =
             case url.fragment of
-                Just "abacus" ->
+                Just "am" ->
                     AbacusPage
 
                 Just "ram" ->
@@ -205,7 +205,7 @@ update msg model =
                 newUrl =
                     case newPage of
                         AbacusPage ->
-                            "#abacus"
+                            "#am"
 
                         RamPage ->
                             "#ram"
@@ -251,7 +251,7 @@ update msg model =
             let
                 newPage =
                     case url.fragment of
-                        Just "abacus" ->
+                        Just "am" ->
                             AbacusPage
 
                         Just "ram" ->
