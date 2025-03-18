@@ -27,7 +27,6 @@ import Shared.Icons.Survey exposing (survey)
 import Shared.Icons.ElmLogo exposing (elmLogo)
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.Mail exposing (heroiconMail)
-import Shared.Icons.GithubSmall exposing (heroiconGithubSmall)
 
 import Html exposing (Html, div, text, button, img, a, p, h2)
 import Html.Attributes exposing (class, href, target, rel, src, alt)
@@ -417,27 +416,12 @@ view model =
                                 [ href "https://www.fiit.stuba.sk"
                                 , target "_blank"
                                 , rel "noopener noreferrer"
-                                , class "sm:m-6"
+                                , class "m-2.5"
                                 ]
                                 [ img
-                                    [ src "assets\\fiit.png"
+                                    [ src "assets\\fiit.webp"
                                     , alt "fiit"
-                                    , class "w-[20rem] lg:w-[27rem] hidden sm:block"
-                                    ]
-                                    []
-                                ]
-
-                            , -- Smaller image shown on screens < "sm"
-                            a 
-                                [ href "https://www.fiit.stuba.sk"
-                                , target "_blank"
-                                , rel "noopener noreferrer"
-                                , class "m-5 sm:m-0"
-                                ]
-                                [ img
-                                    [ src "assets\\fiitsmall.webp"
-                                    , alt "fiit"
-                                    , class "w-[10rem] block sm:hidden"
+                                    , class "w-[6rem] sm:w-[8rem] md:w-[10rem] lg:w-[11rem]"
                                     ]
                                     []
                                 ]
@@ -447,7 +431,7 @@ view model =
                             img
                                 [ Html.Attributes.src "assets\\hnatkosim.webp"
                                 , Html.Attributes.alt "HnatkoSim"
-                                , class "w-[20rem] sm:w-[26rem] md:w-[32rem] lg:w-[37rem] breathe"
+                                , class "w-[16em] sm:w-[18rem] md:w-[23rem] lg:w-[28rem] breathe"
                                 ]
                                 []
                             ]
@@ -456,23 +440,23 @@ view model =
                     
                     , div [ class "flex flex-col items-center justify-center" ]
                         [ -- We use inline-grid and a single column.
-                        div [ class "inline-grid w-fit grid-cols-1 gap-4" ]
+                        div [ class "inline-grid w-fit grid-cols-1 gap-3" ]
                             [ button
                                 [ onClick (ChangePage AbacusPage)
-                                , class "px-2 sm:px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
+                                , class "px-1.5 text-sm sm:text-md sm:px-6 sm:py-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
                                 ]
                                 [ text "Abacus Machine Simulator" ]
                             , button
                                 [ onClick (ChangePage RamPage)
-                                , class "px-2 sm:px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
+                                , class "px-1.5 text-sm sm:text-md sm:px-6 sm:py-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
                                 ]
                                 [ text "Random Access Machine Simulator" ]
                             , button
                                 [ onClick NoOp
                                 , class 
                                     """
-                                    px-2
-                                    sm:px-8 py-4
+                                    px-1.5 text-sm sm:text-md
+                                    sm:px-6 sm:py-3 py-2
                                     text-white 
                                     font-bold 
                                     
@@ -482,13 +466,13 @@ view model =
                                     
 
                                     hover:animate-none
-                                    helicopter-rotate
+                                    
                                     flex items-center justify-center gap-2
 
                                     hover:bg-gradient-to-r hover:from-red-600 hover:via-blue-600 hover:to-orange-600
                                     
                                     
-                                    opacity-50
+                                    opacity-40
                                     cursor-not-allowed
                                     disabled
                                     """
@@ -512,27 +496,27 @@ view model =
 
 
 
-                    , div [ class "content-end m-5" ]
+                    , div [ class "content-end m-2" ]
                         [
-                        div [class "flex flex-col sm:flex-row gap-4"]
+                        div [class "flex flex-col sm:flex-row gap-2 text-xs sm:text-sm"]
                             [
                             button
                                 [ onClick ToggleAboutModal
-                                , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
+                                , class "sm:w-1/3 px-3 py-1.5 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-1"
                                 ]
                                 [ heroiconInfo, text "About" ]
                             , a
                                 [ href "https://docs.google.com/forms/d/e/1FAIpQLSe4agj2hvxDIDLTRTOW5YYO4QNrZwihH4uf5q9CBlslGeUrAg/viewform?usp=dialog"
                                 , target "_blank"
                                 , rel "noopener noreferrer"
-                                , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
+                                , class "sm:w-1/3 px-3 py-1.5 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-1"
                                 ]
                                 [ heroiconBug, text "Report a bug" ]
                             , a
-                                [ href "https://github.com/martinhnatko/am-ram-simulators"
+                                [ href "https://github.com/martinhnatko/hnatkosim"
                                 , target "_blank"
                                 , rel "noopener noreferrer"
-                                , class "sm:w-1/3 px-4 py-2 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-2"
+                                , class "sm:w-1/3 px-3 py-1.5 font-semibold rounded shadow-lg transition-colors duration-200 border border-blue-500 text-blue-500 bg-white hover:bg-blue-50  focus:outline-none flex items-center justify-center gap-1"
                                 ]
                                 [ heroiconGithub, text "Source code" ]
                             ]
@@ -595,7 +579,7 @@ viewAboutModal =
                         , rel "noopener noreferrer"
                         , class "flex items-center gap-1 text-blue-500 hover:text-blue-600"      
                     ] 
-                    [heroiconGithubSmall] 
+                    [heroiconGithub] 
                 ]
             , p [ class "flex flex-row flex-wrap gap-1 items-center justify-start" ] 
                     [ 

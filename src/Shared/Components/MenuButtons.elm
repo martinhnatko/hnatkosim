@@ -15,13 +15,13 @@ menuButtons onToggleSlotsModal onGoBackToMenu onToggleGuideModal onToggleSetting
         [ -- Save/Load Slots Button
           if not simStarted then
               button
-                  [ class "w-1/3 px-1 py-0 border border-blue-500 text-blue-500 bg-white flex items-center justify-center rounded gap-1 hover:bg-blue-50 transition-colors duration-200 focus:outline-none"
+                  [ class "w-1/3 px-1 py-0 border border-blue-500 text-blue-500 bg-white flex items-center justify-center rounded gap-0.5 hover:bg-blue-50 transition-colors duration-200 focus:outline-none"
                   , onClick onToggleSlotsModal
                   ]
                   [ heroiconSave, text "Save/Load" ]
           else
               button
-                  [ class "w-1/3 px-1 py-0 border border-gray-400 text-gray-400 bg-gray-100 flex items-center justify-center rounded gap-1 cursor-not-allowed"
+                  [ class "w-1/3 px-1 py-0 border border-gray-400 text-gray-400 bg-gray-100 flex items-center justify-center rounded gap-0.5 cursor-not-allowed"
                   , disabled True
                   ]
                   [ heroiconSave, text "Save/Load" ]
@@ -29,13 +29,13 @@ menuButtons onToggleSlotsModal onGoBackToMenu onToggleGuideModal onToggleSetting
           -- Guide Button
         , if not simStarted then 
               button
-                  [ class "w-1/3 px-2 py-1 border border-blue-500 text-blue-500 bg-white flex items-center justify-center rounded gap-1 hover:bg-blue-50 transition-colors duration-200 focus:outline-none"
+                  [ class "w-1/3 px-2 py-1 border border-blue-500 text-blue-500 bg-white flex items-center justify-center rounded gap-0.5 hover:bg-blue-50 transition-colors duration-200 focus:outline-none"
                   , onClick onToggleGuideModal
                   ]
                   [ heroiconGuide, text "Guide" ]
           else
               button
-                  [ class "w-1/3 px-2 py-1 border border-gray-400 text-gray-400 bg-gray-100 flex items-center justify-center rounded gap-1 cursor-not-allowed"
+                  [ class "w-1/3 px-2 py-1 border border-gray-400 text-gray-400 bg-gray-100 flex items-center justify-center rounded gap-0.5 cursor-not-allowed"
                   , disabled True
                   ]
                   [ heroiconGuide, text "Guide" ]
@@ -45,13 +45,13 @@ menuButtons onToggleSlotsModal onGoBackToMenu onToggleGuideModal onToggleSetting
                 -- Settings Button
                 if not simStarted then
                     button
-                        [ class "w-1/2 px-2 py-1 border border-blue-500 text-blue-500 bg-white flex items-center justify-center rounded gap-1 hover:bg-blue-50 transition-colors duration-200 focus:outline-none"
+                        [ class "w-1/2 px-2 py-1 border border-blue-500 text-blue-500 bg-white flex items-center justify-center rounded hover:bg-blue-50 transition-colors duration-200 focus:outline-none"
                         , onClick onToggleSettingsModal
                         ]
                         [ heroiconSettings ]
                 else
                     button
-                        [ class "w-1/2 px-2 py-1 border border-gray-400 text-gray-400 bg-gray-100 flex items-center justify-center rounded gap-1 cursor-not-allowed"
+                        [ class "w-1/2 px-2 py-1 border border-gray-400 text-gray-400 bg-gray-100 flex items-center justify-center rounded cursor-not-allowed"
                         , disabled True
                         ]
                         [ heroiconSettings ]

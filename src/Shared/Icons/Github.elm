@@ -17,7 +17,7 @@ import Svg.Attributes exposing (strokeLinejoin)
 heroiconGithub : Html msg
 heroiconGithub =
     svg
-        [ class "h-6 w-6"
+        [ class "h-5 w-5"
         , width "98"
         , height "96"
         , viewBox "0 0 98 96"
