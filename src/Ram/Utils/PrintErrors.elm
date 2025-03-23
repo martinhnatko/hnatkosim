@@ -7,7 +7,7 @@ import Ram.Types.Messages exposing (Msg)
 import Ram.Types.Messages exposing (Msg(..))
 import Ram.Types.ErrorType exposing (ErrorType(..))
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+import Shared.Components.Console exposing (ConsoleMessageType(..))
 
 import List
 import String

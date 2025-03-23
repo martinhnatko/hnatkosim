@@ -7,7 +7,7 @@ import Time exposing (Posix)
 import Ram.Types.Instructions exposing (Instruction)
 import Ram.Types.Slot exposing (Slot)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
+import Shared.Components.Console exposing (ConsoleMessage)
 
 -- MODEL
 type alias Model =

@@ -4,7 +4,7 @@ import Ram.Types.Messages exposing (Msg(..))
 import Ram.Types.Instructions exposing (Instruction(..))
 import Ram.Types.Slot exposing (Slot)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType)
+import Shared.Components.Console exposing (ConsoleMessageType)
 
 import Json.Encode as Encode
 

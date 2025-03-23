@@ -2,7 +2,7 @@ module Ram.Types.Messages exposing (..)
 
 import Time exposing (Posix)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType)
+import Shared.Components.Console exposing (ConsoleMessageType)
 
 -- MESSAGES
 type Msg

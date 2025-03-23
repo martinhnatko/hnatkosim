@@ -7,7 +7,7 @@ import Ram.Types.ErrorType exposing (ErrorType(..))
 
 import Ram.Utils.HelperFunctions exposing (..)
 
-import Shared.Types.ConsoleMessage exposing (..)
+import Shared.Components.Console exposing (ConsoleMessageType(..))
 
 import Array
 import Dict

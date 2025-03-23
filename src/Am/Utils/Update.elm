@@ -11,7 +11,7 @@ import Am.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Am.Utils.PrintErrors exposing (printErrors)
 
 import Shared.Ports exposing (setItem, scrollToBottom, scrollInstructionIntoView)
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+import Shared.Components.Console exposing (ConsoleMessageType(..))
 
 import Dict
 import List exposing (range)

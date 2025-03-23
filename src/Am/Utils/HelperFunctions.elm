@@ -4,7 +4,7 @@ import Am.Types.Messages exposing (Msg(..))
 import Am.Types.Instructions exposing (Instruction(..))
 import Am.Types.Slot exposing (Slot)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType)
+import Shared.Components.Console exposing (ConsoleMessageType)
 
 import Time
 import Task

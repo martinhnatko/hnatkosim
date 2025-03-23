@@ -1,6 +1,6 @@
 module Am.Types.Messages exposing (..)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType)
+import Shared.Components.Console exposing (ConsoleMessageType)
 
 import Time exposing (Posix)
 

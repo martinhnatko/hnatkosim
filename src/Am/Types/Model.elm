@@ -3,7 +3,7 @@ module Am.Types.Model exposing (..)
 import Am.Types.Instructions exposing (Instruction)
 import Am.Types.Slot exposing (Slot)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessage)
+import Shared.Components.Console exposing (ConsoleMessage)
 
 import Dict exposing (Dict)
 import Array exposing (Array)

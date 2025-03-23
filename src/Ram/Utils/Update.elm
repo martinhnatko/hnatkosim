@@ -10,7 +10,7 @@ import Ram.Utils.RamInterpreter exposing (executeInstruction, runAllInstructions
 import Ram.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Ram.Utils.PrintErrors exposing (printErrors)
 
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+import Shared.Components.Console exposing (ConsoleMessageType(..))
 import Shared.Ports exposing (setItem, scrollToBottom, requestMathJaxTypeset, scrollInstructionIntoView)
 
 import Dict

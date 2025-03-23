@@ -1,11 +1,22 @@
-module Shared.Components.Console exposing (viewConsole)
-
-import Shared.Types.ConsoleMessage exposing (ConsoleMessage, ConsoleMessageType(..))
+module Shared.Components.Console exposing (viewConsole, ConsoleMessage, ConsoleMessageType(..))
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (id, class)
 
 import Time
+
+type alias ConsoleMessage =
+    { messageType : ConsoleMessageType
+    , timestamp : Time.Posix
+    , text : String
+    }
+
+type ConsoleMessageType
+    = InfoMessage
+    | ErrorMessage
+    | SimStarted
+    | SimStopped
+    | Warning
 
 --Conole view
 viewConsole : List ConsoleMessage -> Html msg

@@ -19,7 +19,7 @@ import Ram.Utils.RamParser as RamParser
 import Ram.Utils.HelperFunctions as RamHelper
 
 import Shared.Ports exposing (getItem, gotItem, subToTextArea, scrollToBottom)
-import Shared.Types.ConsoleMessage exposing (ConsoleMessageType(..))
+import Shared.Components.Console exposing (ConsoleMessageType(..))
 import Shared.Icons.Bug exposing (heroiconBug)
 import Shared.Icons.Github exposing (heroiconGithub)
 import Shared.Icons.Info exposing (heroiconInfo)
