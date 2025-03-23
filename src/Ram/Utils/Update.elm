@@ -6,7 +6,7 @@ import Ram.Types.Messages exposing (Msg(..))
 import Ram.Types.Slot exposing (Slot)
 
 import Ram.Utils.RamParser exposing (parseRAM)
-import Ram.Utils.ExecuteInstruction exposing (executeInstruction, runAllInstructions)
+import Ram.Utils.RamInterpreter exposing (executeInstruction, runAllInstructions)
 import Ram.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Ram.Utils.PrintErrors exposing (printErrors)
 

@@ -1,4 +1,4 @@
-module Am.Utils.ExecuteInstruction exposing (..)
+module Am.Utils.AmInterpreter exposing (..)
 
 import Am.Types.Model exposing (Model)
 import Am.Types.Messages exposing (Msg(..))

@@ -5,8 +5,8 @@ import Am.Types.Model exposing (Model)
 import Am.Types.Messages exposing (Msg(..))
 import Am.Types.Slot exposing (Slot)
 
-import Am.Utils.AbacusParser exposing (parseAM)
-import Am.Utils.ExecuteInstruction exposing (executeInstruction, runAllInstructions)
+import Am.Utils.AmParser exposing (parseAM)
+import Am.Utils.AmInterpreter exposing (executeInstruction, runAllInstructions)
 import Am.Utils.HelperFunctions exposing (encodeSlot, requestAddMessage)
 import Am.Utils.PrintErrors exposing (printErrors)
 

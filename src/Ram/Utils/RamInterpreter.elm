@@ -1,4 +1,4 @@
-module Ram.Utils.ExecuteInstruction exposing (..)
+module Ram.Utils.RamInterpreter exposing (..)
 
 import Ram.Types.Model exposing (Model)
 import Ram.Types.Messages exposing (Msg(..))

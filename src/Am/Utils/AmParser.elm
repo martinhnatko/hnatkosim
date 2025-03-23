@@ -1,4 +1,4 @@
-module Am.Utils.AbacusParser exposing (..)
+module Am.Utils.AmParser exposing (..)
 
 import Am.Types.Instructions exposing (Instruction(..))
 import Am.Types.ErrorType exposing (ErrorType(..))
