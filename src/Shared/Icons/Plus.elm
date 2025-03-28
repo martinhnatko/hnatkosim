@@ -6,7 +6,7 @@ import Svg.Attributes exposing (fill, stroke, strokeWidth, viewBox, strokeLineca
 heroiconPlus : Html msg
 heroiconPlus =
     svg
-        [ class "h-8 w-8"
+        [ class "h-6 w-6"
         , fill "none"
         , stroke "currentColor"
         , strokeWidth "1.5"

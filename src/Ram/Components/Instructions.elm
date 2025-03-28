@@ -115,7 +115,7 @@ viewInstructions instructions pointer simStarted halted =
                                 ("Unknown", " bg-red-200 text-red-800", Nothing)
 
                     baseClasses =
-                        "p-0.5 border-2 border-solid rounded font-mono transition-colors"
+                        "border-2 border-solid rounded font-mono transition-colors"
 
                     activeClasses =
                         if isActive then
@@ -132,7 +132,7 @@ viewInstructions instructions pointer simStarted halted =
                     [ div [ class "text-gray-400 w-8 text-right" ]
                         [ text (String.fromInt (index + 1)) ]
 
-                    , div [ class "h-6 w-px bg-gray-400" ] []
+                    , div [ class "h-5 w-px bg-gray-400" ] []
 
                     , div [] [ text instructionText ]
                     , case maybeExeCount of

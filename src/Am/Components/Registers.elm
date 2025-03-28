@@ -7,7 +7,7 @@ import Dict exposing (Dict)
 
 viewRegisters : Dict Int (Int, Bool) -> Dict Int String -> Html msg
 viewRegisters registers highlighted =
-    div [ class "flex flex-col md:w-1/3 bg-white p-1 shadow-lg rounded md:overflow-auto" ]
+    div [ class "flex flex-col md:w-1/3 bg-white p-1.5 shadow-lg rounded md:overflow-auto" ]
         (
         registers
             |> Dict.toList
@@ -22,10 +22,10 @@ viewRegisters registers highlighted =
                         [ class
                             (
                                 if wasUsed then
-                                    "flex items-center gap-4 p-1 border-b last:border-none font-mono " 
+                                    "flex items-center gap-4 p-0.5 border-b last:border-none font-mono " 
                                     ++ highlightClass
                                 else
-                                    "flex items-center gap-4 p-1 border-b last:border-none font-mono bg-gray-100 rounded " 
+                                    "flex items-center gap-4 p-0.5 border-b last:border-none font-mono bg-gray-100 rounded " 
                                     ++ highlightClass
                             )
                         ]

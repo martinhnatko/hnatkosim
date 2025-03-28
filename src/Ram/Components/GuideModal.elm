@@ -146,7 +146,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                       [ 
                         
                         -- LOAD instruction row
-                        tr [ class "bg-blue-100/70" ]
+                        tr [ class "bg-blue-100/80" ]
                             [ td [ class "px-3 py-1 whitespace-normal" ]
                                   [ span [ class "text-blue-500 font-semibold" ]
                                         [ text "LOAD operand" ]
@@ -158,7 +158,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                             ]
                         
                         -- STORE instruction row
-                        , tr [ class "bg-blue-100/70" ]
+                        , tr [ class "bg-blue-100/80" ]
                               [ td [ class "px-3 py-1 whitespace-normal" ]
                                     [ span [ class "text-blue-500 font-semibold" ]
                                           [ text "STORE operand" ]
@@ -213,7 +213,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                                   [ text "Accumulator is divided by the operand." ]
                             ]
                         -- READ instruction row
-                      , tr [ class "bg-blue-100/70" ]
+                      , tr [ class "bg-blue-100/80" ]
                             [ td [ class "px-3 py-1 whitespace-normal" ]
                                   [ span [ class "text-blue-500 font-semibold" ]
                                         [ text "READ operand" ]
@@ -224,7 +224,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
                                   [ text "Value from input tape is stored into operand." ]
                             ]
                         -- WRITE instruction row
-                      , tr [ class "bg-blue-100/70" ]
+                      , tr [ class "bg-blue-100/80" ]
                             [ td [ class "px-3 py-1 whitespace-normal" ]
                                   [ span [ class "text-blue-500 font-semibold" ]
                                         [ text "WRITE operand" ]

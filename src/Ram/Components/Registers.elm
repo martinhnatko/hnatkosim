@@ -12,8 +12,8 @@ viewRegisters : Model -> Html Msg
 viewRegisters model =
     div [class "flex flex-col md:w-1/3 gap-2"] [
         
-        div [class "flex w-full h-full overflow-auto bg-white rounded p-1 order-2 md:order-1"] 
-            [ div [ class "flex flex-col w-full p-1 rounded overflow-y-auto" ]
+        div [class "flex flex-col w-full h-full overflow-y-auto bg-white rounded p-1.5 order-2 md:order-1"] 
+            
                 (
                 model.registers
                     |> Dict.toList
@@ -30,11 +30,11 @@ viewRegisters model =
                                     (
                                     case wasUsed of
                                         Just _ ->
-                                            "flex items-center gap-4 p-1 border-b last:border-none font-mono "
+                                            "flex items-center gap-4 p-0.5 border-b last:border-none font-mono "
                                                 ++ highlightClass
 
                                         Nothing ->
-                                            "flex items-center gap-4 p-1 border-b last:border-none font-mono bg-gray-100 rounded " 
+                                            "flex items-center gap-4 p-0.5 border-b last:border-none font-mono bg-gray-100 rounded " 
                                                 ++ highlightClass
                                     )
                                 ]
@@ -53,7 +53,7 @@ viewRegisters model =
                         )
                     )   
  
-            ] 
+            -- ] 
         
         , div [ class "flex w-full max-h-[30%] bg-white rounded p-1.5 rounded gap-1.5 order-1 md:order-2" ]
             [ 
