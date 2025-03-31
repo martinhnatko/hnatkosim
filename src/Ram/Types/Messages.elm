@@ -1,6 +1,7 @@
 module Ram.Types.Messages exposing (..)
 
 import Time exposing (Posix)
+import File exposing (File)
 
 import Shared.Components.Console exposing (ConsoleMessageType)
 
@@ -41,3 +42,7 @@ type Msg
     | TypedBase String
     | ChangeLogBase Int
     | RequestMathJaxUpdate
+    | TriggerUpload Int
+    | FileSelected Int File
+    | FileLoaded Int String String
+    | TriggerDownload Int

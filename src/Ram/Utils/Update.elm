@@ -13,6 +13,8 @@ import Ram.Utils.PrintErrors exposing (printErrors)
 import Shared.Components.Console exposing (ConsoleMessageType(..))
 import Shared.Ports exposing (setItem, scrollToBottom, requestMathJaxTypeset, scrollInstructionIntoView)
 
+import File exposing (File)
+
 import Dict
 import List exposing (range)
 import Array
@@ -20,6 +22,8 @@ import Platform.Cmd as Cmd
 import Time
 import Task
 import Process
+import File.Select
+import File.Download
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -508,3 +512,41 @@ update msg model =
         
         TypedBase newText ->
             ( { model | typedBase = newText }, Cmd.none )
+        
+        TriggerUpload i ->
+            ( model, File.Select.file ["text/plain"] (FileSelected i) )
+        
+        FileSelected i file ->
+            let
+                fileNameWithExtension = File.name file
+                fileName = String.slice 0 (String.length fileNameWithExtension - 4) fileNameWithExtension
+                fileType = File.mime file
+            in
+            if fileType /= "text/plain" then
+                ( model, Cmd.batch [ requestAddMessage (ErrorMessage, "File " ++ fileName ++ " is not a valid text file. Only .txt files are allowed.") ] )
+            else
+                ( model, Task.perform (FileLoaded i fileName) (File.toString file) )
+                
+        FileLoaded i fileName content ->
+            case Array.get i model.slots of
+                Just slot ->
+                    let
+                        updatedSlot = { slot | inputText = content, inputTape = Array.empty, name = fileName }
+                        encodedSlot = encodeSlot updatedSlot
+
+                    in
+                    ( 
+                    { model | slots = Array.set i updatedSlot model.slots } 
+                    , Cmd.batch [ setItem ("ram_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Content of file " ++ fileName ++ ".txt uploaded to slot "  ++ String.fromInt i ++ "." ) ]
+                    )
+                    
+                Nothing ->
+                    ( model, Cmd.none )
+        
+        TriggerDownload i ->
+            case Array.get i model.slots of
+                Just slot ->
+                    ( model, Cmd.batch [ File.Download.string (slot.name ++ ".txt") "text/plain" (slot.inputText), requestAddMessage (InfoMessage, "Slot "  ++ String.fromInt i ++ " downloaded as file " ++ slot.name ++ ".txt.") ] )
+                Nothing ->
+                    ( model, Cmd.none )
+  

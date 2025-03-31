@@ -56,7 +56,7 @@ view model =
 
               -- Slots Modal
             , if model.showSlotsModal then
-                  viewSlotsModal (model.inputText == "") (Array.map (\slot -> ( slot.name, slot.inputText == "" )) model.slots) ToggleSlotsModal SaveSlot LoadSlot DeleteSlot UpdateSlotName NoOp
+                  viewSlotsModal (model.inputText == "") (Array.map (\slot -> ( slot.name, slot.inputText == "" )) model.slots) ToggleSlotsModal SaveSlot LoadSlot DeleteSlot UpdateSlotName NoOp SaveSlot SaveSlot
               else
                   text ""
             ]

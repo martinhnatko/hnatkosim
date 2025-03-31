@@ -10,6 +10,8 @@ import Html.Events exposing (onClick, onInput, stopPropagationOn)
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.TrashSmall exposing (heroiconTrashSmall)
 import Shared.Icons.Save exposing (heroiconSave)
+import Shared.Icons.Download exposing (heroiconDownload)
+import Shared.Icons.Upload exposing (heroiconUpload)
 
 import Array exposing (Array)
 import Json.Decode as Decode
@@ -20,8 +22,8 @@ stopPropagationClick noOpMsg =
         Decode.succeed ( noOpMsg, True )
 
 
-viewSlotsModal : Bool -> Array (String, Bool) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> msg -> Html msg
-viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onNoOp =
+viewSlotsModal : Bool -> Array (String, Bool) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> msg -> ( Int -> msg ) -> ( Int -> msg ) -> Html msg
+viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onNoOp onTriggerUpload onTriggerDownload =
     div
         [ class "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         , onClick onToggleSlotsModal
@@ -40,14 +42,16 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
             , p [ class "text-sm mt-2" ]
                 [ text "You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there's no need to press save, as changes are saved automatically." ]
             , span [ class "text-red-500 text-sm" ] [text "Warning: Everything is stored in your browser's local storage, so it's unique to this browser and won't carry over if you switch browsers or devices." ]
-            , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName
+            , p [ class "text-sm" ]
+                [ text "You have the ability to download or upload code to specific slots. When downloading, the code from a slot will be saved as the content of a file named <slot-name>.txt. When uploading, you need to select a .txt file, which will then be saved to the corresponding slot." ]
+            , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onTriggerUpload onTriggerDownload
             ]
         ]
 
 
-viewSlots : Bool -> Array (String, Bool) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> Html msg
-viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName =
-    div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-3" ]
+viewSlots : Bool -> Array (String, Bool) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> ( Int -> String -> msg ) -> ( Int -> msg ) -> ( Int -> msg ) -> Html msg
+viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onTriggerUpload onTriggerDownload =
+    div [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3.5 mt-3" ]
         (List.map
             (\i ->
                 let
@@ -56,27 +60,27 @@ viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdat
                 in
                 -- A small box for each slot
                 div (if isEmpty then 
-                        [ class "border p-3 rounded bg-gray-100 shadow-sm w-full" ]
+                        [ class "flex flex-col gap-2 border p-2.5 rounded bg-gray-200 shadow-sm w-full" ]
                      else
-                        [ class "border p-3 rounded bg-white shadow-sm w-full" ])
+                        [ class "flex flex-col gap-2 border p-2.5 rounded bg-white shadow-sm w-full" ])
                     [ -- Editable slot name input:
-                      input
-                        [ type_ "text"
-                        , class "font-bold text-gray-800 border border-gray-300 rounded p-1 w-full mb-1 focus:outline-none focus:ring focus:ring-blue-200"
-                        , value slotName
-                        , onInput (\newName -> onUpdateSlotName i newName)
-                        , placeholder ("Slot " ++ String.fromInt i)
-                        ]
-                        []
+                    input
+                      [ type_ "text"
+                      , class "font-bold text-gray-800 border border-gray-300 rounded p-1 w-full focus:outline-none focus:ring focus:ring-blue-200"
+                      , value slotName
+                      , onInput (\newName -> onUpdateSlotName i newName)
+                      , placeholder ("Slot " ++ String.fromInt i)
+                      ]
+                      []
                       -- Row of 3 buttons
-                    , div [ class "flex gap-2 mt-1" ]
+                    , div [ class "flex gap-2 h-8" ]
                         [ -- Save button
                           button
                             [ class 
                                 ( if inputTextEmpty then
-                                    "w-full bg-gray-500 text-white px-2 py-1 rounded opacity-50 cursor-not-allowed"
+                                    "bg-gray-500 text-white w-1/3 rounded opacity-50 cursor-not-allowed"
                                   else
-                                    "w-full bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
+                                    "bg-blue-500 text-white w-1/3 rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
                                 )
                             , onClick (onSaveSlot i)
                             , disabled inputTextEmpty
@@ -86,27 +90,48 @@ viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdat
                         , button
                             [ class
                                 ( if not isEmpty then
-                                    "w-full bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
+                                    "bg-blue-500 text-white w-1/3 rounded hover:bg-blue-600 transition-colors duration-200 focus:outline-none"
                                   else
-                                    "w-full bg-gray-500 text-white px-2 py-1 rounded opacity-50 cursor-not-allowed"
+                                    "bg-gray-500 text-white w-1/3 rounded opacity-50 cursor-not-allowed"
                                 )
                             , onClick (onLoadSlot i)
                             , disabled isEmpty
                             ]
                             [ text "Load" ]
-                          -- Delete (trash icon) button
                         , button
                             [ class
                                 ( if not isEmpty then
-                                    "w-full bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center hover:bg-red-600 transition-colors duration-200 focus:outline-none"
+                                    "bg-red-500 text-white w-1/3 rounded flex items-center justify-center hover:bg-red-600 transition-colors duration-200 focus:outline-none"
                                   else  
-                                    "w-full bg-gray-500 text-white px-2 py-1 rounded flex items-center justify-center opacity-50 cursor-not-allowed"
+                                    "bg-gray-500 text-white w-1/3 rounded flex items-center justify-center opacity-50 cursor-not-allowed"
                                 )
                             , onClick (onDeleteSlot i)
                             , disabled isEmpty
                             ]
                             [ heroiconTrashSmall ]
+                          
+                        
                         ]
+                      , div [class "flex flex-row gap-2 h-6 text-sm"][
+                        button
+                              [ class
+                                  ( if not isEmpty then
+                                      "border gap-1 px-1 py-1 border-blue-500 text-blue-500 bg-white hover:bg-blue-50 w-1/2 rounded flex items-center justify-center transition-colors duration-200 focus:outline-none"
+                                    else  
+                                      "border gap-1 px-1 py-1 border-gray-400 text-gray-400 bg-gray-100 w-1/2 rounded flex items-center justify-center cursor-not-allowed"
+                                  )
+                              , onClick (onTriggerDownload i)
+                              , disabled isEmpty
+                              ]
+                              [ heroiconDownload, text "Download" ]
+                        , button
+                              [ class "border gap-1 px-1 py-1 border-blue-500 text-blue-500 bg-white hover:bg-blue-50 w-1/2 rounded flex items-center justify-center transition-colors duration-200 focus:outline-none"
+                                    
+                              , onClick (onTriggerUpload i)
+                              ]
+                              [ heroiconUpload, text "Upload" ]
+                      ]                          
+                          
                     ]
             )
             (List.range 1 20)
