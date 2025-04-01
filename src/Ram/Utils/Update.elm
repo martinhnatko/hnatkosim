@@ -13,7 +13,7 @@ import Ram.Utils.PrintErrors exposing (printErrors)
 import Shared.Components.Console exposing (ConsoleMessageType(..))
 import Shared.Ports exposing (setItem, scrollToBottom, requestMathJaxTypeset, scrollInstructionIntoView)
 
-import File exposing (File)
+import File
 
 import Dict
 import List exposing (range)
@@ -52,7 +52,7 @@ update msg model =
                 if updatedModel.instructionPointer >= List.length updatedModel.instructions then
                     ( { updatedModel | isRunning = False }, Cmd.batch [removalCmd, Task.perform (ComputeAndPrintDuration False) Time.now, scrollInstructionIntoView ((String.fromInt  updatedModel.instructionPointer), speed)] )
                 else
-                    ( updatedModel, Cmd.batch [removalCmd, scrollInstructionIntoView ((String.fromInt  updatedModel.instructionPointer), speed)] )
+                    ( updatedModel, Cmd.batch [removalCmd, scrollInstructionIntoView ((String.fromInt  updatedModel.instructionPointer), speed + 1 )] )
 
         
         Step ->
