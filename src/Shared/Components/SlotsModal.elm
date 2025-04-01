@@ -2,7 +2,7 @@ module Shared.Components.SlotsModal exposing (..)
 
 import Ram.Types.Messages exposing (Msg(..))
 
-import Html exposing (Html, div, button, text, input, h2, p, span, strong)
+import Html exposing (Html, div, button, text, input, h2, p, span)
 import Html.Attributes exposing (disabled, class, type_, value)
 import Html.Attributes exposing (placeholder)
 import Html.Events exposing (onClick, onInput, stopPropagationOn)
