@@ -2,7 +2,7 @@ module Shared.Components.SlotsModal exposing (..)
 
 import Ram.Types.Messages exposing (Msg(..))
 
-import Html exposing (Html, div, button, text, input, h2, p, span)
+import Html exposing (Html, div, button, text, input, h2, p, span, strong)
 import Html.Attributes exposing (disabled, class, type_, value)
 import Html.Attributes exposing (placeholder)
 import Html.Events exposing (onClick, onInput, stopPropagationOn)
@@ -40,10 +40,23 @@ viewSlotsModal inputTextEmpty arrayOfSlots onToggleSlotsModal onSaveSlot onLoadS
                 [ heroiconX ]
             , h2 [ class "text-xl font-bold flex items-center gap-1" ] [ heroiconSave, text "Save/Load" ]
             , p [ class "text-sm mt-2" ]
-                [ text "You can save and load code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits only affect your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there's no need to press save, as changes are saved automatically." ]
-            , span [ class "text-red-500 text-sm" ] [text "Warning: Everything is stored in your browser's local storage, so it's unique to this browser and won't carry over if you switch browsers or devices." ]
+                [ text "You can "
+                , span [class "font-semibold"] [ text "save" ]
+                , text " and "
+                , span [class "font-semibold"] [ text "load" ]
+                , text " code into separate slots. When you load a slot, its content is copied into your current workspace, so any edits affect only your workspace until you explicitly save them to a slot. In other words, your workspace is effectively its own slot as well. You can also rename your slots. After renaming, there's no need to press save, as changes are saved automatically." ]
+            , p [ class "text-red-500 text-sm my-0.5" ] 
+                [text "Warning: Everything is stored in your browser's local storage, so it's unique to this browser and won't carry over if you switch browsers or devices." ]
             , p [ class "text-sm" ]
-                [ text "You have the ability to download or upload code to specific slots. When downloading, the code from a slot will be saved as the content of a file named <slot-name>.txt. When uploading, you need to select a .txt file, which will then be saved to the corresponding slot." ]
+                [ text "You also have the ability to "
+                , span [class "font-semibold"] [ text "download" ]
+                , text " or "
+                , span [class "font-semibold"] [ text "upload" ]
+                , text " code to specific slots. When downloading, the code from a slot will be downloaded as the content of a file named "
+                , span [class "font-mono"] [text "<slot-name>.txt"]
+                , text ". When uploading, you need to select a " 
+                , span [class "font-mono"] [text ".txt"]
+                , text " file from your device, which will then be saved to the corresponding slot." ]
             , viewSlots inputTextEmpty arrayOfSlots onSaveSlot onLoadSlot onDeleteSlot onUpdateSlotName onTriggerUpload onTriggerDownload
             ]
         ]
