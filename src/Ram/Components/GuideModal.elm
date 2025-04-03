@@ -22,7 +22,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
         , onClick onToggleGuideModal
         ]
         [ div
-            [ class "bg-white p-3 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[60vw] overflow-y-auto"
+            [ class "bg-white p-3 rounded shadow-lg relative max-h-[80vh] max-w-[80vw] lg:max-w-[70vw] overflow-y-auto"
             , stopPropagationClick onNoOp
             ]
             [ -- Close Button (top-right)
