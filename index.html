@@ -82,7 +82,7 @@
       requestAnimationFrame(() => {
           const el = document.getElementById(elementId);
           if (el) {
-              const container = el.parentElement; // The direct parent is the scrollable container
+              const container = el.parentElement;
               
               const elRect = el.getBoundingClientRect();
               const containerRect = container.getBoundingClientRect();
@@ -93,7 +93,7 @@
               const offset = elementCenter - containerCenter;
               const targetScroll = container.scrollTop + offset;
 
-              // Optional clamp to prevent overscrolling
+              // Clamp to prevent overscrolling
               const maxScroll = container.scrollHeight - container.clientHeight;
               const finalScroll = Math.max(0, Math.min(targetScroll, maxScroll));
 
@@ -122,7 +122,6 @@
   app.ports.getItem.subscribe(function (key) {
     var value = localStorage.getItem(key);
     if (value === null) {
-      // If not found, we send null
       app.ports.gotItem.send([ key, null ]);
     } else {
       app.ports.gotItem.send([ key, value ]);
