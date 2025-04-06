@@ -8,7 +8,6 @@ import Shared.Icons.Reset exposing (heroiconReset)
 import Html exposing (Html, div, button, text)
 import Html.Attributes exposing (class, disabled)
 import Html.Events exposing (onClick)
-import Json.Decode exposing (at)
 
 controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Bool -> Html msg
 controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset startDisabled =
