@@ -55,3 +55,25 @@ input:focus{
     transform: rotate(0deg) translateY(0);
   }
 }
+
+.helicopter-rotate-small {
+  animation: helicopter-rotate-small 1.5s ease-in-out infinite;
+}
+
+@keyframes helicopter-rotate-small {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  15% {
+    transform: rotate(2deg) translateY(-2px);
+  }
+  30% {
+    transform: rotate(-3deg) translateY(-1px);
+  }
+  45% {
+    transform: rotate(0deg) translateY(0);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}

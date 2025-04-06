@@ -2,7 +2,5 @@ elm-stuff
 repl-temp-*
 node_modules
 
-todo.txt
-
 main_dev.js
 index_dev.html

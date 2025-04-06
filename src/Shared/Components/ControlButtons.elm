@@ -8,6 +8,7 @@ import Shared.Icons.Reset exposing (heroiconReset)
 import Html exposing (Html, div, button, text)
 import Html.Attributes exposing (class, disabled)
 import Html.Events exposing (onClick)
+import Json.Decode exposing (at)
 
 controlButtons : Bool -> Bool -> Bool -> Bool -> msg -> msg -> msg -> msg -> Bool -> Html msg
 controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause onStep onReset startDisabled =
@@ -53,15 +54,21 @@ controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause o
 
           -- Reset Button
         , if not simStarted then
-              button 
-                  [ class "w-1/3 px-2 py-1 bg-gray-400 text-white flex items-center justify-center rounded cursor-not-allowed"
-                  , disabled True
-                  ]
-                  [ heroiconReset, text "Stop" ]
-          else
-              button 
-                  [ class "w-1/3 px-2 py-1 bg-red-500 text-white flex items-center justify-center rounded hover:bg-red-600 transition-colors duration-200 focus:outline-none"
-                  , onClick onReset
-                  ]
-                  [ heroiconReset, text "Stop" ]
+            button 
+                [ class "w-1/3 px-2 py-1 bg-gray-400 text-white flex items-center justify-center rounded cursor-not-allowed"
+                , disabled True
+                ]
+                [ heroiconReset, text "Stop" ]
+        else if halted || atEndOfInstructions then
+            button 
+                [ class "helicopter-rotate-small hover:animate-none w-1/3 px-2 py-1 bg-red-500 text-white flex items-center justify-center rounded hover:bg-red-600 transition-colors duration-200 focus:outline-none"
+                , onClick onReset
+                ]
+                [ heroiconReset, text "Stop" ]
+        else
+            button 
+                [ class "w-1/3 px-2 py-1 bg-red-500 text-white flex items-center justify-center rounded hover:bg-red-600 transition-colors duration-200 focus:outline-none"
+                , onClick onReset
+                ]
+                [ heroiconReset, text "Stop" ]
         ]

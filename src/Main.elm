@@ -154,7 +154,7 @@ init _ url key =
                     , Cmd.batch <|
                         List.map (\i -> getItem ("ram_slot_" ++ String.fromInt i)) (List.range 1 20)
                     , Cmd.map AbacusMsg (AmHelper.requestAddMessage (InfoMessage, "Welcome to Abacus Machine Simulator") )
-                    , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )    
+                    , Cmd.map RamMsg (RamHelper.requestAddMessage (InfoMessage, "Welcome to RAM Simulator") )
                     , subToTextArea ()
                     ]
             else
