@@ -148,7 +148,7 @@ update msg model =
                                 , executedInstructions = 0
                                 , isRunning = False
                             }
-                            , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ".")
+                            , requestAddMessage (InfoMessage, "Reached end of instructions. No instructions were executed. You can return to editing mode by pressing Stop.")
                         )
                     else
                         ( 
@@ -157,7 +157,7 @@ update msg model =
                                 , executedInstructions = 0
                                 , isRunning = False
                             }
-                            , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second.") 
+                            , requestAddMessage (InfoMessage, "Reached end of instructions. Duration: " ++ String.fromInt duration ++ " ms. Number of executed instructions: " ++ String.fromInt numOfInstructions ++ ". Speed: " ++ speed ++ " instructions/second. Press Stop to return to editing mode.") 
                         )
 
                 Nothing ->
