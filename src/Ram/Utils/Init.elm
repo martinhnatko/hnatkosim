@@ -1,20 +1,21 @@
 module Ram.Utils.Init exposing (..)
+
+import Ram.Types.Instructions exposing (Instruction(..), Operand(..))
 import Dict
 import List exposing (range)
 import Array
 
 -- INIT
 
-init : { inputText : String, registers : Dict.Dict Int ( number, Maybe a ), highlighted_registers : Dict.Dict k v, highlighted_input_tape : Dict.Dict b c, highlighted_output_tape : Dict.Dict d e, instructions : List f, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List g, slots : Array.Array { name : String, inputText : String, inputTape : Array.Array number }, halted : Bool, inputTape : Array.Array h, inputTapePointer : number, outputTape : Array.Array i, showSlotsModal : Bool, showGuideModal : Bool, showSettingsModal : Bool, simulationStartTime : Maybe j, executedInstructions : number, totalNumberOfRegisters : number, totalMaxExecutedInstructions : number, typedTotalNumberOfRegisters : String, typedTotalMaxExecutedInstructions : String, typedBase : String, logSpace : number, logTime : number, logBase : number, tooManyRuntimeMsgs : Bool }
 init =
     let
         initialModel =
-            { inputText = ""
+            { inputText = "#-------------------------------------\n# Welcome to HnatkoSim | RAM Simulator\n\n# This is an example program that computes the average of two numbers.\n# You can find more examples in the Guide section.\n\n# Feel free to start the simulation by pressing Start or Step.\n# When the simulation finishes, press Stop to return to editing mode.\n#-------------------------------------\n\n# Read numbers from input tape into R1 and R2\nread 1\nread 2\n\n# Add numbers into accumulator\nadd 1\nadd 2\n\n# Divide the result by 2\ndiv =2\n\n# Write the result to the output tape\nwrite 0\n\nhalt"
             , registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 100))
             , highlighted_registers = Dict.empty
             , highlighted_input_tape = Dict.empty
             , highlighted_output_tape = Dict.empty
-            , instructions = []
+            , instructions = [Read (Direct 1) Nothing 0,Read (Direct 2) Nothing 0,Add (Direct 1) Nothing 0,Add (Direct 2) Nothing 0,Div (Constant 2) Nothing 0,Write (Direct 0) Nothing 0,Halt 0]
             , isRunning = False
             , simStarted = False
             , instructionPointer = 0
@@ -49,7 +50,7 @@ init =
                 , { name = "", inputText = "# n!\n\n# Read number from input tape into R1\nread 1\n\n# Load number from R1 into accumulator\nload 1\n\n# If it's zero, jump to label zero, because 0! is 1 \njzero zero\n\n# Load constant 1 into accumulator and store it in R2\nload =1\nstore 2\n\n# Load number from R2, multiply it by input number and decrement input number\n# Loops until the input value is zero\nloop:\n\tload 2\n\tmul 1\n\tstore 2\n\n\tload 1\n\tsub =1\n\tstore 1\n\t\n\tJGTZ loop\n\n# Reslt is in R2, write it in the output tape and halt\nwrite 2\nhalt\n\n# 0! is 1, so write it in the output tape and halt\nzero:\n\tload =1\n\twrite 0\n\thalt", inputTape = Array.fromList [ 5 ] }
                 ]
             , halted = False
-            , inputTape = Array.empty
+            , inputTape = Array.fromList [48,152]
             , inputTapePointer = 0
             , outputTape = Array.empty
             , showSlotsModal = False

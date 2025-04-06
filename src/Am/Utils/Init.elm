@@ -1,17 +1,17 @@
 module Am.Utils.Init exposing (..)
+import Am.Types.Instructions exposing (Instruction(..))
 import Dict
 import List exposing (range)
 import Array
 
 -- INIT
-init : { inputText : String, registers : Dict.Dict Int ( number, Bool ), highlighted : Dict.Dict k v, instructions : List a, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List b, slots : Array.Array { name : String, inputText : String }, showSlotsModal : Bool, showGuideModal : Bool, showSettingsModal : Bool, simulationStartTime : Maybe c, executedInstructions : number, totalNumberOfRegisters : number, totalMaxExecutedInstructions : number, typedTotalNumberOfRegisters : String, typedTotalMaxExecutedInstructions : String }
 init =
     let
         initialModel =
-            { inputText = ""
+            { inputText = "#------------------------------------\n# Welcome to HnatkoSim | AM Simulator\n\n# This is an example program that computes the sum of two numbers using a destructive approach.\n# The result will be stored in R3.\n# You can find more examples in the Guide section.\n\n# Feel free to start the simulation by pressing Start or Step.\n# When the simulation finishes, press Stop to return to editing mode.\n#------------------------------------\n\n# Load 'a' into R1 (a = 4)\na1a1a1a1\n\n# Load 'b' into R2 (b = 2)\na2a2\n\n# Transfer 'a' from R1 to R3\n(s1 a3)1\n\n# Transfer 'b' from R2 to R3\n(s2 a3)2\n"
             , registers = Dict.fromList (List.map (\n -> (n, (0,  False))) (range 0 100))
             , highlighted = Dict.empty
-            , instructions = []
+            , instructions = [Increment 1 Nothing,Increment 1 Nothing,Increment 1 Nothing,Increment 1 Nothing,Increment 2 Nothing,Increment 2 Nothing,StartLoop 9 1 Nothing,Decrement 1 Nothing,Increment 3 Nothing,EndLoop 6 1 Nothing,StartLoop 13 2 Nothing,Decrement 2 Nothing,Increment 3 Nothing,EndLoop 10 2 Nothing]
             , isRunning = False
             , simStarted = False
             , instructionPointer = 0

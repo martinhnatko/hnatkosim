@@ -348,13 +348,14 @@ update msg model =
                 | isRunning = False
                 , inputText = ""
                 , simStarted = False
+                , halted = False
                 , instructionPointer = 0
                 , registers = Dict.fromList (List.map (\n -> (n, (0, Nothing))) (range 0 model.totalNumberOfRegisters))
                 , instructions = []
                 , logSpace = 0
                 , logTime = 0
               }
-            , setItem ("ram_current", "")
+            , setItem ("ram_current", { name = "", inputText = "", inputTape = model.inputTape } |> encodeSlot )
             )
 
         SaveSlot i ->
