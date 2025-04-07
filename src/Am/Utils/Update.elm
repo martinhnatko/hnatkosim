@@ -43,8 +43,8 @@ update msg model =
                 let
                     speed = (Array.get (model.speedIdx - 1) model.speeds) |> Maybe.withDefault 1000
 
-                    -- half the speed in ms
-                    highlightDuration = speed // 2
+                    -- 75% of the speed in ms
+                    highlightDuration = (toFloat speed * 0.75) |> round
 
                     ( updatedModel, removalCmd ) = executeInstruction model highlightDuration
                 in
