@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/hnatkosim.webp" alt="HnatkoSim Screenshot" width="60%"/>
+</p>
+
 # HnatkoSim
 
 HnatkoSim is a platform of simulators for two computational models-**Abacus Machine (AM)** and **Random Access Machine (RAM)**-built in [Elm](https://elm-lang.org/) as part of a bachelor’s thesis project.
