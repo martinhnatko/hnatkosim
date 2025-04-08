@@ -38,7 +38,7 @@ viewGuideModal onToggleGuideModal onLoadSlot onNoOp =
             , div [ class "my-1 text-sm" ]
                 [ p [ class "mb-2" ]
                     [ 
-                        text "Random Access Machine is a computational model similar to conventional sequential computers. It consists of data memory (implemented as registers) and program memory containing instructions. An input/output unit interfaces with the environment, while an arithmetic-logic and control unit interprets and executes the program." 
+                        text "Random Access Machine is a computational model similar to conventional sequential computers. It consists of data memory (implemented as registers) and program memory containing instructions. An input/output unit interfaces with the environment, while an arithmetic-logic and control unit interprets and executes the program. It’s often used to study algorithms from the standpoint of computational complexity. Programming in RAM is comparable to working with a simplified processor that has a limited instruction set, making it a helpful entry point into assembly-like programming." 
                     ]
                 , p [ class "mb-2" ]
                     [ 
