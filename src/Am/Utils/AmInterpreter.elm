@@ -78,7 +78,7 @@ executeInstruction model highlightDuration =
                             ( { model | instructionPointer = nextInstructionPointer }, Cmd.none )
                         _ ->
                             let
-                                newRegisters = Dict.update reg (Maybe.map (\(val, _) -> (val - 1, True))) model.registers
+                                newRegisters = Dict.update reg (Maybe.map (\(val, _) -> (Basics.max 0 (val - 1), True))) model.registers
                             in
                             if dontHighlight then
                                 (
