@@ -451,8 +451,10 @@ view model =
                                 , class "px-1.5 text-sm sm:text-md sm:px-6 sm:py-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
                                 ]
                                 [ text "Random Access Machine Simulator" ]
-                            , button
-                                [ onClick NoOp
+                            , a
+                                [ href "https://docs.google.com/forms/d/e/1FAIpQLSdQoSvSqd-mCTB4yz9xMqjNfwCstgw_eWmdulsLwmxOKtusyA/viewform?usp=sf_link"
+                                , target "_blank"
+                                , rel "noopener noreferrer"
                                 , class 
                                     """
                                     px-1.5 text-sm sm:text-md
@@ -471,14 +473,10 @@ view model =
 
                                     hover:bg-gradient-to-r hover:from-red-600 hover:via-blue-600 hover:to-orange-600
                                     
-                                    
-                                    opacity-40
-                                    cursor-not-allowed
-                                    disabled
+                                    twerk
                                     """
                                 ]
-                                [ survey, text "SHORT FEEDBACK SURVEY" ]
-                            
+                                [ survey, text "SHORT FEEDBACK SURVEY" ]                            
 
                                 , p 
                                     [ class """
@@ -490,7 +488,7 @@ view model =
                                         sm:max-w-[50ch]
                                         max-w-[40ch]
                                     """ ]
-                                    [ text "*Survey is being prepared and will be available soon. You'll be notified once it's ready!" ]
+                                    [ text "*Please take a moment to fill out this short survey, it's part of my bachelor's thesis." ]
                             ]
                         ]
 

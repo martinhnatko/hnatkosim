@@ -60,7 +60,7 @@ controlButtons atEndOfInstructions isRunning halted simStarted onStart onPause o
                 [ heroiconReset, text "Stop" ]
         else if halted || atEndOfInstructions then
             button 
-                [ class "helicopter-rotate-small hover:animate-none w-1/3 px-2 py-1 bg-red-500 text-white flex items-center justify-center rounded hover:bg-red-600 transition-colors duration-200 focus:outline-none"
+                [ class "twerk hover:animate-none w-1/3 px-2 py-1 bg-red-500 text-white flex items-center justify-center rounded hover:bg-red-600 transition-colors duration-200 focus:outline-none"
                 , onClick onReset
                 ]
                 [ heroiconReset, text "Stop" ]

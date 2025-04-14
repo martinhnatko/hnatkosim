@@ -33,34 +33,11 @@ input:focus{
   }
 }
 
-.helicopter-rotate {
-  animation: helicopter-rotate 3s ease-in-out infinite;
+.twerk {
+  animation: twerk 1.5s ease-in-out infinite;
 }
 
-@keyframes helicopter-rotate {
-  0% {
-    transform: rotate(0deg) translateY(0);
-  }
-  10% {
-    transform: rotate(5deg) translateY(-5px);
-  }
-  20% {
-    transform: rotate(-5deg) translateY(-3px);
-  }
-  30% {
-    transform: rotate(0deg) translateY(0);
-  }
-  /* Stay still from 30% to 100% to create a pause */
-  100% {
-    transform: rotate(0deg) translateY(0);
-  }
-}
-
-.helicopter-rotate-small {
-  animation: helicopter-rotate-small 1.5s ease-in-out infinite;
-}
-
-@keyframes helicopter-rotate-small {
+@keyframes twerk {
   0% {
     transform: rotate(0deg) translateY(0);
   }
