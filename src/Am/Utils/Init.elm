@@ -5,6 +5,7 @@ import List exposing (range)
 import Array
 
 -- INIT
+init : { inputText : String, registers : Dict.Dict Int ( number, Bool ), highlighted : Dict.Dict k v, instructions : List Instruction, isRunning : Bool, simStarted : Bool, instructionPointer : number, speeds : Array.Array number, speedIdx : number, consoleMessages : List a, slots : Array.Array { name : String, inputText : String }, showSlotsModal : Bool, showGuideModal : Bool, showSettingsModal : Bool, simulationStartTime : Maybe b, executedInstructions : number, totalNumberOfRegisters : number, totalMaxExecutedInstructions : number, typedTotalNumberOfRegisters : String, typedTotalMaxExecutedInstructions : String }
 init =
     let
         initialModel =
