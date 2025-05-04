@@ -524,7 +524,7 @@ update msg model =
                 fileType = File.mime file
             in
             if fileType /= "text/plain" then
-                ( model, Cmd.batch [ requestAddMessage (ErrorMessage, "File " ++ fileName ++ " is not a valid text file. Only .txt files are allowed.") ] )
+                ( model, Cmd.batch [ requestAddMessage (ErrorMessage, "File \"" ++ fileName ++ "\" is not a valid text file. Only .txt files are allowed.") ] )
             else
                 ( model, Task.perform (FileLoaded i fileName) (File.toString file) )
                 
@@ -538,7 +538,7 @@ update msg model =
                     in
                     ( 
                     { model | slots = Array.set i updatedSlot model.slots } 
-                    , Cmd.batch [ setItem ("ram_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Content of file " ++ fileName ++ ".txt uploaded to slot "  ++ String.fromInt i ++ "." ) ]
+                    , Cmd.batch [ setItem ("ram_slot_" ++ String.fromInt i, encodedSlot), requestAddMessage (InfoMessage, "Content of file \"" ++ fileName ++ ".txt\" uploaded to slot "  ++ String.fromInt i ++ "." ) ]
                     )
                     
                 Nothing ->
@@ -547,7 +547,7 @@ update msg model =
         TriggerDownload i ->
             case Array.get i model.slots of
                 Just slot ->
-                    ( model, Cmd.batch [ File.Download.string (slot.name ++ ".txt") "text/plain" (slot.inputText), requestAddMessage (InfoMessage, "Slot "  ++ String.fromInt i ++ " downloaded as file " ++ slot.name ++ ".txt.") ] )
+                    ( model, Cmd.batch [ File.Download.string (slot.name ++ ".txt") "text/plain" (slot.inputText), requestAddMessage (InfoMessage, "Slot "  ++ String.fromInt i ++ " downloaded as file \"" ++ slot.name ++ ".txt\".") ] )
                 Nothing ->
                     ( model, Cmd.none )
   
