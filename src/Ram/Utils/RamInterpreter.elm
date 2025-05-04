@@ -101,7 +101,7 @@ executeInstruction model highlightDuration =
         Just instr ->
             let 
                 dontHighlight : Bool
-                dontHighlight = ( model.speedIdx == 7 || model.speedIdx == 6 ) && model.isRunning
+                dontHighlight = model.speedIdx == 7 && model.isRunning
             in
             case instr of
                 

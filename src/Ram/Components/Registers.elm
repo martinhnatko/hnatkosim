@@ -61,22 +61,18 @@ viewRegisters model =
             div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
                 [ h3 [ class "text-sm font-semibold" ] [ text "Time Complexity" ]
                 , p [ class "text-xs" ] 
-                    [ text "Logarithmic cost: " 
-                    , span [ class "text-green-600 font-semibold" ] [ text (model.logTime |> String.fromInt) ]
-                    ]
-                , p [ class "text-xs" ] 
                     [ text "Unit cost: "
                     , span [ class "text-green-600 font-semibold" ] [ text (model.executedInstructions |> String.fromInt) ]   
+                    ]
+                , p [ class "text-xs" ] 
+                    [ text "Logarithmic cost: " 
+                    , span [ class "text-green-600 font-semibold" ] [ text (model.logTime |> String.fromInt) ]
                     ]
                 ]
             
             -- Card #2: Space Complexity
             , div [ class "bg-white w-1/2 p-1 rounded border overflow-x-auto" ]
                 [ h3 [ class "text-sm font-semibold" ] [ text "Space Complexity" ]
-                , p [ class "text-xs" ] 
-                    [ text "Logarithmic cost: " 
-                    , span [ class "text-green-600 font-semibold" ] [ text (model.logSpace |> String.fromInt) ]
-                    ]
                 , p [ class "text-xs" ] 
                     [ text "Unit cost: " 
                     , span [ class "text-green-600 font-semibold" ] [ text ( 
@@ -88,6 +84,10 @@ viewRegisters model =
                                                                                 |> String.fromInt
                                                                             ) 
                                                                     ]
+                    ]
+                , p [ class "text-xs" ] 
+                    [ text "Logarithmic cost: " 
+                    , span [ class "text-green-600 font-semibold" ] [ text (model.logSpace |> String.fromInt) ]
                     ]
                 ]
             ]
