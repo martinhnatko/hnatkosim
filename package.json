@@ -1,5 +1,8 @@
 {
   "devDependencies": {
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "elm": "^0.19.1-5",
+    "uglify-js": "^3.17.4",
+    "elm-live": "^4.0.2"
   }
 }
