@@ -17,7 +17,7 @@ jobs:
         - name: Install Node dependencies
           run: npm install
         
-        - name: Build and minify project
+        - name: Build and minify project into dist folder
           run: npm run build
         
         - name: Deploy to GitHub Pages
