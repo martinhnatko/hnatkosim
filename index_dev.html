@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+
+  <title>HnatkoSim DEV</title>
+  
+  <script src="main_dev.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href=".\styles.css" rel="stylesheet">
+
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon//favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon//favicon-16x16.png">
+  <link rel="manifest" href="assets/favicon//site.webmanifest">
+</head>
+
+<body>
+  <div id="myapp"></div>
+</body>
+
+<script>
+  var app = Elm.Main.init({
+    node: document.getElementById('myapp')
+  });
+
+  // Listening for MathJax typeset request
+  if (app.ports && app.ports.requestMathJaxTypeset) 
+  {
+    app.ports.requestMathJaxTypeset.subscribe(function() {
+      // Re-render math in the DOM
+      MathJax.typeset();
+    });
+   }
+
+  // Subscribing to the subToTextArea port and adding a tab key listener to the textarea, which inserts a tab character at the cursor position when the tab key is pressed
+  app.ports.subToTextArea.subscribe(function() {
+    var textbox = document.getElementById('textbox');
+    if (textbox) {
+      textbox.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var start = this.selectionStart;
+          var end = this.selectionEnd;
+
+          // Insert a tab character at the cursor position
+          this.value = this.value.substring(0, start) +
+            "\t" + this.value.substring(end);
+
+          // Move the cursor to the correct position after inserting the tab
+          this.selectionStart = this.selectionEnd = start + 1;
+        }
+      });
+    }
+  });
+
+    
+    function smoothScrollTo(parentEl, targetY, duration = 500) {
+        const startY = parentEl.scrollTop;
+        const diff = targetY - startY;
+        let startTime = null;
+
+        function animateScroll(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            parentEl.scrollTop = startY + diff * progress;
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        }
+
+        requestAnimationFrame(animateScroll);
+    }
+
+    app.ports.scrollInstructionIntoView.subscribe(function ([elementId, duration]) {
+        requestAnimationFrame(() => {
+            const el = document.getElementById(elementId);
+            if (el) {
+                const container = el.parentElement; // The direct parent is the scrollable container
+                
+                const elRect = el.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                const elementCenter = elRect.top + (elRect.height / 2);
+                const containerCenter = containerRect.top + (containerRect.height / 2);
+
+                const offset = elementCenter - containerCenter;
+                const targetScroll = container.scrollTop + offset;
+
+                // Optional clamp to prevent overscrolling
+                const maxScroll = container.scrollHeight - container.clientHeight;
+                const finalScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+                smoothScrollTo(container, finalScroll, duration);
+            }
+        });
+    });
+
+    
+  // Subscribing to the subToScrollToBottom port and scrolling to the bottom of the element with the given ID
+  app.ports.scrollToBottom.subscribe(function (elementId) {
+    requestAnimationFrame(() => {
+        const el = document.getElementById(elementId);
+        if (el) {
+            el.scrollTop = el.scrollHeight;
+        }
+    });
+  });
+
+
+  // Subscribing for the setItem port => write to localStorage
+  app.ports.setItem.subscribe(function ([key, value]) {
+    localStorage.setItem(key, value);
+  });
+
+  // Subscribing for the getItem port => read from localStorage
+  app.ports.getItem.subscribe(function (key) {
+    var value = localStorage.getItem(key);
+    if (value === null) {
+      // If not found, we send null
+      app.ports.gotItem.send([ key, null ]);
+    } else {
+      app.ports.gotItem.send([ key, value ]);
+    }
+  });
+</script>
+</html>
