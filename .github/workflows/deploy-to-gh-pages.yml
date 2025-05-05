@@ -17,23 +17,8 @@ jobs:
         - name: Install Node dependencies
           run: npm install
         
-        - name: Create dist folder
-          run: mkdir -p dist
-        
-        - name: Build and minify Elm
-          run: npx elm make src/Main.elm --optimize --output=elm.js
-        
-        - name: Use uglify-js to minify JavaScript
-          run: npx uglify-js elm.js --compress "pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe" | npx uglify-js --mangle --output dist/elm.min.js
-        
-        - name: Build Tailwind
-          run: npx tailwindcss -i ./styles.css -o dist/output.css --minify
-        
-        - name: Copy assets
-          run: cp -r assets dist/assets
-        
-        - name: Copy index.html
-          run: cp index.html dist/index.html
+        - name: Build and minify project
+          run: npm run build
         
         - name: Deploy to GitHub Pages
           uses: JamesIves/github-pages-deploy-action@v4
