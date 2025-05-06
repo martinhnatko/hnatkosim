@@ -26,6 +26,40 @@ Both of these models are **computationally equivalent to a Turing machine**. The
 - Configurable number of registers  
 - Built-in guide for both simulators  
 
+## Running the App Locally
+
+### 1. Install Node.js
+
+Make sure you have [Node.js](https://nodejs.org/) installed.  
+
+### 2. Clone the repository
+
+```
+git clone https://github.com/martinhnatko/hnatkosim
+```
+
+### 3. Navigate to the project directory
+
+```
+cd hnatkosim
+```
+
+### 3. Install project dependencies
+
+```
+npm install
+```
+
+### 4. Start the development server
+
+```
+npx elm-live src/Main.elm --pushstate --open --start-page=index_dev.html "--" --output=main_dev.js
+```
+
+### 5. Edit & reload
+
+elm‑live watches your *.elm files. Any change triggers an automatic re‑compile and the browser reloads immediately.
+
 ## Contributing
 
 Contributions are welcome. Whether you want to add new features or fix bugs, feel free to open an issue or submit a pull request.
