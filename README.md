@@ -30,7 +30,7 @@ Both of these models are **computationally equivalent to a Turing machine**. The
 
 ### 1. Install Node.js
 
-Make sure you have [Node.js](https://nodejs.org/) installed.  
+Make sure you have [Node.js](https://nodejs.org/en/download) installed.  
 
 ### 2. Clone the repository
 
