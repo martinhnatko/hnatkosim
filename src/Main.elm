@@ -23,7 +23,6 @@ import Shared.Components.Console exposing (ConsoleMessageType(..))
 import Shared.Icons.Bug exposing (heroiconBug)
 import Shared.Icons.Github exposing (heroiconGithub)
 import Shared.Icons.Info exposing (heroiconInfo)
-import Shared.Icons.Survey exposing (survey)
 import Shared.Icons.ElmLogo exposing (elmLogo)
 import Shared.Icons.X exposing (heroiconX)
 import Shared.Icons.Mail exposing (heroiconMail)
@@ -451,44 +450,6 @@ view model =
                                 , class "px-1.5 text-sm sm:text-md sm:px-6 sm:py-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded shadow-lg transition-colors duration-200"
                                 ]
                                 [ text "Random Access Machine Simulator" ]
-                            -- , a
-                            --     [ href "https://docs.google.com/forms/d/e/1FAIpQLSdQoSvSqd-mCTB4yz9xMqjNfwCstgw_eWmdulsLwmxOKtusyA/viewform?usp=sf_link"
-                            --     , target "_blank"
-                            --     , rel "noopener noreferrer"
-                            --     , class 
-                            --         """
-                            --         px-1.5 text-sm sm:text-md
-                            --         sm:px-6 sm:py-3 py-2
-                            --         text-white 
-                            --         font-bold 
-                                    
-                            --         rounded
-                            --         shadow-xl
-                            --         bg-gradient-to-r from-red-500 via-blue-500 to-orange-500 
-                                    
-
-                            --         hover:animate-none
-                                    
-                            --         flex items-center justify-center gap-2
-
-                            --         hover:bg-gradient-to-r hover:from-red-600 hover:via-blue-600 hover:to-orange-600
-                                    
-                            --         twerk
-                            --         """
-                            --     ]
-                            --     [ survey, text "SHORT FEEDBACK SURVEY" ]                            
-
-                            --     , p 
-                            --         [ class """
-                            --             text-xs 
-                            --             text-gray-500 
-                            --             text-center 
-                            --             whitespace-normal 
-                            --             break-words 
-                            --             sm:max-w-[50ch]
-                            --             max-w-[40ch]
-                            --         """ ]
-                            --         [ text "*Please take a moment to fill out this short survey, it's part of my bachelor's thesis." ]
                             ]
                         ]
 
@@ -565,7 +526,7 @@ viewAboutModal =
                 [ text "Author: Martin Hnatko"
                 , a 
                     [
-                        href "mailto:xhnatko@stuba.sk"
+                        href "mailto:martinhnatko1@gmail.com"
                         , target "_blank"
                         , rel "noopener noreferrer"
                         , class "text-blue-500 hover:text-blue-600"
